@@ -53,6 +53,18 @@ namespace gr {
                          gr_vector_const_void_star &input_items,
                          gr_vector_void_star &output_items)
     {
+      //for(int i = 0; i < noutput_items; i++) {
+      //  uint64_t absoffset = nitems_read(0) + i;
+      //  double t = time_from_item(0, absoffset);
+      //  GR_LOG_INFO(d_debug_logger, boost::format("rate: %1%  item: %2%  time: %3%") \
+      //              % rate(0) % absoffset % t);
+      //}
+
+      uint64_t absoffset = nitems_read(0);
+      double t = time_from_item(0, absoffset);
+      GR_LOG_INFO(d_debug_logger, boost::format("rate: %f  item: %u  time: %f") \
+                  % rate(0) % absoffset % t);
+
       return noutput_items;
     }
 

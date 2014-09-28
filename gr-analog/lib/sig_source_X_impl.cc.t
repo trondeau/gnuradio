@@ -52,6 +52,7 @@ namespace gr {
       d_sampling_freq(sampling_freq), d_waveform(waveform),
       d_frequency(frequency), d_ampl(ampl), d_offset(offset)
     {
+      set_rate(0, d_sampling_freq);
       d_nco.set_freq(2 * M_PI * d_frequency / d_sampling_freq);
     }
 
