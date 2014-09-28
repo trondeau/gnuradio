@@ -46,7 +46,7 @@ namespace gr {
                    io_signature::make(1, 1, sizeof(gr_complex)),
                    io_signature::make2(1, 2, sizeof(gr_complex), sizeof(float))),
 	blocks::control_loop(loop_bw, 1.0, -1.0),
-	d_order(order), d_error(0), d_phase_detector(NULL)
+	d_order(order), d_error(0), d_noise(1.0), d_phase_detector(NULL)
     {
       // Set up the phase detector to use based on the constellation order
       switch(d_order) {
@@ -66,6 +66,12 @@ namespace gr {
 	throw std::invalid_argument("order must be 2, 4, or 8");
 	break;
       }
+
+      message_port_register_in(pmt::mp("noise"));
+      set_msg_handler(
+        pmt::mp("noise"),
+        boost::bind(&costas_loop_cc_impl::handle_set_noise,
+                    this, _1));
     }
 
     costas_loop_cc_impl::~costas_loop_cc_impl()
@@ -90,33 +96,45 @@ namespace gr {
       */
 
       float K = (sqrt(2.0) - 1);
+      float snr = abs(sample)*abs(sample) / d_noise;
       if(fabsf(sample.real()) >= fabsf(sample.imag())) {
-	return ((sample.real()>0 ? 1.0 : -1.0) * sample.imag() -
-		(sample.imag()>0 ? 1.0 : -1.0) * sample.real() * K);
+	return ((blocks::tanhf_lut(snr*sample.real()) * sample.imag()) -
+          (blocks::tanhf_lut(snr*sample.imag()) * sample.real() * K));
       }
       else {
-	return ((sample.real()>0 ? 1.0 : -1.0) * sample.imag() * K -
-		(sample.imag()>0 ? 1.0 : -1.0) * sample.real());
+	return ((blocks::tanhf_lut(snr*sample.real()) * sample.imag() * K) -
+          (blocks::tanhf_lut(snr*sample.imag()) * sample.real()));
       }
     }
 
     float
     costas_loop_cc_impl::phase_detector_4(gr_complex sample) const
     {
-      return ((sample.real()>0 ? 1.0 : -1.0) * sample.imag() -
-	      (sample.imag()>0 ? 1.0 : -1.0) * sample.real());
+      float snr = abs(sample)*abs(sample) / d_noise;
+      return ((blocks::tanhf_lut(snr*sample.real()) * sample.imag()) -
+              (blocks::tanhf_lut(snr*sample.imag()) * sample.real()));
     }
 
     float
     costas_loop_cc_impl::phase_detector_2(gr_complex sample) const
     {
-      return (sample.real()*sample.imag());
+      float snr = abs(sample)*abs(sample) / d_noise;
+      return blocks::tanhf_lut(snr*sample.real()) * sample.imag();
     }
 
     float
     costas_loop_cc_impl::error() const
     {
       return d_error;
+    }
+
+    void
+    costas_loop_cc_impl::handle_set_noise(pmt::pmt_t msg)
+    {
+      if(pmt::is_real(msg)) {
+        d_noise = pmt::to_double(msg);
+        d_noise = powf(10.0f, d_noise/10.0f);
+      }
     }
 
     int

@@ -34,6 +34,7 @@ namespace gr {
     private:
       int d_order;
       float d_error;
+      float d_noise;
 
       /*! \brief the phase detector circuit for 8th-order PSK loops
        *  \param sample complex sample
@@ -60,6 +61,8 @@ namespace gr {
       ~costas_loop_cc_impl();
 
       float error() const;
+
+      void handle_set_noise(pmt::pmt_t msg);
 
       void setup_rpc();
 
