@@ -170,6 +170,86 @@ namespace gr {
 			   const pmt::pmt_t &key,
 			   long id);
 
+
+    /*****************************************************************
+     *  Timing/Rate information
+     ****************************************************************/
+
+    /*!
+     * Sets the time value of \p item on output port \p which to the
+     * new \p time. This will reset the scheduler's understanding of
+     * item times for this block starting with the specified item
+     * number. Any items before this this item number do not have a
+     * defined time. Generally, this value is set at the start of the
+     * flowgraph and only updated when a discontinuity occurs between
+     * samples.
+     *
+     * If not set, the block initializes item 0 to time 0.
+     *
+     * \param which The output port value to set the time.
+     * \param time  The time of \p item.
+     * \param item  The absolute item value for the new time (see nitems_written).
+     */
+    void set_time(unsigned int which, double time, uint64_t item);
+
+    /*!
+     * Sets the sample \p rate of the output port \p which. The rate
+     * is used to translate between and item number and actual
+     * time. We would generally set this value in a source block of
+     * the flowgraph where we know the exact correct sample rate. If
+     * used manually anywhere else, the value entered here for \p rate
+     * should be based on any resampling done in the flowgraph up to
+     * this block.
+     *
+     * If not set, the block initializes the value to 1.
+     *
+     * Generally, we set this in a source block. The scheduler
+     * propagates this information downstream to all other blocks,
+     * adjusting it appropriately by each block's relative_rate.
+     *
+     * \param which The output port value to set the rate info.
+     * \param rate  The rate (in samps/sec) of the buffer.
+     */
+    void set_rate(unsigned int which, double rate);
+
+    /*!
+     * Returns the time of the block at the current valid_item, based
+     * on the last call to set_time. The function returns the time and
+     * fills in \p valid_item with the value of the earliest item we
+     * can get time information about.
+     */
+    double time(unsigned int which, uint64_t &valid_item);
+
+    /*!
+     * Returns the rate of the blocks buffer \p which.
+     */
+    double rate(unsigned int which);
+
+    /*!
+     * Returns the time of \p item from the input buffer \p which. If
+     * the item, in absolute time, is from before the last valid
+     * sample (the sample at which a new time value was set), the
+     * timing information is invalid and this block will return -1.
+     *
+     * \param which The output port value to get the time from.
+     * \param item  The item number in absolute samples.
+     */
+    double time_from_item(unsigned int which, uint64_t item);
+
+    /*!
+     * Returns the item at \p time from the input buffer \p which. If
+     * the item, in absolute time, is from before the last valid
+     * sample (the sample at which a new time value was set), the
+     * timing information is invalid and this block will return -1.
+     *
+     * \param which The output port value to get the sample number from.
+     * \param time  The time from which to get the item number.
+     */
+    uint64_t item_from_time(unsigned int which, double time);
+
+
+
+
     /*!
      * \brief Set core affinity of block to the cores in the vector
      * mask.

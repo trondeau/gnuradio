@@ -38,16 +38,7 @@
 
 namespace gr {
 
-// must be defined to either 0 or 1
-#define ENABLE_LOGGING 0
-
-#if (ENABLE_LOGGING)
-#define LOG(x) do { x; } while(0)
-#else
-#define LOG(x) do {;} while(0)
-#endif
-
-  static int which_scheduler  = 0;
+  //static int which_scheduler  = 0;
 
   inline static unsigned int
   round_up(unsigned int n, unsigned int multiple)
@@ -158,15 +149,10 @@ namespace gr {
   }
 
   block_executor::block_executor(block_sptr block, int max_noutput_items)
-    : d_block(block), d_log(0), d_max_noutput_items(max_noutput_items)
+    : d_block(block), d_max_noutput_items(max_noutput_items)
   {
-    if(ENABLE_LOGGING) {
-      std::string name = str(boost::format("sst-%03d.log") % which_scheduler++);
-      d_log = new std::ofstream(name.c_str());
-      std::unitbuf(*d_log);		// make it unbuffered...
-      *d_log << "block_executor: "
-             << d_block << std::endl;
-    }
+    gr::logger_ptr null;
+    configure_default_loggers(null, d_log, "block_executor");
 
 #ifdef GR_PERFORMANCE_COUNTERS
     prefs *prefs = prefs::singleton();
@@ -178,9 +164,6 @@ namespace gr {
 
   block_executor::~block_executor()
   {
-    if(ENABLE_LOGGING)
-      delete d_log;
-
     d_block->stop();			// stop any drivers, etc.
   }
 
@@ -197,7 +180,8 @@ namespace gr {
     block        *m = d_block.get();
     block_detail *d = m->detail().get();
 
-    LOG(*d_log << std::endl << m);
+    //LOG(*d_log << std::endl << m);
+    GR_LOG_DEBUG(d_log, boost::format("%1%") % m);
 
     max_noutput_items = round_down(d_max_noutput_items, m->output_multiple());
 
@@ -217,12 +201,14 @@ namespace gr {
       // determine the minimum available output space
       noutput_items = min_available_space(d, m->output_multiple (), m->min_noutput_items ());
       noutput_items = std::min(noutput_items, max_noutput_items);
-      LOG(*d_log << " source\n  noutput_items = " << noutput_items << std::endl);
+      //LOG(*d_log << " source\n  noutput_items = " << noutput_items << std::endl);
+      GR_LOG_DEBUG(d_log, boost::format("source\n  noutput_items = %1%") % noutput_items);
       if(noutput_items == -1)		// we're done
         goto were_done;
 
       if(noutput_items == 0){		// we're output blocked
-        LOG(*d_log << "  BLKD_OUT\n");
+        //LOG(*d_log << "  BLKD_OUT\n");
+        GR_LOG_DEBUG(d_log, "  BLKD_OUT");
         return BLKD_OUT;
       }
 
@@ -236,7 +222,8 @@ namespace gr {
       d_input_done.resize(d->ninputs());
       d_output_items.resize (0);
       d_start_nitems_read.resize(d->ninputs());
-      LOG(*d_log << " sink\n");
+      //LOG(*d_log << " sink\n");
+      GR_LOG_DEBUG(d_log, " sink");
 
       max_items_avail = 0;
       for(int i = 0; i < d->ninputs (); i++) {
@@ -249,8 +236,12 @@ namespace gr {
           d_input_done[i] = d->input(i)->done();
         }
 
-        LOG(*d_log << "  d_ninput_items[" << i << "] = " << d_ninput_items[i] << std::endl);
-        LOG(*d_log << "  d_input_done[" << i << "] = " << d_input_done[i] << std::endl);
+        //LOG(*d_log << "  d_ninput_items[" << i << "] = " << d_ninput_items[i] << std::endl);
+        //LOG(*d_log << "  d_input_done[" << i << "] = " << d_input_done[i] << std::endl);
+        GR_LOG_DEBUG(d_log, boost::format("  d_ninput_items[%1%] = %2%") \
+                     % i % d_ninput_items[i]);
+        GR_LOG_DEBUG(d_log, boost::format("  d_input_done[%1%] = %2%") \
+                     % i % d_input_done[i]);
 
         if (d_ninput_items[i] < m->output_multiple() && d_input_done[i])
           goto were_done;
@@ -262,11 +253,16 @@ namespace gr {
       noutput_items = (int)(max_items_avail * m->relative_rate ());
       noutput_items = round_down(noutput_items, m->output_multiple ());
       noutput_items = std::min(noutput_items, max_noutput_items);
-      LOG(*d_log << "  max_items_avail = " << max_items_avail << std::endl);
-      LOG(*d_log << "  noutput_items = " << noutput_items << std::endl);
+      //LOG(*d_log << "  max_items_avail = " << max_items_avail << std::endl);
+      //LOG(*d_log << "  noutput_items = " << noutput_items << std::endl);
+      GR_LOG_DEBUG(d_log, boost::format("  max_items_avail = %1%") \
+                   % max_items_avail);
+      GR_LOG_DEBUG(d_log, boost::format("  noutput_items = %1%") \
+                   % noutput_items);
 
       if(noutput_items == 0) {    // we're blocked on input
-        LOG(*d_log << "  BLKD_IN\n");
+        //LOG(*d_log << "  BLKD_IN\n");
+        GR_LOG_DEBUG(d_log, "  BLKD_IN");
         return BLKD_IN;
       }
 
@@ -297,20 +293,27 @@ namespace gr {
 
       // determine the minimum available output space
       noutput_items = min_available_space(d, m->output_multiple(), m->min_noutput_items());
-      if(ENABLE_LOGGING) {
-        *d_log << " regular ";
-        if(m->relative_rate() >= 1.0)
-          *d_log << "1:" << m->relative_rate() << std::endl;
-        else
-          *d_log << 1.0/m->relative_rate() << ":1\n";
-        *d_log << "  max_items_avail = " << max_items_avail << std::endl;
-        *d_log << "  noutput_items = " << noutput_items << std::endl;
+
+      //*d_log << " regular ";
+      if(m->relative_rate() >= 1.0) {
+        //*d_log << "  regular 1:" << m->relative_rate() << std::endl;
+        GR_LOG_DEBUG(d_log, boost::format(" 1:%1% ") % m->relative_rate());
       }
+      else {
+        //*d_log << 1.0/m->relative_rate() << ":1\n";
+        GR_LOG_DEBUG(d_log, boost::format("  regular %1%:1 ") % m->relative_rate());
+      }
+      //*d_log << "  max_items_avail = " << max_items_avail << std::endl;
+      //*d_log << "  noutput_items = " << noutput_items << std::endl;
+      GR_LOG_DEBUG(d_log, boost::format("  max_items_avail = %1%") % max_items_avail);
+      GR_LOG_DEBUG(d_log, boost::format("  noutput_items = %1%") % noutput_items);
+
       if(noutput_items == -1)		// we're done
         goto were_done;
 
       if(noutput_items == 0) {		// we're output blocked
-        LOG(*d_log << "  BLKD_OUT\n");
+        //LOG(*d_log << "  BLKD_OUT\n");
+        GR_LOG_DEBUG(d_log, "  BLKD_OUT");
         return BLKD_OUT;
       }
 
@@ -385,7 +388,8 @@ namespace gr {
         }
 
         // We're blocked on input
-        LOG(*d_log << "  BLKD_IN\n");
+        //LOG(*d_log << "  BLKD_IN\n");
+        GR_LOG_DEBUG(d_log, "  BLKD_IN");
         if(d_input_done[i])   // If the upstream block is done, we're done
           goto were_done;
 
@@ -442,8 +446,10 @@ namespace gr {
         d->stop_perf_counters(noutput_items, n);
 #endif /* GR_PERFORMANCE_COUNTERS */
 
-      LOG(*d_log << "  general_work: noutput_items = " << noutput_items
-          << " result = " << n << std::endl);
+      //LOG(*d_log << "  general_work: noutput_items = " << noutput_items
+      //    << " result = " << n << std::endl);
+      GR_LOG_DEBUG(d_log, boost::format("  general_work: noutput_items = %1% result = %2%") \
+                   % noutput_items % n);
 
       // Adjust number of unaligned items left to process
       if(m->is_unaligned()) {
@@ -455,10 +461,32 @@ namespace gr {
       // (the relative_rate), we might want to automatically update
       // based on the amount of items written/read.
       // In the block constructor, use enable_update_rate(true).
+      double alpha = 0.01;
+      double beta = 1-alpha;
       if(m->update_rate()) {
-        rrate = ((double)(m->nitems_written(0)+n)) / ((double)m->nitems_read(0));
+        rrate = alpha*rrate + beta*(((double)(m->nitems_written(0)+n)) / ((double)m->nitems_read(0)));
         if(rrate > 0)
           m->set_relative_rate(rrate);
+      }
+
+      // SET RATES AND SUCH FOR CALCULATING TIMES
+      if(!d->sink_p ()) {
+        double start_rate = m->rate(0);
+        uint64_t item0 = 0;
+        double time0 = m->time(0, item0);
+        double rate = m->rate(0) * m->relative_rate();
+        m->set_rate(0, rate);
+        m->set_time(0, time0, item0);
+
+        GR_LOG_DEBUG(d_log, boost::format("%1%: time0:  %2%  item0: %3%") \
+                     % m->alias() % time0 % item0);
+
+        GR_LOG_DEBUG(d_log, boost::format("%1%: input rate:  %2%  output rate: %3%  after set: %4%") \
+                     % m->alias() % start_rate % rate % m->rate(0));
+      }
+      else {
+        GR_LOG_DEBUG(d_log, boost::format("%1%: rate:  %2%") \
+                     % m->alias() % m->rate(0));
       }
 
       // Now propagate the tags based on the new relative rate
@@ -495,7 +523,8 @@ namespace gr {
     assert(0);
 
   were_done:
-    LOG(*d_log << "  were_done\n");
+    //LOG(*d_log << "  were_done\n");
+    GR_LOG_DEBUG(d_log, "  were_done");
     d->set_done (true);
     return DONE;
   }

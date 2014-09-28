@@ -83,7 +83,8 @@ namespace gr {
     : d_base(0), d_bufsize(0), d_max_reader_delay(0), d_vmcircbuf(0),
       d_sizeof_item(sizeof_item), d_link(link),
       d_write_index(0), d_abs_write_offset(0), d_done(false),
-      d_last_min_items_read(0)
+      d_last_min_items_read(0),
+      d_rate(1), d_time(0), d_last_valid_item(0)
   {
     if(!allocate_buffer (nitems, sizeof_item))
       throw std::bad_alloc ();
@@ -255,6 +256,32 @@ namespace gr {
     d_item_tags.erase(begin_itr, end_itr);
   }
 
+  void
+  buffer::set_time(double time, uint64_t item)
+  {
+    d_last_valid_item = item;
+    d_time = time;
+  }
+
+  void
+  buffer::set_rate(double rate)
+  {
+    d_rate = rate;
+  }
+
+  double
+  buffer::time(uint64_t &item)
+  {
+    item = d_last_valid_item;
+    return d_time;
+  }
+
+  double
+  buffer::rate()
+  {
+    return d_rate;
+  }
+
   long
   buffer_ncurrently_allocated()
   {
@@ -341,6 +368,42 @@ namespace gr {
       }
       itr++;
     }
+  }
+
+  double
+  buffer_reader::time(uint64_t &item)
+  {
+    return d_buffer->time(item);
+  }
+
+  double
+  buffer_reader::rate()
+  {
+    return d_buffer->rate();
+  }
+
+  double
+  buffer_reader::time_from_item(uint64_t item)
+  {
+    uint64_t init_item;
+    double init_time, d, t;
+
+    init_time = time(init_item);
+    d = static_cast<double>(item - init_item);
+    t = init_time + d/rate();
+    return t;
+  }
+
+  uint64_t
+  buffer_reader::item_from_time(double t)
+  {
+    uint64_t init_item, item;
+    double init_time, d;
+
+    init_time = time(init_item);
+    d = t - init_time;
+    item = rate()*init_item + d;
+    return item;
   }
 
   long

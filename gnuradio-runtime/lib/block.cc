@@ -53,6 +53,8 @@ namespace gr {
       d_priority(-1),
       d_pc_rpc_set(false),
       d_update_rate(false),
+      d_rate(1),
+      d_time(0),
       d_max_output_buffer(std::max(output_signature->max_streams(),1), -1),
       d_min_output_buffer(std::max(output_signature->max_streams(),1), -1)
   {
@@ -66,6 +68,22 @@ namespace gr {
   block::~block()
   {
     global_block_registry.unregister_primitive(symbol_name());
+  }
+
+  void
+  block::set_detail(block_detail_sptr detail)
+  {
+    d_detail = detail;
+
+    //unsigned int nins = static_cast<unsigned int>(d_detail->ninputs());
+    //unsigned int nouts = static_cast<unsigned int>(d_detail->noutputs());
+    //for(unsigned int n = 0; n < nouts; n++) {
+    //  d_detail->set_rate(n, d_rate);
+    //  d_detail->set_time(n, d_time, 0);
+    //}
+    //for(unsigned int n = 0; n < nins; n++) {
+    //  d_detail->input(n)->declare_sample_delay(d_attr_delay);
+    //}
   }
 
   unsigned
@@ -426,6 +444,79 @@ namespace gr {
     else
       d_min_output_buffer[port] = min_output_buffer;
   }
+
+
+
+  void
+  block::set_time(unsigned int which, double time, uint64_t item)
+  {
+    d_time = time;
+    if(d_detail) {
+      d_detail->set_time(which, time, item);
+    }
+  }
+
+  void
+  block::set_rate(unsigned int which, double rate)
+  {
+    d_rate = rate;
+    if(d_detail) {
+      d_detail->set_rate(which, rate);
+    }
+  }
+
+
+  double
+  block::time(unsigned int which, uint64_t &valid_item)
+  {
+    if(d_detail) {
+      return d_detail->time(which, valid_item);
+    }
+    valid_item = 0;
+    return d_time;
+  }
+
+  double
+  block::rate(unsigned int which)
+  {
+    if(d_detail) {
+      return d_detail->rate(which);
+    }
+    return d_rate;
+  }
+
+  double
+  block::original_time()
+  {
+    return d_time;
+  }
+
+  double
+  block::original_rate()
+  {
+    return d_rate;
+  }
+
+  double
+  block::time_from_item(unsigned int which, uint64_t item)
+  {
+    if(d_detail) {
+      return d_detail->time_from_item(which, item);
+    }
+    return 0;
+  }
+
+  uint64_t
+  block::item_from_time(unsigned int which, double time)
+  {
+    if(d_detail) {
+      return d_detail->item_from_time(which, time);
+    }
+    return 0;
+  }
+
+
+
 
 
   bool

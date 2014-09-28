@@ -130,6 +130,13 @@ namespace gr {
     std::multimap<uint64_t,tag_t>::iterator get_tags_lower_bound(uint64_t x) { return d_item_tags.lower_bound(x); }
     std::multimap<uint64_t,tag_t>::iterator get_tags_upper_bound(uint64_t x) { return d_item_tags.upper_bound(x); }
 
+
+    void set_time(double time, uint64_t item);
+    void set_rate(double rate);
+
+    double time(uint64_t &item);
+    double rate();
+
     // -------------------------------------------------------------------------
 
   private:
@@ -161,6 +168,11 @@ namespace gr {
     bool				d_done;
     std::multimap<uint64_t,tag_t>                   d_item_tags;
     uint64_t                            d_last_min_items_read;
+
+    // For keeping track of time
+    double  d_rate;               // rate of the block
+    double  d_time;               // time of d_last_valid_sample
+    int64_t d_last_valid_item;    // items before this have no valid time info
 
     unsigned index_add(unsigned a, unsigned b)
     {
@@ -308,6 +320,12 @@ namespace gr {
                            uint64_t abs_start,
                            uint64_t abs_end,
 			   long id);
+
+
+    double time(uint64_t &item);
+    double rate();
+    double time_from_item(uint64_t item);
+    uint64_t item_from_time(double t);
 
     // -------------------------------------------------------------------------
 
