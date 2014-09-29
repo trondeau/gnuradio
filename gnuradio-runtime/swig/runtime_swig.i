@@ -60,6 +60,7 @@
 #include <gnuradio/top_block.h>
 #include <gnuradio/logger.h>
 #include <gnuradio/math.h>
+#include <gnuradio/time.h>
 %}
 
 %constant int sizeof_char 	= sizeof(char);
@@ -88,6 +89,7 @@
 %include "sync_interpolator.i"
 %include "tagged_stream_block.i"
 %include "tags.i"
+%include "time.i"
 %include "top_block.i"
 %include "block_gateway.i"
 %include "gr_logger.i"

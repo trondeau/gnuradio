@@ -109,6 +109,7 @@ list(APPEND gnuradio_runtime_sources
   sys_paths.cc
   tagged_stream_block.cc
   test.cc
+  time.cc
   top_block.cc
   top_block_impl.cc
   tpb_detail.cc
@@ -257,6 +258,7 @@ list(APPEND test_gnuradio_runtime_sources
   qa_logger.cc
   qa_vmcircbuf.cc
   qa_runtime.cc
+  qa_time.cc
 )
 
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/math)

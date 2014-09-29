@@ -37,6 +37,7 @@
 #include <qa_fxpt_nco.h>
 #include <qa_fxpt_vco.h>
 #include <qa_logger.h>
+#include <qa_time.h>
 #include <qa_math.h>
 #include <qa_vmcircbuf.h>
 #include <qa_sincos.h>
@@ -54,6 +55,7 @@ qa_runtime::suite()
   s->addTest(qa_fxpt_nco::suite());
   s->addTest(qa_fxpt_vco::suite());
   s->addTest(qa_logger::suite());
+  s->addTest(qa_time::suite());
   s->addTest(qa_math::suite());
   s->addTest(qa_vmcircbuf::suite());
   s->addTest(qa_sincos::suite());

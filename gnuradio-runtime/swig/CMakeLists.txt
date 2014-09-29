@@ -120,6 +120,7 @@ install(
     sync_interpolator.i
     tagged_stream_block.i
     tags.i
+    time.i
     top_block.i
     ${CMAKE_CURRENT_BINARY_DIR}/runtime_swig_doc.i
     ${CMAKE_CURRENT_BINARY_DIR}/pmt_swig_doc.i

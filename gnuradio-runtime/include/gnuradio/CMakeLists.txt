@@ -69,6 +69,7 @@ install(FILES
   sync_interpolator.h
   sys_paths.h
   tag_checker.h
+  time.h
   types.h
   sys_pri.h
   unittests.h
