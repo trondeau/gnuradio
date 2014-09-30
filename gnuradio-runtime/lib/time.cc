@@ -117,16 +117,19 @@ namespace gr {
   grtime_t
   grtime_t::operator*(double x)
   {
-    long int secs = x*d_secs;
-    double fracs = x*d_fracs;
-    return grtime_t(secs, fracs);
+    double secs = x*d_secs;
+    double rm = fmod(secs, 1.0);
+    double fracs = x*d_fracs + rm;
+    return grtime_t(static_cast<long int>(secs), fracs);
   }
 
   grtime_t &
   grtime_t::operator*=(double x)
   {
-    d_secs *= x;
-    d_fracs *= x;
+    double secs = x*d_secs;
+    double rm = fmod(secs, 1.0);
+    d_secs = static_cast<long int>(secs);
+    d_fracs = d_fracs*x + rm;
     check_overflow();
     return *this;
   }

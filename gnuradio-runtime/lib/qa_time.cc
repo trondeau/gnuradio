@@ -146,13 +146,13 @@ qa_time::t6()
 void
 qa_time::t7()
 {
-  double x = 11.876;
+  double x = 0.876;
   long int secs = 2;
   double fracs = 0.123;
   gr::grtime_t t1(secs, fracs);
   gr::grtime_t t_res0, t_res1;
   gr::grtime_t t_res2 = t1;
-  gr::grtime_t t_test(x*secs, x*fracs);
+  gr::grtime_t t_test(1, 0.859748);
 
   t_res0 = x*t1;
   t_res1 = t1*x;

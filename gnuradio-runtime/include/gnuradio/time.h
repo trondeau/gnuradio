@@ -25,6 +25,7 @@
 
 #include <gnuradio/api.h>
 #include <iostream>
+#include <cmath>
 
 namespace gr {
 
@@ -92,9 +93,10 @@ namespace gr {
     //! Allows x*t version of multiplying by a scalar
     friend grtime_t operator*(double x, grtime_t t)
     {
-      long int secs = x*t.secs();
-      double fracs = x*t.fracs();
-      return gr::grtime_t(secs, fracs);
+      double secs = x*t.secs();
+      double rm = fmod(secs, 1.0);
+      double fracs = x*t.fracs() + rm;
+      return grtime_t(static_cast<long int>(secs), fracs);
     }
 
   };
