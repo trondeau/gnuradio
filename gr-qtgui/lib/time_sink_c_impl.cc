@@ -525,7 +525,7 @@ namespace gr {
       if(tags.size() > 0) {
         d_triggered = true;
         trigger_index = tags[0].offset - nr;
-        d_start = d_index + trigger_index - d_trigger_delay - 1;
+        d_start = d_index + trigger_index - d_trigger_delay;
         d_end = d_start + d_size;
         d_trigger_count = 0;
         _adjust_tags(-d_start);
