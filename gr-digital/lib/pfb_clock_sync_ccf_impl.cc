@@ -109,6 +109,8 @@ namespace gr {
       set_taps(dtaps, d_dtaps, d_diff_filters);
 
       set_relative_rate((float)d_osps/(float)d_sps);
+      GR_LOG_INFO(d_debug_logger, boost::format("osps: %f  sps: %f  rate: %s") \
+                  % d_osps % d_sps % relative_rate());
     }
 
     pfb_clock_sync_ccf_impl::~pfb_clock_sync_ccf_impl()

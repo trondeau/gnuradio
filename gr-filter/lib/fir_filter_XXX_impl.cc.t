@@ -104,4 +104,3 @@ namespace gr {
 
   } /* namespace filter */
 } /* namespace gr */
-

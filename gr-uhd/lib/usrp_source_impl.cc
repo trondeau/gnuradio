@@ -680,8 +680,8 @@ namespace gr {
           double time= static_cast<double>(_metadata.time_spec.get_full_secs()) \
             + _metadata.time_spec.get_frac_secs();
           double rate = _samp_rate;
-          set_rate(0, rate);
-          set_time(0, time, nitems_written(0));
+          set_output_rate(0, rate);
+          set_valid_time(0, time, nitems_written(0));
 
           GR_LOG_INFO(d_debug_logger, boost::format("rate: %1%  item: %2%  time: %3%") \
                       % rate % nitems_written(0) % time);
