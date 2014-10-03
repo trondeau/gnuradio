@@ -81,7 +81,7 @@ namespace gr {
     bool operator==(const grtime_t &t) const;
 
     //! Return a printable string with the combine secs.fracs
-    std::string write() const;
+    std::string write(int precision=15) const;
 
     //! Define output operator
     friend std::ostream& operator<<(std::ostream &os, const grtime_t &t)

@@ -93,8 +93,8 @@ namespace gr {
     // or buffers to set at the time. This stuffs that information
     // into the buffers now that they are built.
     for(int n = 0; n < d->noutputs(); n++) {
-      d->set_rate(n, block->original_rate());
-      d->set_time(n, block->original_time(), 0);
+      d->set_output_rate(n, block->original_rate());
+      d->set_valid_time(n, block->original_time(), 0);
     }
 
     // make sure our block isnt finished

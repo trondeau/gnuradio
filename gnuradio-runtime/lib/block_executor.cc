@@ -464,29 +464,30 @@ namespace gr {
       double alpha = 0.01;
       double beta = 1-alpha;
       if(m->update_rate()) {
-        rrate = alpha*rrate + beta*(((double)(m->nitems_written(0)+n)) / ((double)m->nitems_read(0)));
+        //rrate = m->relative_rate();
+        //rrate = alpha*rrate + beta*(((double)(m->nitems_written(0)+n)) / ((double)m->nitems_read(0)));
+        rrate = static_cast<double>(m->nitems_written(0)+n) / static_cast<double>(m->nitems_read(0));
         if(rrate > 0)
           m->set_relative_rate(rrate);
       }
 
+
+
       // SET RATES AND SUCH FOR CALCULATING TIMES
       if(!d->sink_p ()) {
-        double start_rate = m->rate(0);
+        double start_rate = m->input_rate(0);
         uint64_t item0 = 0;
-        double time0 = m->time(0, item0);
-        double rate = m->rate(0) * m->relative_rate();
-        m->set_rate(0, rate);
-        m->set_time(0, time0, item0);
+        grtime_t time0 = m->valid_time(0, item0);
+        double rate = m->input_rate(0) * m->relative_rate();
+        m->set_output_rate(0, rate);
+        m->set_valid_time(0, time0, item0);
 
-        GR_LOG_DEBUG(d_log, boost::format("%1%: time0:  %2%  item0: %3%") \
-                     % m->alias() % time0 % item0);
-
-        GR_LOG_DEBUG(d_log, boost::format("%1%: input rate:  %2%  output rate: %3%  after set: %4%") \
-                     % m->alias() % start_rate % rate % m->rate(0));
+        GR_LOG_DEBUG(d_log, boost::format("%1%: input rate:  %2%  rel rate: %3%  output rate: %4%") \
+                     % m->alias() % m->input_rate(0) % m->relative_rate() % rate);
       }
       else {
         GR_LOG_DEBUG(d_log, boost::format("%1%: rate:  %2%") \
-                     % m->alias() % m->rate(0));
+                     % m->alias() % m->input_rate(0));
       }
 
       // Now propagate the tags based on the new relative rate

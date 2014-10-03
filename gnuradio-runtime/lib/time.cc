@@ -192,13 +192,13 @@ namespace gr {
   }
 
   std::string
-  grtime_t::write() const
+  grtime_t::write(int precision) const
   {
     // Maybe a niceer way to display this with stripping off the
     // leading 0 of the fractional part.
     std::stringstream s;
     std::stringstream frac;
-    frac << std::setprecision(15) << d_fracs;
+    frac << std::fixed << std::setprecision(precision) << d_fracs;
     s << d_secs << frac.str().substr(1);
     return s.str();
   }

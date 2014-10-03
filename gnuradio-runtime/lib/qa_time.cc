@@ -135,11 +135,16 @@ void
 qa_time::t6()
 {
   // Time struct outputs 15 decimals of precision.
-  gr::grtime_t t(1234567890123456789, 0.01234567890123456789);
-  std::string test = "1234567890123456789.0123456789012346";
-  std::string res = t.write();
+  gr::grtime_t t0(1234567890123456789, 0.01234567890123456789);
+  std::string test0 = "1234567890123456789.012345678901235";
+  std::string res0 = t0.write();
 
-  CPPUNIT_ASSERT(test == res);
+  gr::grtime_t t1(0, 3.125e-5);
+  std::string test1 = "0.00003125";
+  std::string res1 = t1.write(8);
+
+  CPPUNIT_ASSERT(test0 == res0);
+  CPPUNIT_ASSERT(test1 == res1);
 }
 
 

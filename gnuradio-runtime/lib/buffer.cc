@@ -84,12 +84,16 @@ namespace gr {
       d_sizeof_item(sizeof_item), d_link(link),
       d_write_index(0), d_abs_write_offset(0), d_done(false),
       d_last_min_items_read(0),
-      d_rate(1), d_time(0), d_last_valid_item(0)
+      d_output_rate(1), d_valid_time(0), d_last_valid_item(0)
   {
     if(!allocate_buffer (nitems, sizeof_item))
       throw std::bad_alloc ();
 
     s_buffer_count++;
+
+    std::string name = boost::str(boost::format("buffer%1%") % s_buffer_count);
+    gr::logger_ptr null;
+    configure_default_loggers(null, d_log, name);
   }
 
   buffer_sptr
@@ -257,29 +261,29 @@ namespace gr {
   }
 
   void
-  buffer::set_time(double time, uint64_t item)
+  buffer::set_valid_time(grtime_t time, uint64_t item)
   {
     d_last_valid_item = item;
-    d_time = time;
+    d_valid_time = time;
   }
 
   void
-  buffer::set_rate(double rate)
+  buffer::set_output_rate(double rate)
   {
-    d_rate = rate;
+    d_output_rate = rate;
   }
 
-  double
-  buffer::time(uint64_t &item)
+  grtime_t
+  buffer::valid_time(uint64_t &item)
   {
     item = d_last_valid_item;
-    return d_time;
+    return d_valid_time;
   }
 
   double
-  buffer::rate()
+  buffer::output_rate()
   {
-    return d_rate;
+    return d_output_rate;
   }
 
   long
@@ -298,6 +302,10 @@ namespace gr {
     s_buffer_reader_count++;
 
     buffer->d_max_reader_delay = 0;
+
+    std::string name = boost::str(boost::format("buffer_reader%1%") % s_buffer_reader_count);
+    gr::logger_ptr null;
+    configure_default_loggers(null, d_log, name);
   }
 
   buffer_reader::~buffer_reader()
@@ -370,39 +378,41 @@ namespace gr {
     }
   }
 
-  double
-  buffer_reader::time(uint64_t &item)
+  grtime_t
+  buffer_reader::valid_time(uint64_t &item)
   {
-    return d_buffer->time(item);
+    return d_buffer->valid_time(item);
   }
 
   double
-  buffer_reader::rate()
+  buffer_reader::input_rate()
   {
-    return d_buffer->rate();
+    return d_buffer->output_rate();
   }
 
-  double
+  grtime_t
   buffer_reader::time_from_item(uint64_t item)
   {
     uint64_t init_item;
-    double init_time, d, t;
+    grtime_t init_time, d, t;
 
-    init_time = time(init_item);
-    d = static_cast<double>(item - init_item);
-    t = init_time + d/rate();
+    init_time = valid_time(init_item);
+    d = grtime_t(item - init_item, 0);
+    t = init_time + (1.0/input_rate()) * d;
+
     return t;
   }
 
   uint64_t
-  buffer_reader::item_from_time(double t)
+  buffer_reader::item_from_time(grtime_t t)
   {
     uint64_t init_item, item;
-    double init_time, d;
+    grtime_t init_time, d;
 
-    init_time = time(init_item);
+    init_time = valid_time(init_item);
     d = t - init_time;
-    item = rate()*init_item + d;
+    //item = input_rate()*init_item + d;
+    item = 0;
     return item;
   }
 

@@ -26,6 +26,8 @@
 #include <gnuradio/api.h>
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/tags.h>
+#include <gnuradio/time.h>
+#include <gnuradio/logger.h>
 #include <boost/weak_ptr.hpp>
 #include <gnuradio/thread/thread.h>
 #include <map>
@@ -131,11 +133,42 @@ namespace gr {
     std::multimap<uint64_t,tag_t>::iterator get_tags_upper_bound(uint64_t x) { return d_item_tags.upper_bound(x); }
 
 
-    void set_time(double time, uint64_t item);
-    void set_rate(double rate);
+    /*!
+     * Sets the time value of \p item to the new \p time. The buffer
+     * will use this value to calculate the time of an item based on
+     * the current sample rates.
+     *
+     * \param time  The time of \p item.
+     * \param item  The absolute item value for the new time (see nitems_written).
+     */
+    void set_valid_time(grtime_t time, uint64_t item);
 
-    double time(uint64_t &item);
-    double rate();
+    /*!
+     * Sets the sample rate of the buffer. This is the output rate of
+     * a block. A block can set this itself, but generally this value
+     * is set by the scheduler by taking the information from the
+     * input_rate (from the previous block) updated by the block's
+     * relative_rate.
+     *
+     * \param rate  the rate the output buffer runs at.
+     */
+    void set_output_rate(double rate);
+
+    /*!
+     * A buffer keeps track of the earliest known valid time and the
+     * item that time is associated with. As packets, bursts, or other
+     * stream discontinuities happen, the timing information must be
+     * update and previous time before the \p item value returned here
+     * are invalid.
+     */
+    grtime_t valid_time(uint64_t &item);
+
+    /*!
+     * This is the rate of the buffer. Generally called through the
+     * next block's buffer_reader to update and set the following
+     * buffers' sample rates.
+     */
+    double output_rate();
 
     // -------------------------------------------------------------------------
 
@@ -170,9 +203,10 @@ namespace gr {
     uint64_t                            d_last_min_items_read;
 
     // For keeping track of time
-    double  d_rate;               // rate of the block
-    double  d_time;               // time of d_last_valid_sample
+    double  d_output_rate;        // output rate of the block
+    grtime_t  d_valid_time;       // time of d_last_valid_sample
     int64_t d_last_valid_item;    // items before this have no valid time info
+    gr::logger_ptr d_log;
 
     unsigned index_add(unsigned a, unsigned b)
     {
@@ -322,10 +356,24 @@ namespace gr {
 			   long id);
 
 
-    double time(uint64_t &item);
-    double rate();
-    double time_from_item(uint64_t item);
-    uint64_t item_from_time(double t);
+    /*!
+     * The earliest valid time and item it's associated with.
+     */
+    grtime_t valid_time(uint64_t &item);
+
+    /*!
+     * The rate of the buffer.
+     */
+    double input_rate();
+
+    /*!
+     * Given an \p item, if it is later in time than the ealiest valid
+     * item, this calculates and returns the time in seconds when that
+     * item happened.
+     */
+    grtime_t time_from_item(uint64_t item);
+
+    uint64_t item_from_time(grtime_t t);
 
     // -------------------------------------------------------------------------
 
@@ -339,6 +387,7 @@ namespace gr {
     uint64_t     d_abs_read_offset;  // num items seen since the start
     boost::weak_ptr<block> d_link;   // block that reads via this buffer reader
     unsigned d_attr_delay;           // sample delay attribute for tag propagation
+    gr::logger_ptr d_log;
 
     //! constructor is private.  Use gr::buffer::add_reader to create instances
     buffer_reader(buffer_sptr buffer, unsigned int read_index,

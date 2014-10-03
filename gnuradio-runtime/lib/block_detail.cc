@@ -222,52 +222,61 @@ namespace gr {
 
 
   void
-  block_detail::set_time(unsigned int which, double time, uint64_t item)
+  block_detail::set_valid_time(unsigned int which, grtime_t time, uint64_t item)
   {
-    if(which >= d_noutputs)
-      throw std::invalid_argument("block_detail::set_time invalid buffer.");
-    d_output[which]->set_time(time, item);
+    if(!sink_p()) {
+      if(which >= d_noutputs)
+        throw std::invalid_argument("block_detail::set_valid_time invalid buffer.");
+      d_output[which]->set_valid_time(time, item);
+    }
   }
 
   void
-  block_detail::set_rate(unsigned int which, double rate)
+  block_detail::set_output_rate(unsigned int which, double rate)
   {
-    if(which >= d_noutputs)
-      throw std::invalid_argument("block_detail::set_rate invalid buffer.");
-    d_output[which]->set_rate(rate);
+    if(!sink_p()) {
+      if(which >= d_noutputs)
+        throw std::invalid_argument("block_detail::set_rate invalid buffer.");
+      d_output[which]->set_output_rate(rate);
+    }
   }
 
-  double
-  block_detail::time(unsigned int which, uint64_t &valid_item)
+  grtime_t
+  block_detail::valid_time(unsigned int which, uint64_t &valid_item)
   {
+    // Sources don't have inputs or a difference between input or
+    // output time info.
     if(source_p()) {
       if(which >= d_noutputs)
         throw std::invalid_argument("block_detail::rate invalid buffer.");
-      return d_output[which]->time(valid_item);
+      return d_output[which]->valid_time(valid_item);
     }
     else {
       if(which >= d_ninputs)
         throw std::invalid_argument("block_detail::time invalid buffer.");
-      return d_input[which]->time(valid_item);
+      return d_input[which]->valid_time(valid_item);
     }
   }
 
   double
-  block_detail::rate(unsigned int which)
+  block_detail::input_rate(unsigned int which)
   {
+    // Sources don't have inputs or a difference between input or
+    // output rate info.
     if(source_p()) {
       if(which >= d_noutputs)
         throw std::invalid_argument("block_detail::rate invalid buffer.");
-      return d_output[which]->rate();
+      return d_output[which]->output_rate();
     }
     else {
       if(which >= d_ninputs)
         throw std::invalid_argument("block_detail::rate invalid buffer.");
-      return d_input[which]->rate();
+      return d_input[which]->input_rate();
     }
+    return 0;
   }
 
-  double
+  grtime_t
   block_detail::time_from_item(unsigned int which, uint64_t item)
   {
     if(source_p()) {
@@ -280,10 +289,11 @@ namespace gr {
         throw std::invalid_argument("block_detail::rate invalid buffer.");
       return d_input[which]->time_from_item(item);
     }
+    return grtime_t(0,0);
   }
 
   uint64_t
-  block_detail::item_from_time(unsigned int which, double time)
+  block_detail::item_from_time(unsigned int which, grtime_t time)
   {
     return 0;
   }

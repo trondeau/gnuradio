@@ -27,6 +27,7 @@
 #include <gnuradio/runtime_types.h>
 #include <gnuradio/tpb_detail.h>
 #include <gnuradio/tags.h>
+#include <gnuradio/time.h>
 #include <gnuradio/high_res_timer.h>
 #include <stdexcept>
 
@@ -190,7 +191,7 @@ namespace gr {
      * \param time  The time of \p item.
      * \param item  The absolute item value for the new time (see nitems_written).
      */
-    void set_time(unsigned int which, double time, uint64_t item);
+    void set_valid_time(unsigned int which, grtime_t time, uint64_t item);
 
     /*!
      * Sets the sample \p rate of the output port \p which. The rate
@@ -210,7 +211,7 @@ namespace gr {
      * \param which The output port value to set the rate info.
      * \param rate  The rate (in samps/sec) of the buffer.
      */
-    void set_rate(unsigned int which, double rate);
+    void set_output_rate(unsigned int which, double rate);
 
     /*!
      * Returns the time of the block at the current valid_item, based
@@ -218,12 +219,12 @@ namespace gr {
      * fills in \p valid_item with the value of the earliest item we
      * can get time information about.
      */
-    double time(unsigned int which, uint64_t &valid_item);
+    grtime_t valid_time(unsigned int which, uint64_t &valid_item);
 
     /*!
-     * Returns the rate of the blocks buffer \p which.
+     * Returns the rate of the block's input buffer \p which.
      */
-    double rate(unsigned int which);
+    double input_rate(unsigned int which);
 
     /*!
      * Returns the time of \p item from the input buffer \p which. If
@@ -234,7 +235,7 @@ namespace gr {
      * \param which The output port value to get the time from.
      * \param item  The item number in absolute samples.
      */
-    double time_from_item(unsigned int which, uint64_t item);
+    grtime_t time_from_item(unsigned int which, uint64_t item);
 
     /*!
      * Returns the item at \p time from the input buffer \p which. If
@@ -245,7 +246,7 @@ namespace gr {
      * \param which The output port value to get the sample number from.
      * \param time  The time from which to get the item number.
      */
-    uint64_t item_from_time(unsigned int which, double time);
+    uint64_t item_from_time(unsigned int which, grtime_t time);
 
 
 
