@@ -84,7 +84,8 @@ namespace gr {
       d_sizeof_item(sizeof_item), d_link(link),
       d_write_index(0), d_abs_write_offset(0), d_done(false),
       d_last_min_items_read(0),
-      d_output_rate(1), d_valid_time(0), d_last_valid_item(0)
+      d_output_rate(1), d_valid_time(0), d_last_valid_item(0),
+      d_rate_dir(IO_RATE_FWD)
   {
     if(!allocate_buffer (nitems, sizeof_item))
       throw std::bad_alloc ();
@@ -286,6 +287,26 @@ namespace gr {
     return d_output_rate;
   }
 
+
+  rate_propagation_dir_t
+  buffer::rate_propagation_dir() const
+  {
+    return d_rate_dir;
+  }
+
+  void
+  buffer::set_rate_propagation_dir(rate_propagation_dir_t dir)
+  {
+    d_rate_dir = dir;
+  }
+
+  bool
+  buffer::rate_propagation_fwd()
+  {
+    return d_rate_dir == IO_RATE_FWD;
+  }
+
+
   long
   buffer_ncurrently_allocated()
   {
@@ -384,6 +405,12 @@ namespace gr {
     return d_buffer->valid_time(item);
   }
 
+  void
+  buffer_reader::set_input_rate(double rate)
+  {
+    d_buffer->set_output_rate(rate);
+  }
+
   double
   buffer_reader::input_rate()
   {
@@ -415,6 +442,25 @@ namespace gr {
     item = 0;
     return item;
   }
+
+  rate_propagation_dir_t
+  buffer_reader::rate_propagation_dir() const
+  {
+    return d_buffer->rate_propagation_dir();
+  }
+
+  void
+  buffer_reader::set_rate_propagation_dir(rate_propagation_dir_t dir)
+  {
+    d_buffer->set_rate_propagation_dir(dir);
+  }
+
+  bool
+  buffer_reader::rate_propagation_fwd()
+  {
+    return d_buffer->rate_propagation_fwd();
+  }
+
 
   long
   buffer_reader_ncurrently_allocated()

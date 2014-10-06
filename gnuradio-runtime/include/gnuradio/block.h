@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2007,2009,2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2007,2009,2010,2013-2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -602,6 +602,7 @@ namespace gr {
      * \param which The output port value to set the rate info.
      * \param rate  The rate (in samps/sec) of the buffer.
      */
+    void set_input_rate(unsigned int which, double rate);
     void set_output_rate(unsigned int which, double rate);
 
     /*!
@@ -616,9 +617,11 @@ namespace gr {
      * Returns the rate of the block's input buffer \p which.
      */
     double input_rate(unsigned int which);
+    double output_rate(unsigned int which);
 
-    grtime_t original_time();
-    double original_rate();
+    grtime_t original_valid_time();
+    double original_input_rate();
+    double original_output_rate();
 
     /*!
      * Returns the time of \p item from the input buffer \p which. If
@@ -675,7 +678,7 @@ namespace gr {
     int                   d_priority;              // thread priority level
     bool                  d_pc_rpc_set;
     bool                  d_update_rate;           // should sched update rel rate?
-    double d_output_rate;  // hold on to the value before detail is created
+    double d_input_rate;   // hold on to the value before detail is created
     grtime_t d_valid_time; // hold on to the value before detail is created
     bool d_finished;       // true if msg ports think we are finished
 

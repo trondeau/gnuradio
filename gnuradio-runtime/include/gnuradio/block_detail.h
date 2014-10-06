@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009,2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2009,2010,2013-2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -211,6 +211,7 @@ namespace gr {
      * \param which The output port value to set the rate info.
      * \param rate  The rate (in samps/sec) of the buffer.
      */
+    void set_input_rate(unsigned int which, double rate);
     void set_output_rate(unsigned int which, double rate);
 
     /*!
@@ -225,7 +226,7 @@ namespace gr {
      * Returns the rate of the block's input buffer \p which.
      */
     double input_rate(unsigned int which);
-
+    double output_rate(unsigned int which);
     /*!
      * Returns the time of \p item from the input buffer \p which. If
      * the item, in absolute time, is from before the last valid
@@ -249,6 +250,7 @@ namespace gr {
     uint64_t item_from_time(unsigned int which, grtime_t time);
 
 
+    bool rate_propagation_fwd(unsigned int which);
 
 
     /*!

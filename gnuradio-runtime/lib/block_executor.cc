@@ -473,22 +473,37 @@ namespace gr {
 
 
 
-      // SET RATES AND SUCH FOR CALCULATING TIMES
-      if(!d->sink_p ()) {
-        double start_rate = m->input_rate(0);
-        uint64_t item0 = 0;
-        grtime_t time0 = m->valid_time(0, item0);
-        double rate = m->input_rate(0) * m->relative_rate();
-        m->set_output_rate(0, rate);
-        m->set_valid_time(0, time0, item0);
 
-        GR_LOG_DEBUG(d_log, boost::format("%1%: input rate:  %2%  rel rate: %3%  output rate: %4%") \
-                     % m->alias() % m->input_rate(0) % m->relative_rate() % rate);
+
+
+      // SET RATES AND SUCH FOR CALCULATING TIMES
+      if(d->rate_propagation_fwd(0)) {
+        if(!d->sink_p()) {
+          uint64_t item0 = 0;
+          grtime_t time0 = d->valid_time(0, item0);
+          double rate = d->input_rate(0) * m->relative_rate();
+          d->set_output_rate(0, rate);
+          d->set_valid_time(0, time0, item0);
+
+          GR_LOG_DEBUG(d_log, boost::format("%1%: input rate:  %2%  rel rate: %3%  output rate: %4%") \
+                       % m->alias() % d->input_rate(0) % m->relative_rate() % rate);
+        }
       }
       else {
-        GR_LOG_DEBUG(d_log, boost::format("%1%: rate:  %2%") \
-                     % m->alias() % m->input_rate(0));
+        if(!d->source_p()) {
+          uint64_t item0 = 0;
+          grtime_t time0 = d->valid_time(0, item0);
+          double rate = d->output_rate(0) / m->relative_rate();
+          d->set_input_rate(0, rate);
+          d->set_valid_time(0, time0, item0);
+
+          GR_LOG_DEBUG(d_log, boost::format("%1%: output rate:  %2%  rel rate: %3%  input rate: %4%") \
+                       % m->alias() % d->output_rate(0) % m->relative_rate() % rate);
+        }
       }
+
+
+
 
       // Now propagate the tags based on the new relative rate
       if(!propagate_tags(m->tag_propagation_policy(), d,

@@ -56,7 +56,6 @@ namespace gr {
       d_tags(tags),
       d_tagpos(0)
     {
-      set_output_rate(0,32000);
       if(tags.size() == 0) {
         d_settags = 0;
       }

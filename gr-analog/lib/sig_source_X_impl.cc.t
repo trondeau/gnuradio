@@ -47,8 +47,9 @@ namespace gr {
     @IMPL_NAME@::@IMPL_NAME@(double sampling_freq, gr_waveform_t waveform,
 			     double frequency, double ampl, @TYPE@ offset)
     : sync_block("@BASE_NAME@",
-		    io_signature::make(0, 0, 0),
-		    io_signature::make(1, 1, sizeof(@TYPE@))),
+                 io_signature::make(0, 0, 0),
+                 io_signature::make(1, 1, sizeof(@TYPE@),
+                                    io_signature::PINNED_RATE)),
       d_sampling_freq(sampling_freq), d_waveform(waveform),
       d_frequency(frequency), d_ampl(ampl), d_offset(offset)
     {

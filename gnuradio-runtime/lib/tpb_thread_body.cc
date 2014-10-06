@@ -89,13 +89,16 @@ namespace gr {
       gr::thread::set_thread_priority(d->thread, block->thread_priority());
     }
 
-    // If a block's ctor set the time/rate, there was no block_detail
-    // or buffers to set at the time. This stuffs that information
-    // into the buffers now that they are built.
-    for(int n = 0; n < d->noutputs(); n++) {
-      d->set_output_rate(n, block->original_rate());
-      d->set_valid_time(n, block->original_time(), 0);
-    }
+    //// If a block's ctor set the time/rate, there was no block_detail
+    //// or buffers to set at the time. This stuffs that information
+    //// into the buffers now that they are built.
+    //for(int n = 0; n < d->noutputs(); n++) {
+    //  d->set_output_rate(n, block->original_output_rate());
+    //  d->set_valid_time(n, block->original_valid_time(), 0);
+    //}
+    //for(int n = 0; n < d->ninputs(); n++) {
+    //  d->set_input_rate(n, block->original_input_rate());
+    //}
 
     // make sure our block isnt finished
     block->clear_finished();

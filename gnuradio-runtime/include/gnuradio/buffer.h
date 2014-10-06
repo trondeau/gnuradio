@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009-2011,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2009-2011,2013-2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -35,6 +35,12 @@
 namespace gr {
 
   class vmcircbuf;
+
+
+  enum rate_propagation_dir_t {
+    IO_RATE_FWD = 0,
+    IO_RATE_REV = 1,
+  };
 
   /*!
    * \brief Allocate a buffer that holds at least \p nitems of size \p sizeof_item.
@@ -170,6 +176,12 @@ namespace gr {
      */
     double output_rate();
 
+
+    rate_propagation_dir_t rate_propagation_dir() const;
+    void set_rate_propagation_dir(rate_propagation_dir_t dir);
+    bool rate_propagation_fwd();
+
+
     // -------------------------------------------------------------------------
 
   private:
@@ -206,6 +218,8 @@ namespace gr {
     double  d_output_rate;        // output rate of the block
     grtime_t  d_valid_time;       // time of d_last_valid_sample
     int64_t d_last_valid_item;    // items before this have no valid time info
+    rate_propagation_dir_t d_rate_dir; // how rates get propagated
+
     gr::logger_ptr d_log;
 
     unsigned index_add(unsigned a, unsigned b)
@@ -365,6 +379,7 @@ namespace gr {
      * The rate of the buffer.
      */
     double input_rate();
+    void set_input_rate(double rate);
 
     /*!
      * Given an \p item, if it is later in time than the ealiest valid
@@ -374,6 +389,11 @@ namespace gr {
     grtime_t time_from_item(uint64_t item);
 
     uint64_t item_from_time(grtime_t t);
+
+    rate_propagation_dir_t rate_propagation_dir() const;
+    void set_rate_propagation_dir(rate_propagation_dir_t dir);
+    bool rate_propagation_fwd();
+
 
     // -------------------------------------------------------------------------
 

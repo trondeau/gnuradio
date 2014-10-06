@@ -51,7 +51,8 @@ namespace gr {
       DEFAULT_FLAGS  = 0,
       MEM_BLOCK_ALLOC = 1 << 0,
       MEM_BLOCK_SINGLE = 1 << 1,
-      MEM_BLOCK_ODD = 1 << 2
+      MEM_BLOCK_ODD = 1 << 2,
+      PINNED_RATE = 1 << 16,
     } io_flags_t;
 
     static const int IO_INFINITE = -1;
@@ -68,7 +69,7 @@ namespace gr {
      * \param flags  specify the io flags for the stream
      */
     static sptr make(int min_streams, int max_streams,
-                     int sizeof_stream_item, 
+                     int sizeof_stream_item,
 		     uint32_t flags = DEFAULT_FLAGS);
 
     /*!
@@ -83,7 +84,7 @@ namespace gr {
      */
     static sptr make2(int min_streams, int max_streams,
                       int sizeof_stream_item1,
-                      int sizeof_stream_item2, 
+                      int sizeof_stream_item2,
 		      uint32_t flags1 = DEFAULT_FLAGS,
 		      uint32_t flags2 = DEFAULT_FLAGS);
 

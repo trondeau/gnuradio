@@ -37,6 +37,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+
+#include <gnuradio/buffer.h>
+#include <gnuradio/block_detail.h>
+
+
+
 namespace gr {
 
 #define GR_TOP_BLOCK_IMPL_DEBUG 0
@@ -108,6 +114,7 @@ namespace gr {
     // Validate new simple flow graph and wire it up
     d_ffg->validate();
     d_ffg->setup_connections();
+    d_ffg->wire_rate_paths();
 
     // Only export perf. counters if ControlPort config param is
     // enabled and if the PerfCounter option 'export' is turned on.

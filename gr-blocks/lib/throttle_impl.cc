@@ -45,8 +45,10 @@ namespace gr {
                                  double samples_per_second,
                                  bool ignore_tags)
       : sync_block("throttle",
-                      io_signature::make(1, 1, itemsize),
-                      io_signature::make(1, 1, itemsize)),
+                   io_signature::make(1, 1, itemsize,
+                                      io_signature::PINNED_RATE),
+                   io_signature::make(1, 1, itemsize,
+                                      io_signature::PINNED_RATE)),
         d_itemsize(itemsize),
         d_ignore_tags(ignore_tags)
     {
@@ -73,6 +75,8 @@ namespace gr {
       d_total_samples = 0;
       d_samps_per_tick = rate/boost::posix_time::time_duration::ticks_per_second();
       d_samps_per_us = rate/1e6;
+      set_input_rate(0, rate);
+      set_output_rate(0, rate);
     }
 
     double

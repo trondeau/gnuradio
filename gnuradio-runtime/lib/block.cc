@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009,2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2009,2010,2013-2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -53,7 +53,7 @@ namespace gr {
       d_priority(-1),
       d_pc_rpc_set(false),
       d_update_rate(false),
-      d_output_rate(1),
+      d_input_rate(1),
       d_valid_time(0),
       d_max_output_buffer(std::max(output_signature->max_streams(),1), -1),
       d_min_output_buffer(std::max(output_signature->max_streams(),1), -1)
@@ -447,9 +447,18 @@ namespace gr {
   }
 
   void
+  block::set_input_rate(unsigned int which, double rate)
+  {
+    d_input_rate = rate;
+    if(d_detail) {
+      d_detail->set_input_rate(which, rate);
+    }
+  }
+
+  void
   block::set_output_rate(unsigned int which, double rate)
   {
-    d_output_rate = rate;
+    d_input_rate = rate/relative_rate();
     if(d_detail) {
       d_detail->set_output_rate(which, rate);
     }
@@ -472,19 +481,34 @@ namespace gr {
     if(d_detail) {
       return d_detail->input_rate(which);
     }
-    return d_output_rate;
+    return d_input_rate;
+  }
+
+  double
+  block::output_rate(unsigned int which)
+  {
+    if(d_detail) {
+      return d_detail->output_rate(which);
+    }
+    return d_input_rate*relative_rate();
   }
 
   grtime_t
-  block::original_time()
+  block::original_valid_time()
   {
     return d_valid_time;
   }
 
   double
-  block::original_rate()
+  block::original_input_rate()
   {
-    return d_output_rate;
+    return d_input_rate;
+  }
+
+  double
+  block::original_output_rate()
+  {
+    return d_input_rate*relative_rate();
   }
 
   grtime_t

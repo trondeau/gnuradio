@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2009,2010,2013 Free Software Foundation, Inc.
+ * Copyright 2004,2009,2010,2013-2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -232,11 +232,21 @@ namespace gr {
   }
 
   void
+  block_detail::set_input_rate(unsigned int which, double rate)
+  {
+    if(!source_p()) {
+      if(which >= d_ninputs)
+        throw std::invalid_argument("block_detail::set_input_rate invalid buffer.");
+      d_input[which]->set_input_rate(rate);
+    }
+  }
+
+  void
   block_detail::set_output_rate(unsigned int which, double rate)
   {
     if(!sink_p()) {
       if(which >= d_noutputs)
-        throw std::invalid_argument("block_detail::set_rate invalid buffer.");
+        throw std::invalid_argument("block_detail::set_output_rate invalid buffer.");
       d_output[which]->set_output_rate(rate);
     }
   }
@@ -265,13 +275,31 @@ namespace gr {
     // output rate info.
     if(source_p()) {
       if(which >= d_noutputs)
-        throw std::invalid_argument("block_detail::rate invalid buffer.");
+        throw std::invalid_argument("block_detail::input_rate invalid buffer.");
       return d_output[which]->output_rate();
     }
     else {
       if(which >= d_ninputs)
-        throw std::invalid_argument("block_detail::rate invalid buffer.");
+        throw std::invalid_argument("block_detail::input_rate invalid buffer.");
       return d_input[which]->input_rate();
+    }
+    return 0;
+  }
+
+  double
+  block_detail::output_rate(unsigned int which)
+  {
+    // Sinks don't have outputs or a difference between input or
+    // output rate info.
+    if(sink_p()) {
+      if(which >= d_ninputs)
+        throw std::invalid_argument("block_detail::output_rate invalid buffer.");
+      return d_input[which]->input_rate();
+    }
+    else {
+      if(which >= d_noutputs)
+        throw std::invalid_argument("block_detail::output_rate invalid buffer.");
+      return d_output[which]->output_rate();
     }
     return 0;
   }
@@ -281,12 +309,12 @@ namespace gr {
   {
     if(source_p()) {
       if(which >= d_noutputs)
-        throw std::invalid_argument("block_detail::rate invalid buffer.");
+        throw std::invalid_argument("block_detail::time_from_item invalid buffer.");
       return 0;
     }
     else {
       if(which >= d_ninputs)
-        throw std::invalid_argument("block_detail::rate invalid buffer.");
+        throw std::invalid_argument("block_detail::time_from_item invalid buffer.");
       return d_input[which]->time_from_item(item);
     }
     return grtime_t(0,0);
@@ -298,6 +326,17 @@ namespace gr {
     return 0;
   }
 
+  bool
+  block_detail::rate_propagation_fwd(unsigned int which)
+  {
+    if(!source_p()) {
+      if(which >= d_ninputs)
+        throw std::invalid_argument("block_detail::rate_propagation_fwd invalid buffer.");
+      return d_input[which]->rate_propagation_fwd();
+    }
+    else
+      return true; // sources always propagate forward
+  }
 
 
 

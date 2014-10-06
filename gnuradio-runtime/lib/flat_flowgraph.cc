@@ -57,6 +57,79 @@ namespace gr {
   }
 
   void
+  flat_flowgraph::wire_rate_paths()
+  {
+    std::cerr << "ffg: wire_rate_paths" << std::endl;
+
+    typedef std::vector<basic_block_sptr>::reverse_iterator basic_block_riter_t;
+    basic_block_vector_t sorted_blocks = topological_sort(d_blocks);
+
+    bool is_rate_set = false;
+    for(basic_block_viter_t p = sorted_blocks.begin(); p != sorted_blocks.end(); p++) {
+      basic_block_sptr bb = *p;
+      block_sptr block = cast_to_block_sptr(*p);
+      block_detail_sptr detail = block->detail();
+
+      std::cerr << "  " << block->alias() << std::endl;
+
+      if(!detail->source_p()) {
+        uint32_t iflags = bb->input_signature()->stream_flags()[0];
+        if((iflags && io_signature::PINNED_RATE) > 0) {
+          detail->input(0)->set_rate_propagation_dir(IO_RATE_REV);
+          if(is_rate_set) {
+            // CHECK IF SAME RATE
+          }
+          else { // walk backwards
+            std::cerr << "    + " << block->alias() << ": " << block->output_rate(0) << std::endl;
+            double rate = detail->output_rate(0) / block->relative_rate();
+            detail->set_input_rate(0, rate);
+
+            for(basic_block_riter_t r = static_cast<basic_block_riter_t>(p); r != sorted_blocks.rend(); r++) {
+              block_sptr rblock = cast_to_block_sptr(*r);
+              block_detail_sptr rdetail = rblock->detail();
+              if(!rdetail->source_p()) {
+                rdetail->input(0)->set_rate_propagation_dir(IO_RATE_REV);
+                double rate = rdetail->output_rate(0) / rblock->relative_rate();
+                rdetail->set_input_rate(0, rate);
+              }
+              std::cerr << "    - " << rblock->alias() << ": " << rblock->output_rate(0) << std::endl;
+            }
+          }
+        }
+        //else {
+        //  detail->input(0)->set_rate_propagation_dir(IO_RATE_FWD);
+        //}
+      }
+
+      if(!detail->sink_p()) {
+        uint32_t oflags = block->output_signature()->stream_flags()[0];
+        if((oflags && io_signature::PINNED_RATE) > 0) {
+          is_rate_set = true;
+          detail->output(0)->set_rate_propagation_dir(IO_RATE_FWD);
+        }
+
+        double rate = detail->input_rate(0) * block->relative_rate();
+        detail->set_output_rate(0, rate);
+
+
+        //if((oflags && io_signature::PINNED_RATE) > 0) {
+        //  detail->output(0)->set_rate_propagation_dir(IO_RATE_REV);
+        //}
+        //else {
+        //  detail->input(0)->set_rate_propagation_dir(IO_RATE_FWD);
+        //}
+      }
+    }
+
+    std::cerr << std::endl << "After setting" << std::endl;
+    for(basic_block_viter_t p = sorted_blocks.begin(); p != sorted_blocks.end(); p++) {
+      block_sptr block = cast_to_block_sptr(*p);
+      std::cerr << "  " << block->alias() << " : " << block->output_rate(0) << std::endl;
+    }
+  }
+
+
+  void
   flat_flowgraph::setup_connections()
   {
     basic_block_vector_t blocks = calc_used_blocks();
@@ -72,6 +145,20 @@ namespace gr {
       block_sptr block = cast_to_block_sptr(*p);
       block->set_unaligned(0);
       block->set_is_unaligned(false);
+
+
+      // FIXME: Might not need this after work in wire_rate_paths
+      // If a block's ctor set the time/rate, there was no block_detail
+      // or buffers to set at the time. This stuffs that information
+      // into the buffers now that they are built.
+      block_detail_sptr detail = block->detail();
+      for(int n = 0; n < detail->noutputs(); n++) {
+        detail->set_output_rate(n, block->original_output_rate());
+        detail->set_valid_time(n, block->original_valid_time(), 0);
+      }
+      //for(int n = 0; n < detail->ninputs(); n++) {
+      //  detail->set_input_rate(n, block->original_input_rate());
+      //}
     }
 
     // Connect message ports connetions
