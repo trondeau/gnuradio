@@ -46,7 +46,8 @@ namespace gr {
       if(args.cpu_format == "sc16")
         size = 4;
 #endif
-      return io_signature::make(nchan, nchan, size);
+      return io_signature::make(nchan, nchan, size,
+                                io_signature::PINNED_RATE);
     }
 
     /***********************************************************************

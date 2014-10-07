@@ -142,6 +142,7 @@ namespace gr {
         BOOST_FOREACH(const size_t chan, _stream_args.channels)
         {
             _dev->set_rx_rate(rate, chan);
+            set_output_rate(chan, _dev->get_rx_rate(chan));
         }
       _samp_rate = this->get_samp_rate();
       _tag_now = true;

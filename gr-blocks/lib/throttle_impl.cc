@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2005-2011 Free Software Foundation, Inc.
+ * Copyright 2005-2011,2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -35,22 +35,25 @@ namespace gr {
   namespace blocks {
 
     throttle::sptr
-    throttle::make(size_t itemsize, double samples_per_sec, bool ignore_tags)
+    throttle::make(size_t itemsize, double samples_per_sec,
+                   bool ignore_tags, bool pinned_rate)
     {
       return gnuradio::get_initial_sptr
-        (new throttle_impl(itemsize, samples_per_sec, ignore_tags));
+        (new throttle_impl(itemsize, samples_per_sec,
+                           ignore_tags, pinned_rate));
     }
 
     throttle_impl::throttle_impl(size_t itemsize,
                                  double samples_per_second,
-                                 bool ignore_tags)
+                                 bool ignore_tags,
+                                 bool pinned_rate)
       : sync_block("throttle",
                    io_signature::make(1, 1, itemsize,
-                                      io_signature::PINNED_RATE),
+                                      (pinned_rate ? io_signature::PINNED_RATE : io_signature::DEFAULT_FLAGS)),
                    io_signature::make(1, 1, itemsize,
-                                      io_signature::PINNED_RATE)),
-        d_itemsize(itemsize),
-        d_ignore_tags(ignore_tags)
+                                      (pinned_rate ? io_signature::PINNED_RATE : io_signature::DEFAULT_FLAGS))),
+      d_itemsize(itemsize),
+      d_ignore_tags(ignore_tags)
     {
       set_sample_rate(samples_per_second);
     }

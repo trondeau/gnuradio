@@ -65,8 +65,8 @@ namespace gr {
                                    const ::uhd::stream_args_t &stream_args,
                                    const std::string &length_tag_name)
       : sync_block("gr uhd usrp sink",
-                      args_to_io_sig(stream_args),
-                      io_signature::make(0, 0, 0)),
+                   args_to_io_sig(stream_args),
+                   io_signature::make(0, 0, 0)),
         usrp_common_impl(device_addr, stream_args, length_tag_name),
         _length_tag_key(length_tag_name.empty() ? pmt::PMT_NIL : pmt::string_to_symbol(length_tag_name)),
         _nitems_to_send(0),
@@ -145,6 +145,7 @@ namespace gr {
         BOOST_FOREACH(const size_t chan, _stream_args.channels)
         {
             _dev->set_tx_rate(rate, chan);
+            set_input_rate(chan, _dev->get_tx_rate(chan));
         }
       _sample_rate = this->get_samp_rate();
     }

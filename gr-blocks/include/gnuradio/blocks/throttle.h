@@ -48,7 +48,18 @@ namespace gr {
     public:
       typedef boost::shared_ptr<throttle> sptr;
 
-      static sptr make(size_t itemsize, double samples_per_sec, bool ignore_tags=true);
+      /*!
+       * Make a throttle block.
+       *
+       * \param itemsize The size (in bytes) of the stream items.
+       * \param samples_per_sec Desired (approximate) rate for throttling the flowgraph.
+       * \param ignore_tags Ignore rx_rate tags for resetting the
+       * block's \p samples_per_second.
+       * \param pinned_rate Use this as a rate-setting block
+       * (\p samples_per_sec must match any other rate-setting block).
+       */
+      static sptr make(size_t itemsize, double samples_per_sec,
+                       bool ignore_tags=true, bool pinned_rate=false);
 
       //! Sets the sample rate in samples per second.
       virtual void set_sample_rate(double rate) = 0;

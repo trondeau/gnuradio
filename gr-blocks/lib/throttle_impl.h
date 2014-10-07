@@ -38,7 +38,8 @@ namespace gr {
       bool d_ignore_tags;
 
     public:
-      throttle_impl(size_t itemsize, double samples_per_sec, bool ignore_tags=true);
+      throttle_impl(size_t itemsize, double samples_per_sec,
+                    bool ignore_tags=true, bool pinned_rate=false);
       ~throttle_impl();
 
       // Overloading gr::block::start to reset timer
