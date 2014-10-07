@@ -440,27 +440,33 @@ namespace gr {
   void
   block::set_valid_time(unsigned int which, grtime_t time, uint64_t item)
   {
-    d_valid_time = time;
     if(d_detail) {
       d_detail->set_valid_time(which, time, item);
+    }
+    else {
+      d_valid_time = time;
     }
   }
 
   void
   block::set_input_rate(unsigned int which, double rate)
   {
-    d_input_rate = rate;
     if(d_detail) {
       d_detail->set_input_rate(which, rate);
+    }
+    else {
+      d_input_rate = rate;
     }
   }
 
   void
   block::set_output_rate(unsigned int which, double rate)
   {
-    d_input_rate = rate/relative_rate();
     if(d_detail) {
       d_detail->set_output_rate(which, rate);
+    }
+    else {
+      d_input_rate = rate/relative_rate();
     }
   }
 

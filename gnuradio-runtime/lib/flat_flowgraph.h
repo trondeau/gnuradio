@@ -91,6 +91,11 @@ namespace gr {
      * start and restarts.
      */
     void setup_buffer_alignment(block_sptr block);
+
+    void recurse_rate_downstream(endpoint ep, double rate,
+                                 basic_block_vector_t &visited);
+    void recurse_rate_upstream(endpoint ep, double rate,
+                               basic_block_vector_t &visited);
   };
 
 } /* namespace gr */

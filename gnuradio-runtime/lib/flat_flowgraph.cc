@@ -61,70 +61,169 @@ namespace gr {
   {
     std::cerr << "ffg: wire_rate_paths" << std::endl;
 
-    typedef std::vector<basic_block_sptr>::reverse_iterator basic_block_riter_t;
-    basic_block_vector_t sorted_blocks = topological_sort(d_blocks);
-
-    bool is_rate_set = false;
-    for(basic_block_viter_t p = sorted_blocks.begin(); p != sorted_blocks.end(); p++) {
+    endpoint_vector_t pinned_inputs, pinned_outputs;
+    for(basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
       basic_block_sptr bb = *p;
-      block_sptr block = cast_to_block_sptr(*p);
+      block_sptr block = cast_to_block_sptr(bb);
       block_detail_sptr detail = block->detail();
 
-      std::cerr << "  " << block->alias() << std::endl;
-
-      if(!detail->source_p()) {
-        uint32_t iflags = bb->input_signature()->stream_flags()[0];
-        if((iflags && io_signature::PINNED_RATE) > 0) {
-          detail->input(0)->set_rate_propagation_dir(IO_RATE_REV);
-          if(is_rate_set) {
-            // CHECK IF SAME RATE
-          }
-          else { // walk backwards
-            std::cerr << "    + " << block->alias() << ": " << block->output_rate(0) << std::endl;
-            double rate = detail->output_rate(0) / block->relative_rate();
-            detail->set_input_rate(0, rate);
-
-            for(basic_block_riter_t r = static_cast<basic_block_riter_t>(p); r != sorted_blocks.rend(); r++) {
-              block_sptr rblock = cast_to_block_sptr(*r);
-              block_detail_sptr rdetail = rblock->detail();
-              if(!rdetail->source_p()) {
-                rdetail->input(0)->set_rate_propagation_dir(IO_RATE_REV);
-                double rate = rdetail->output_rate(0) / rblock->relative_rate();
-                rdetail->set_input_rate(0, rate);
-              }
-              std::cerr << "    - " << rblock->alias() << ": " << rblock->output_rate(0) << std::endl;
-            }
-          }
+      for(int n = 0; n < detail->ninputs(); n++) {
+        uint32_t flags = bb->input_signature()->stream_flags()[n];
+        if((flags && io_signature::PINNED_RATE) > 0) {
+          pinned_inputs.push_back(endpoint(bb, n));
         }
-        //else {
-        //  detail->input(0)->set_rate_propagation_dir(IO_RATE_FWD);
-        //}
       }
 
-      if(!detail->sink_p()) {
-        uint32_t oflags = block->output_signature()->stream_flags()[0];
-        if((oflags && io_signature::PINNED_RATE) > 0) {
-          is_rate_set = true;
-          detail->output(0)->set_rate_propagation_dir(IO_RATE_FWD);
+      for(int n = 0; n < detail->noutputs(); n++) {
+        uint32_t flags = bb->output_signature()->stream_flags()[n];
+        if((flags && io_signature::PINNED_RATE) > 0) {
+          pinned_outputs.push_back(endpoint(bb, n));
         }
-
-        double rate = detail->input_rate(0) * block->relative_rate();
-        detail->set_output_rate(0, rate);
-
-
-        //if((oflags && io_signature::PINNED_RATE) > 0) {
-        //  detail->output(0)->set_rate_propagation_dir(IO_RATE_REV);
-        //}
-        //else {
-        //  detail->input(0)->set_rate_propagation_dir(IO_RATE_FWD);
-        //}
       }
     }
 
+    // If we have a rate-setting input port from a block, walk the
+    // tree backwards and propagate the rate information to all
+    // upstream blocks.
+    endpoint_viter_t iitrs;
+    for(iitrs = pinned_inputs.begin(); iitrs != pinned_inputs.end(); iitrs++) {
+      block_sptr block = cast_to_block_sptr((*iitrs).block());
+      basic_block_vector_t visited = calc_downstream_blocks((*iitrs).block(), (*iitrs).port());
+      std::cerr << "Input Pinned block " << (*iitrs).block()->alias() << " : "
+                << block->original_input_rate() << std::endl;
+      recurse_rate_upstream(*iitrs, block->original_input_rate(), visited);
+    }
+
+    // If we have a rate-setting output port from a block, use this to
+    // set the downstream block rates and directions.
+    // Note: this follows the input port settings above so that if
+    // rate-setting blocks overlap in their directions (think of a
+    // radio source and sink), the downstream path and forward
+    // direction of the rates take over.
+    endpoint_viter_t oitrs;
+    for(oitrs = pinned_outputs.begin(); oitrs != pinned_outputs.end(); oitrs++) {
+      block_sptr block = cast_to_block_sptr((*oitrs).block());
+      basic_block_vector_t visited(1, (*oitrs).block());
+      std::cerr << "Output Pinned block " << (*oitrs).block()->alias() << " : "
+                << block->original_output_rate() << std::endl;
+      recurse_rate_downstream(*oitrs, block->original_output_rate(), visited);
+    }
+
+
     std::cerr << std::endl << "After setting" << std::endl;
-    for(basic_block_viter_t p = sorted_blocks.begin(); p != sorted_blocks.end(); p++) {
+    for(basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
       block_sptr block = cast_to_block_sptr(*p);
-      std::cerr << "  " << block->alias() << " : " << block->output_rate(0) << std::endl;
+      block_detail_sptr detail = block->detail();
+      for(int n = 0; n < detail->noutputs(); n++) {
+        std::cerr << "  " << block->alias() << "." << n
+                  << " : " << block->output_rate(0)
+                  << "   direction: " << detail->output(n)->rate_propagation_dir()
+                  << std::endl;
+      }
+    }
+
+
+    // At this stage, all blocks have their rates set based on the
+    // first-discovered rate setting blocks for both forward and
+    // reverse settings. Now test to see that the original rates of
+    // the blocks properly match.
+    for(iitrs = pinned_inputs.begin(); iitrs != pinned_inputs.end(); iitrs++) {
+      block_sptr block = cast_to_block_sptr((*iitrs).block());
+      if(block->input_rate((*iitrs).port()) != block->original_input_rate()) {
+        std::stringstream sstr;
+        sstr << "Input pinned-rate mismatch. "
+             << (*iitrs).block()->alias() << " was set to use a rate of "
+             << block->original_input_rate() << " but after rate-pinning is at "
+             << block->input_rate((*iitrs).port()) << "." <<  std::endl;
+        throw std::runtime_error(sstr.str());
+      }
+    }
+
+    // Make the same check for the output ports.
+    for(oitrs = pinned_outputs.begin(); oitrs != pinned_outputs.end(); oitrs++) {
+      block_sptr block = cast_to_block_sptr((*oitrs).block());
+      if(block->output_rate((*oitrs).port()) != block->original_output_rate()) {
+        std::stringstream sstr;
+        sstr << "Output pinned-rate mismatch. "
+             << (*oitrs).block()->alias() << " was set to use a rate of "
+             << block->original_output_rate() << " but after rate-pinning is at "
+             << block->output_rate((*oitrs).port()) << "." << std::endl;
+        throw std::runtime_error(sstr.str());
+      }
+    }
+  }
+
+  void
+  flat_flowgraph::recurse_rate_downstream(endpoint ep, double rate,
+                                          basic_block_vector_t &visited)
+  {
+    basic_block_sptr bblock = ep.block();
+    block_sptr block = cast_to_block_sptr(bblock);
+    block_detail_sptr detail = block->detail();
+    visited.push_back(bblock);
+
+    for(int n = 0; n < detail->ninputs(); n++) {
+      edge e = calc_upstream_edge(bblock, n);
+      if(std::find(visited.begin(), visited.end(), e.src().block()) == visited.end()) {
+        block->set_input_rate(n, rate);
+        detail->input(n)->set_rate_propagation_dir(IO_RATE_REV);
+        std::cerr << "  ^ " << e.src().block()->alias() << "." << e.src().port() << std::endl;
+        recurse_rate_upstream(e.src(), rate, visited);
+      }
+    }
+
+    rate = rate*block->relative_rate();
+    for(int n = 0; n < detail->noutputs(); n++) {
+      block->set_output_rate(n, rate);
+      detail->output(n)->set_rate_propagation_dir(IO_RATE_FWD);
+      basic_block_vector_t vbs = calc_downstream_blocks(bblock, n);
+      for(basic_block_viter_t p = vbs.begin(); p != vbs.end(); p++) {
+        std::cerr << "  v " << (*p)->alias() << "." << n << std::endl;
+        recurse_rate_downstream(endpoint(*p, n), rate, visited);
+      }
+    }
+  }
+
+  void
+  flat_flowgraph::recurse_rate_upstream(endpoint ep, double rate,
+                                        basic_block_vector_t &visited)
+  {
+    basic_block_sptr bblock = ep.block();
+    block_sptr block = cast_to_block_sptr(bblock);
+    block_detail_sptr detail = block->detail();
+    visited.push_back(bblock);
+
+    for(int n = 0; n < detail->noutputs(); n++) {
+      // Follow any other downstream paths
+      basic_block_vector_t vbs = calc_downstream_blocks(bblock, n);
+
+      // remove any blocks we've already visited
+      for(basic_block_viter_t v = visited.begin(); v != visited.end(); v++) {
+        basic_block_viter_t found = std::find(vbs.begin(), vbs.end(), (*v));
+        if(found != vbs.end())
+          vbs.erase(found);
+      }
+
+      for(basic_block_viter_t p = vbs.begin(); p != vbs.end(); p++) {
+        std::cerr << "  v " << (*p)->alias() << "." << n << std::endl;
+        recurse_rate_downstream(endpoint(*p, n), rate, visited);
+      }
+    }
+
+
+    rate = rate/block->relative_rate();
+    for(int n = 0; n < detail->ninputs(); n++) {
+      block->set_input_rate(n, rate);
+      detail->input(n)->set_rate_propagation_dir(IO_RATE_REV);
+
+      // Now keep going up the graph
+      edge_vector_t edges = calc_upstream_edges(bblock);
+      edge_viter_t e;
+      for(e = edges.begin(); e != edges.end(); e++) {
+        endpoint s = (*e).src();
+        std::cerr << "  ^ " << s.block()->alias() << "." << s.port() << std::endl;
+        recurse_rate_upstream(s, rate, visited);
+      }
     }
   }
 
@@ -151,11 +250,11 @@ namespace gr {
       // If a block's ctor set the time/rate, there was no block_detail
       // or buffers to set at the time. This stuffs that information
       // into the buffers now that they are built.
-      block_detail_sptr detail = block->detail();
-      for(int n = 0; n < detail->noutputs(); n++) {
-        detail->set_output_rate(n, block->original_output_rate());
-        detail->set_valid_time(n, block->original_valid_time(), 0);
-      }
+      //block_detail_sptr detail = block->detail();
+      //for(int n = 0; n < detail->noutputs(); n++) {
+      //  detail->set_output_rate(n, block->original_output_rate());
+      //  detail->set_valid_time(n, block->original_valid_time(), 0);
+      //}
       //for(int n = 0; n < detail->ninputs(); n++) {
       //  detail->set_input_rate(n, block->original_input_rate());
       //}
