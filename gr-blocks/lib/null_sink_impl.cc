@@ -55,10 +55,12 @@ namespace gr {
     {
       float *in = (float*)input_items[0];
       for(int i = 0; i < noutput_items; i++) {
-        uint64_t absoffset = nitems_read(0) + i;
-        grtime_t t = time_from_item(0, absoffset);
-        GR_LOG_INFO(d_debug_logger, boost::format("sample: %4%  rate: %1%  item: %2%  time: %3%") \
-                    % input_rate(0) % absoffset % t.write(8) % in[i]);
+        if(fabsf(in[i]) > 0.9) {
+          uint64_t absoffset = nitems_read(0) + i;
+          grtime_t t = time_from_item(0, absoffset);
+          GR_LOG_INFO(d_debug_logger, boost::format("%4%  rate: %1%  item: %2%  time: %3%") \
+                      % input_rate(0) % absoffset % t.write(8) % alias());
+        }
       }
 
 //      uint64_t absoffset = nitems_read(0);

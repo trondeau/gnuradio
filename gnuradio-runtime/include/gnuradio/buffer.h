@@ -36,12 +36,6 @@ namespace gr {
 
   class vmcircbuf;
 
-
-  enum rate_propagation_dir_t {
-    IO_RATE_FWD = 0,
-    IO_RATE_REV = 1,
-  };
-
   /*!
    * \brief Allocate a buffer that holds at least \p nitems of size \p sizeof_item.
    *
@@ -147,7 +141,7 @@ namespace gr {
      * \param time  The time of \p item.
      * \param item  The absolute item value for the new time (see nitems_written).
      */
-    void set_valid_time(grtime_t time, uint64_t item);
+    void set_output_time(grtime_t time, uint64_t item);
 
     /*!
      * Sets the sample rate of the buffer. This is the output rate of
@@ -167,7 +161,7 @@ namespace gr {
      * update and previous time before the \p item value returned here
      * are invalid.
      */
-    grtime_t valid_time(uint64_t &item);
+    grtime_t output_time(uint64_t &item);
 
     /*!
      * This is the rate of the buffer. Generally called through the
@@ -175,11 +169,6 @@ namespace gr {
      * buffers' sample rates.
      */
     double output_rate();
-
-
-    rate_propagation_dir_t rate_propagation_dir() const;
-    void set_rate_propagation_dir(rate_propagation_dir_t dir);
-    bool rate_propagation_fwd();
 
 
     // -------------------------------------------------------------------------
@@ -216,9 +205,8 @@ namespace gr {
 
     // For keeping track of time
     double  d_output_rate;        // output rate of the block
-    grtime_t  d_valid_time;       // time of d_last_valid_sample
+    grtime_t d_valid_time;        // time of the d_last_valid_item
     int64_t d_last_valid_item;    // items before this have no valid time info
-    rate_propagation_dir_t d_rate_dir; // how rates get propagated
 
     gr::logger_ptr d_log;
 
@@ -373,7 +361,8 @@ namespace gr {
     /*!
      * The earliest valid time and item it's associated with.
      */
-    grtime_t valid_time(uint64_t &item);
+    grtime_t input_time(uint64_t &item);
+    void set_input_time(grtime_t t, uint64_t item);
 
     /*!
      * The rate of the buffer.
@@ -389,11 +378,6 @@ namespace gr {
     grtime_t time_from_item(uint64_t item);
 
     uint64_t item_from_time(grtime_t t);
-
-    rate_propagation_dir_t rate_propagation_dir() const;
-    void set_rate_propagation_dir(rate_propagation_dir_t dir);
-    bool rate_propagation_fwd();
-
 
     // -------------------------------------------------------------------------
 

@@ -438,10 +438,21 @@ namespace gr {
 
 
   void
-  block::set_valid_time(unsigned int which, grtime_t time, uint64_t item)
+  block::set_valid_input_time(unsigned int which, grtime_t time, uint64_t item)
   {
     if(d_detail) {
-      d_detail->set_valid_time(which, time, item);
+      d_detail->set_input_time(which, time, item);
+    }
+    else {
+      d_valid_time = time;
+    }
+  }
+
+  void
+  block::set_valid_output_time(unsigned int which, grtime_t time, uint64_t item)
+  {
+    if(d_detail) {
+      d_detail->set_output_time(which, time, item);
     }
     else {
       d_valid_time = time;
@@ -472,10 +483,20 @@ namespace gr {
 
 
   grtime_t
-  block::valid_time(unsigned int which, uint64_t &valid_item)
+  block::valid_input_time(unsigned int which, uint64_t &valid_item)
   {
     if(d_detail) {
-      return d_detail->valid_time(which, valid_item);
+      return d_detail->input_time(which, valid_item);
+    }
+    valid_item = 0;
+    return d_valid_time;
+  }
+
+  grtime_t
+  block::valid_output_time(unsigned int which, uint64_t &valid_item)
+  {
+    if(d_detail) {
+      return d_detail->output_time(which, valid_item);
     }
     valid_item = 0;
     return d_valid_time;

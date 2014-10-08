@@ -43,6 +43,7 @@ namespace gr {
       d_ninputs(ninputs), d_noutputs(noutputs),
       d_input(ninputs), d_output(noutputs),
       d_done(false),
+      d_rate_propagation_fwd(true), d_rate_port(0),
       d_ins_noutput_items(0),
       d_avg_noutput_items(0),
       d_var_noutput_items(0),
@@ -222,12 +223,22 @@ namespace gr {
 
 
   void
-  block_detail::set_valid_time(unsigned int which, grtime_t time, uint64_t item)
+  block_detail::set_input_time(unsigned int which, grtime_t time, uint64_t item)
+  {
+    if(!source_p()) {
+      if(which >= d_ninputs)
+        throw std::invalid_argument("block_detail::set_input_time invalid buffer.");
+      d_input[which]->set_input_time(time, item);
+    }
+  }
+
+  void
+  block_detail::set_output_time(unsigned int which, grtime_t time, uint64_t item)
   {
     if(!sink_p()) {
       if(which >= d_noutputs)
-        throw std::invalid_argument("block_detail::set_valid_time invalid buffer.");
-      d_output[which]->set_valid_time(time, item);
+        throw std::invalid_argument("block_detail::set_output_time invalid buffer.");
+      d_output[which]->set_output_time(time, item);
     }
   }
 
@@ -252,20 +263,25 @@ namespace gr {
   }
 
   grtime_t
-  block_detail::valid_time(unsigned int which, uint64_t &valid_item)
+  block_detail::input_time(unsigned int which, uint64_t &valid_item)
   {
-    // Sources don't have inputs or a difference between input or
-    // output time info.
-    if(source_p()) {
-      if(which >= d_noutputs)
-        throw std::invalid_argument("block_detail::rate invalid buffer.");
-      return d_output[which]->valid_time(valid_item);
-    }
-    else {
+    if(!source_p()) {
       if(which >= d_ninputs)
-        throw std::invalid_argument("block_detail::time invalid buffer.");
-      return d_input[which]->valid_time(valid_item);
+        throw std::invalid_argument("block_detail::input_time invalid buffer.");
+      return d_input[which]->input_time(valid_item);
     }
+    return grtime_t(0,0);
+  }
+
+  grtime_t
+  block_detail::output_time(unsigned int which, uint64_t &valid_item)
+  {
+    if(!sink_p()) {
+      if(which >= d_noutputs)
+        throw std::invalid_argument("block_detail::output_time invalid buffer.");
+      return d_output[which]->output_time(valid_item);
+    }
+    return grtime_t(0,0);
   }
 
   double
@@ -310,7 +326,8 @@ namespace gr {
     if(source_p()) {
       if(which >= d_noutputs)
         throw std::invalid_argument("block_detail::time_from_item invalid buffer.");
-      return 0;
+      //return d_output[which]->time_from_item(item);
+      return grtime_t(0,0);
     }
     else {
       if(which >= d_ninputs)
@@ -326,18 +343,29 @@ namespace gr {
     return 0;
   }
 
-  bool
-  block_detail::rate_propagation_fwd(unsigned int which)
+  void
+  block_detail::set_rate_propagation_fwd(bool fwd)
   {
-    if(!source_p()) {
-      if(which >= d_ninputs)
-        throw std::invalid_argument("block_detail::rate_propagation_fwd invalid buffer.");
-      return d_input[which]->rate_propagation_fwd();
-    }
-    else
-      return true; // sources always propagate forward
+    d_rate_propagation_fwd = fwd;
   }
 
+  bool
+  block_detail::rate_propagation_fwd()
+  {
+    return d_rate_propagation_fwd;
+  }
+
+  void
+  block_detail::set_rate_port(int port)
+  {
+    d_rate_port = port;
+  }
+
+  int
+  block_detail::rate_port()
+  {
+    return d_rate_port;
+  }
 
 
   void

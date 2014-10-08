@@ -191,7 +191,8 @@ namespace gr {
      * \param time  The time of \p item.
      * \param item  The absolute item value for the new time (see nitems_written).
      */
-    void set_valid_time(unsigned int which, grtime_t time, uint64_t item);
+    void set_input_time(unsigned int which, grtime_t time, uint64_t item);
+    void set_output_time(unsigned int which, grtime_t time, uint64_t item);
 
     /*!
      * Sets the sample \p rate of the output port \p which. The rate
@@ -220,7 +221,8 @@ namespace gr {
      * fills in \p valid_item with the value of the earliest item we
      * can get time information about.
      */
-    grtime_t valid_time(unsigned int which, uint64_t &valid_item);
+    grtime_t input_time(unsigned int which, uint64_t &valid_item);
+    grtime_t output_time(unsigned int which, uint64_t &valid_item);
 
     /*!
      * Returns the rate of the block's input buffer \p which.
@@ -250,8 +252,10 @@ namespace gr {
     uint64_t item_from_time(unsigned int which, grtime_t time);
 
 
-    bool rate_propagation_fwd(unsigned int which);
-
+    void set_rate_propagation_fwd(bool fwd);
+    bool rate_propagation_fwd();
+    void set_rate_port(int port);
+    int  rate_port();
 
     /*!
      * \brief Set core affinity of block to the cores in the vector
@@ -324,6 +328,8 @@ namespace gr {
     std::vector<buffer_reader_sptr> d_input;
     std::vector<buffer_sptr>        d_output;
     bool                            d_done;
+    bool d_rate_propagation_fwd;
+    int  d_rate_port;
 
     // Performance counters
     float d_ins_noutput_items;

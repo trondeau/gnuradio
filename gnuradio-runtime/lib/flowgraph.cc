@@ -351,6 +351,20 @@ namespace gr {
     return result;
   }
 
+  edge_vector_t
+  flowgraph::calc_downstream_edges(basic_block_sptr block, int port)
+  {
+    edge_vector_t results;
+
+    for(edge_viter_t p = d_edges.begin(); p != d_edges.end(); p++) {
+      if(p->src() == endpoint(block, port)) {
+        results.push_back(*p);
+      }
+    }
+
+    return results;
+  }
+
   std::vector<basic_block_vector_t>
   flowgraph::partition()
   {

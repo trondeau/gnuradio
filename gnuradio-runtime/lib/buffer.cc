@@ -84,8 +84,7 @@ namespace gr {
       d_sizeof_item(sizeof_item), d_link(link),
       d_write_index(0), d_abs_write_offset(0), d_done(false),
       d_last_min_items_read(0),
-      d_output_rate(1), d_valid_time(0), d_last_valid_item(0),
-      d_rate_dir(IO_RATE_FWD)
+      d_output_rate(1), d_valid_time(0), d_last_valid_item(0)
   {
     if(!allocate_buffer (nitems, sizeof_item))
       throw std::bad_alloc ();
@@ -262,7 +261,7 @@ namespace gr {
   }
 
   void
-  buffer::set_valid_time(grtime_t time, uint64_t item)
+  buffer::set_output_time(grtime_t time, uint64_t item)
   {
     d_last_valid_item = item;
     d_valid_time = time;
@@ -275,7 +274,7 @@ namespace gr {
   }
 
   grtime_t
-  buffer::valid_time(uint64_t &item)
+  buffer::output_time(uint64_t &item)
   {
     item = d_last_valid_item;
     return d_valid_time;
@@ -286,26 +285,6 @@ namespace gr {
   {
     return d_output_rate;
   }
-
-
-  rate_propagation_dir_t
-  buffer::rate_propagation_dir() const
-  {
-    return d_rate_dir;
-  }
-
-  void
-  buffer::set_rate_propagation_dir(rate_propagation_dir_t dir)
-  {
-    d_rate_dir = dir;
-  }
-
-  bool
-  buffer::rate_propagation_fwd()
-  {
-    return d_rate_dir == IO_RATE_FWD;
-  }
-
 
   long
   buffer_ncurrently_allocated()
@@ -400,9 +379,15 @@ namespace gr {
   }
 
   grtime_t
-  buffer_reader::valid_time(uint64_t &item)
+  buffer_reader::input_time(uint64_t &item)
   {
-    return d_buffer->valid_time(item);
+    return d_buffer->output_time(item);
+  }
+
+  void
+  buffer_reader::set_input_time(grtime_t t, uint64_t item)
+  {
+    d_buffer->set_output_time(t, item);
   }
 
   void
@@ -423,7 +408,7 @@ namespace gr {
     uint64_t init_item;
     grtime_t init_time, d, t;
 
-    init_time = valid_time(init_item);
+    init_time = input_time(init_item);
     d = grtime_t(item - init_item, 0);
     t = init_time + (1.0/input_rate()) * d;
 
@@ -433,34 +418,16 @@ namespace gr {
   uint64_t
   buffer_reader::item_from_time(grtime_t t)
   {
-    uint64_t init_item, item;
-    grtime_t init_time, d;
-
-    init_time = valid_time(init_item);
-    d = t - init_time;
-    //item = input_rate()*init_item + d;
-    item = 0;
-    return item;
+    //uint64_t init_item, item;
+    //grtime_t init_time, d;
+    //
+    //init_time = valid_time(init_item);
+    //d = t - init_time;
+    ////item = input_rate()*init_item + d;
+    //item = 0;
+    //return item;
+    return 0;
   }
-
-  rate_propagation_dir_t
-  buffer_reader::rate_propagation_dir() const
-  {
-    return d_buffer->rate_propagation_dir();
-  }
-
-  void
-  buffer_reader::set_rate_propagation_dir(rate_propagation_dir_t dir)
-  {
-    d_buffer->set_rate_propagation_dir(dir);
-  }
-
-  bool
-  buffer_reader::rate_propagation_fwd()
-  {
-    return d_buffer->rate_propagation_fwd();
-  }
-
 
   long
   buffer_reader_ncurrently_allocated()

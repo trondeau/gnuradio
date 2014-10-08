@@ -202,6 +202,7 @@ namespace gr {
     edge_vector_t calc_upstream_edges(basic_block_sptr block);
     bool has_block_p(basic_block_sptr block);
     edge calc_upstream_edge(basic_block_sptr block, int port);
+    edge_vector_t calc_downstream_edges(basic_block_sptr block, int port);
 
   private:
     void check_valid_port(gr::io_signature::sptr sig, int port);

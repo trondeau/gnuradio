@@ -73,13 +73,24 @@ namespace gr {
     void
     throttle_impl::set_sample_rate(double rate)
     {
+      gr::thread::scoped_lock lock(d_setlock);
+
       //changing the sample rate performs a reset of state params
       d_start = boost::get_system_time();
       d_total_samples = 0;
       d_samps_per_tick = rate/boost::posix_time::time_duration::ticks_per_second();
       d_samps_per_us = rate/1e6;
+
+      uint64_t offset = nitems_read(0);
+      grtime_t newtime = time_from_item(0, offset);
       set_input_rate(0, rate);
       set_output_rate(0, rate);
+      set_valid_input_time(0, newtime, offset);
+      set_valid_output_time(0, newtime, offset);
+
+      std::cerr << "Throttle change to rate " << rate
+                << " at time " << newtime
+                << " at offset " << offset << std::endl;
     }
 
     double
@@ -93,6 +104,8 @@ namespace gr {
                         gr_vector_const_void_star &input_items,
                         gr_vector_void_star &output_items)
     {
+      gr::thread::scoped_lock lock(d_setlock);
+
       // check for updated rx_rate tag
       if(!d_ignore_tags){
         uint64_t abs_N = nitems_read(0);

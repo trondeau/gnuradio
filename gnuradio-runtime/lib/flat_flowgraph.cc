@@ -89,9 +89,12 @@ namespace gr {
     for(iitrs = pinned_inputs.begin(); iitrs != pinned_inputs.end(); iitrs++) {
       block_sptr block = cast_to_block_sptr((*iitrs).block());
       basic_block_vector_t visited = calc_downstream_blocks((*iitrs).block(), (*iitrs).port());
+      visited.push_back(iitrs->block());
       std::cerr << "Input Pinned block " << (*iitrs).block()->alias() << " : "
                 << block->original_input_rate() << std::endl;
-      recurse_rate_upstream(*iitrs, block->original_input_rate(), visited);
+      edge e = calc_upstream_edge(iitrs->block(), iitrs->port());
+      block->set_input_rate(iitrs->port(), block->original_input_rate());
+      recurse_rate_upstream(e, block->original_input_rate(), visited);
     }
 
     // If we have a rate-setting output port from a block, use this to
@@ -103,10 +106,19 @@ namespace gr {
     endpoint_viter_t oitrs;
     for(oitrs = pinned_outputs.begin(); oitrs != pinned_outputs.end(); oitrs++) {
       block_sptr block = cast_to_block_sptr((*oitrs).block());
+
+      // don't revisit upstream in this downstream walk
       basic_block_vector_t visited(1, (*oitrs).block());
-      std::cerr << "Output Pinned block " << (*oitrs).block()->alias() << " : "
+      edge_vector_t edges = calc_upstream_edges((*oitrs).block());
+      for(edge_viter_t e = edges.begin(); e != edges.end(); e++) {
+        visited.push_back((*e).src().block());
+      }
+
+      std::cerr << "Output Pinned block " << oitrs->block()->alias() << " : "
                 << block->original_output_rate() << std::endl;
-      recurse_rate_downstream(*oitrs, block->original_output_rate(), visited);
+      edge e = calc_downstream_edges(oitrs->block(), oitrs->port())[oitrs->port()];
+      block->set_output_rate(oitrs->port(), block->original_output_rate());
+      recurse_rate_downstream(e, block->original_output_rate(), visited);
     }
 
 
@@ -114,14 +126,20 @@ namespace gr {
     for(basic_block_viter_t p = d_blocks.begin(); p != d_blocks.end(); p++) {
       block_sptr block = cast_to_block_sptr(*p);
       block_detail_sptr detail = block->detail();
-      for(int n = 0; n < detail->noutputs(); n++) {
+      for(int n = 0; n < detail->ninputs(); n++) {
         std::cerr << "  " << block->alias() << "." << n
-                  << " : " << block->output_rate(0)
-                  << "   direction: " << detail->output(n)->rate_propagation_dir()
+                  << " : " << block->input_rate(n)
+                  << "   direction: " << detail->rate_propagation_fwd()
                   << std::endl;
       }
+      if(detail->source_p()) {
+        for(int n = 0; n < detail->noutputs(); n++) {
+          std::cerr << "  " << block->alias() << "." << n
+                    << " : " << block->output_rate(n)
+                    << std::endl;
+        }
+      }
     }
-
 
     // At this stage, all blocks have their rates set based on the
     // first-discovered rate setting blocks for both forward and
@@ -153,76 +171,121 @@ namespace gr {
     }
   }
 
+
   void
-  flat_flowgraph::recurse_rate_downstream(endpoint ep, double rate,
+  flat_flowgraph::recurse_rate_downstream(edge ed, double rate,
                                           basic_block_vector_t &visited)
   {
-    basic_block_sptr bblock = ep.block();
-    block_sptr block = cast_to_block_sptr(bblock);
-    block_detail_sptr detail = block->detail();
-    visited.push_back(bblock);
+    block_sptr srcblock = cast_to_block_sptr(ed.src().block());
+    block_sptr dstblock = cast_to_block_sptr(ed.dst().block());
+    std::cerr << "v" << std::endl;
+    std::cerr << srcblock->alias() << ":" << ed.src().port() << " -> "
+              << dstblock->alias() << ":" << ed.dst().port() << std::endl;
 
-    for(int n = 0; n < detail->ninputs(); n++) {
-      edge e = calc_upstream_edge(bblock, n);
-      if(std::find(visited.begin(), visited.end(), e.src().block()) == visited.end()) {
-        block->set_input_rate(n, rate);
-        detail->input(n)->set_rate_propagation_dir(IO_RATE_REV);
-        std::cerr << "  ^ " << e.src().block()->alias() << "." << e.src().port() << std::endl;
-        recurse_rate_upstream(e.src(), rate, visited);
+    dstblock->detail()->set_rate_propagation_fwd(true);
+    dstblock->detail()->set_rate_port(ed.dst().port());
+
+    visited.push_back(dstblock);
+
+    edge_vector_t us_edges = calc_upstream_edges(ed.dst().block());
+    std::cerr << "  " << dstblock->alias() << " has " << us_edges.size() << " edges" << std::endl;
+    for(edge_viter_t e = us_edges.begin(); e != us_edges.end(); e++) {
+      block_sptr esrc = cast_to_block_sptr(e->src().block());
+      block_sptr edst = cast_to_block_sptr(e->dst().block());
+      std::cerr << "    edge: " << esrc->alias() << ":" << e->src().port() << " -> "
+                << edst->alias() << ":" << e->dst().port() << std::endl;
+
+      //if((std::find(visited.begin(), visited.end(), e->src().block())) == visited.end()) {
+      if(!((e->src() == ed.src()) && (e->dst() == ed.dst()))) {
+        recurse_rate_upstream(*e, rate, visited);
       }
     }
 
-    rate = rate*block->relative_rate();
-    for(int n = 0; n < detail->noutputs(); n++) {
-      block->set_output_rate(n, rate);
-      detail->output(n)->set_rate_propagation_dir(IO_RATE_FWD);
-      basic_block_vector_t vbs = calc_downstream_blocks(bblock, n);
-      for(basic_block_viter_t p = vbs.begin(); p != vbs.end(); p++) {
-        std::cerr << "  v " << (*p)->alias() << "." << n << std::endl;
-        recurse_rate_downstream(endpoint(*p, n), rate, visited);
+    double new_rate = rate*dstblock->relative_rate();
+
+    int nouts = dstblock->detail()->noutputs();
+    std::cerr << "  " << dstblock->alias() << " has noutputs: " << nouts << std::endl;
+    for(int n = 0; n < nouts; n++) {
+
+      dstblock->set_output_rate(n, new_rate);
+      dstblock->set_input_rate(ed.dst().port(), rate);
+
+      std::cerr << "        " << "source rate: " << dstblock->output_rate(n)
+                << "  dest rate: " << rate
+                << " rel rate " << dstblock->relative_rate() << std::endl;
+      std::cerr << "        " << "block " << dstblock->alias() << " output port "
+                << n << " controlled by port " << ed.dst().port() << std::endl;
+
+
+      edge_vector_t ds_edges = calc_downstream_edges(ed.dst().block(), n);
+      std::cerr << "  Output " << n << " has " << ds_edges.size() << " edges" << std::endl;
+      for(edge_viter_t e = ds_edges.begin(); e != ds_edges.end(); e++) {
+        block_sptr esrc = cast_to_block_sptr(e->src().block());
+        block_sptr edst = cast_to_block_sptr(e->dst().block());
+        std::cerr << "    edge: " << esrc->alias() << ":" << e->src().port() << " -> "
+                  << edst->alias() << ":" << e->dst().port() << std::endl;
+        if((std::find(visited.begin(), visited.end(), e->dst().block())) == visited.end()) {
+          recurse_rate_downstream(*e, new_rate, visited);
+        }
       }
     }
   }
 
   void
-  flat_flowgraph::recurse_rate_upstream(endpoint ep, double rate,
+  flat_flowgraph::recurse_rate_upstream(edge ed, double rate,
                                         basic_block_vector_t &visited)
   {
-    basic_block_sptr bblock = ep.block();
-    block_sptr block = cast_to_block_sptr(bblock);
-    block_detail_sptr detail = block->detail();
-    visited.push_back(bblock);
+    block_sptr srcblock = cast_to_block_sptr(ed.src().block());
+    block_sptr dstblock = cast_to_block_sptr(ed.dst().block());
+    std::cerr << "^" << std::endl;
+    std::cerr  << srcblock->alias() << ":" << ed.src().port() << " <- "
+               << dstblock->alias() << ":" << ed.dst().port()<< std::endl;
 
-    for(int n = 0; n < detail->noutputs(); n++) {
-      // Follow any other downstream paths
-      basic_block_vector_t vbs = calc_downstream_blocks(bblock, n);
+    srcblock->detail()->set_rate_propagation_fwd(false);
+    srcblock->detail()->set_rate_port(ed.src().port());
+    srcblock->set_output_rate(ed.src().port(), rate);
 
-      // remove any blocks we've already visited
-      for(basic_block_viter_t v = visited.begin(); v != visited.end(); v++) {
-        basic_block_viter_t found = std::find(vbs.begin(), vbs.end(), (*v));
-        if(found != vbs.end())
-          vbs.erase(found);
-      }
+    visited.push_back(dstblock);
 
-      for(basic_block_viter_t p = vbs.begin(); p != vbs.end(); p++) {
-        std::cerr << "  v " << (*p)->alias() << "." << n << std::endl;
-        recurse_rate_downstream(endpoint(*p, n), rate, visited);
+    int nouts = srcblock->detail()->noutputs();
+    std::cerr << "  " << srcblock->alias() << " has noutputs: " << nouts << std::endl;
+    for(int n = 0; n < nouts; n++) {
+      edge_vector_t ds_edges = calc_downstream_edges(ed.src().block(), n);
+      std::cerr << "  Output " << n << " has " << ds_edges.size() << " edges" << std::endl;
+      for(edge_viter_t e = ds_edges.begin(); e != ds_edges.end(); e++) {
+        block_sptr esrc = cast_to_block_sptr(e->src().block());
+        block_sptr edst = cast_to_block_sptr(e->dst().block());
+        std::cerr << "    edge: " << esrc->alias() << ":" << e->src().port() << " -> "
+                  << edst->alias() << ":" << e->dst().port() << std::endl;
+        //if((std::find(visited.begin(), visited.end(), e->dst().block())) == visited.end()) {
+        if(!((e->src() == ed.src()) && (e->dst() == ed.dst()))) {
+          recurse_rate_downstream(*e, rate, visited);
+        }
       }
     }
 
+    double new_rate = rate/srcblock->relative_rate();
 
-    rate = rate/block->relative_rate();
-    for(int n = 0; n < detail->ninputs(); n++) {
-      block->set_input_rate(n, rate);
-      detail->input(n)->set_rate_propagation_dir(IO_RATE_REV);
+    int nins = srcblock->detail()->ninputs();
+    std::cerr << "  " << dstblock->alias() << " has ninputs: " << nins << std::endl;
+    for(int n = 0; n < nins; n++) {
 
-      // Now keep going up the graph
-      edge_vector_t edges = calc_upstream_edges(bblock);
-      edge_viter_t e;
-      for(e = edges.begin(); e != edges.end(); e++) {
-        endpoint s = (*e).src();
-        std::cerr << "  ^ " << s.block()->alias() << "." << s.port() << std::endl;
-        recurse_rate_upstream(s, rate, visited);
+      srcblock->set_input_rate(n, new_rate);
+
+      std::cerr << "        " << "block " << srcblock->alias() << " input port "
+                << n << " controlled by port " << ed.src().port() << std::endl;
+
+      edge_vector_t us_edges = calc_upstream_edges(ed.src().block());
+      std::cerr << "  Input " << n << " has " << us_edges.size() << " edges" << std::endl;
+      for(edge_viter_t e = us_edges.begin(); e != us_edges.end(); e++) {
+        block_sptr esrc = cast_to_block_sptr(e->src().block());
+        block_sptr edst = cast_to_block_sptr(e->dst().block());
+        std::cerr << "    edge: " << esrc->alias() << ":" << e->src().port() << " -> "
+                  << edst->alias() << ":" << e->dst().port() << std::endl;
+
+        if((std::find(visited.begin(), visited.end(), e->dst().block())) == visited.end()) {
+          recurse_rate_upstream(*e, new_rate, visited);
+        }
       }
     }
   }
@@ -244,20 +307,6 @@ namespace gr {
       block_sptr block = cast_to_block_sptr(*p);
       block->set_unaligned(0);
       block->set_is_unaligned(false);
-
-
-      // FIXME: Might not need this after work in wire_rate_paths
-      // If a block's ctor set the time/rate, there was no block_detail
-      // or buffers to set at the time. This stuffs that information
-      // into the buffers now that they are built.
-      //block_detail_sptr detail = block->detail();
-      //for(int n = 0; n < detail->noutputs(); n++) {
-      //  detail->set_output_rate(n, block->original_output_rate());
-      //  detail->set_valid_time(n, block->original_valid_time(), 0);
-      //}
-      //for(int n = 0; n < detail->ninputs(); n++) {
-      //  detail->set_input_rate(n, block->original_input_rate());
-      //}
     }
 
     // Connect message ports connetions
