@@ -149,9 +149,11 @@ namespace gr {
 
       assert(sizeof(float)==sizeof(sample_t));
       // Real number of outputs is set in check_topology
-      set_input_signature(io_signature::make(1, MAX_PORTS, sizeof(sample_t)));
+      set_input_signature(io_signature::make(1, MAX_PORTS, sizeof(sample_t),
+                                             io_signature::PINNED_RATE));
 
       jack_nframes_t sample_rate = jack_get_sample_rate(d_jack_client);
+      set_input_rate(0, sample_rate);
 
       if((jack_nframes_t)sampling_rate != sample_rate) {
         GR_LOG_INFO(d_logger, boost::format("[%1%]: unable to support sampling rate %2%\n\tCard requested %3% instead.") \

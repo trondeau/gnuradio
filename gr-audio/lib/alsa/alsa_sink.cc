@@ -139,7 +139,8 @@ namespace gr {
         d_special_case_mono_to_stereo = true;
       }
       set_input_signature(io_signature::make(min_chan, max_chan,
-                                               sizeof(float)));
+                                             sizeof(float),
+                                             io_signature::PINNED_RATE));
 
       // fill in portions of the d_hw_params that we know now...
 
@@ -211,6 +212,7 @@ namespace gr {
         bail("get_period_size failed", error);
 
       set_output_multiple(d_period_size);
+      set_input_rate(0, d_sampling_rate);
     }
 
     bool

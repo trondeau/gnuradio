@@ -90,6 +90,8 @@ namespace gr {
       // set up for audio input using the stored desired parameters
 
       setup();
+
+      set_output_rate(0, d_output_sample_rate);
     }
 
     void osx_source::setup()
@@ -225,7 +227,8 @@ namespace gr {
 
       if (d_n_user_channels == 0) {
 	set_output_signature(io_signature::make
-			     (1, d_n_dev_channels, sizeof(float)));
+			     (1, d_n_dev_channels, sizeof(float),
+                              io_signature::PINNED_RATE));
       }
 
       // set the interim buffer size; to work with the GR scheduler,

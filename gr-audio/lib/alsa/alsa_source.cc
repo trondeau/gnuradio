@@ -136,7 +136,8 @@ namespace gr {
       }
 
       set_output_signature(io_signature::make(min_chan, max_chan,
-                                                sizeof(float)));
+                                              sizeof(float),
+                                              io_signature::PINNED_RATE));
 
       // fill in portions of the d_hw_params that we know now...
 
@@ -208,6 +209,7 @@ namespace gr {
         bail("get_period_size failed", error);
 
       set_output_multiple(d_period_size);
+      set_output_rate(0, d_sampling_rate);
     }
 
     bool

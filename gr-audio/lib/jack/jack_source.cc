@@ -146,7 +146,8 @@ namespace gr {
       set_output_multiple(d_jack_buffer_size);
 
       assert(sizeof(float)==sizeof(sample_t));
-      set_output_signature(io_signature::make(1, MAX_PORTS, sizeof(sample_t)));
+      set_output_signature(io_signature::make(1, MAX_PORTS, sizeof(sample_t),
+                                              io_signature::PINNED_RATE));
 
       jack_nframes_t sample_rate = jack_get_sample_rate(d_jack_client);
 
@@ -154,6 +155,8 @@ namespace gr {
         GR_LOG_INFO(d_logger, boost::format("[%1%]: unable to support sampling rate %2%\n\tCard requested %3% instead.") \
                      % d_device_name % sampling_rate % d_sampling_rate);
       }
+
+      set_output_rate(0, sample_rate);
     }
 
     bool

@@ -228,7 +228,10 @@ namespace gr {
       // signature.  The portaudio specs say that they'll accept any
       // number of channels from 1 to max.
       set_input_signature(io_signature::make(1, deviceInfo->maxOutputChannels,
-                                               sizeof(sample_t)));
+                                             sizeof(sample_t),
+                                             io_signature::PINNED_RATE));
+
+      set_input_rate(0, d_sampling_rate);
     }
 
     bool

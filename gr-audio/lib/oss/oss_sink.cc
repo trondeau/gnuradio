@@ -61,7 +61,8 @@ namespace gr {
                        const std::string device_name,
                        bool ok_to_block)
       : sync_block("audio_oss_sink",
-                      io_signature::make(1, 2, sizeof(float)),
+                      io_signature::make(1, 2, sizeof(float),
+                                         io_signature::PINNED_RATE),
                       io_signature::make(0, 0, 0)),
         d_sampling_rate(sampling_rate),
         d_device_name(device_name.empty() ? default_device_name() : device_name),
@@ -114,6 +115,8 @@ namespace gr {
           throw std::runtime_error("audio_oss_sink");
         }
       }
+
+      set_input_rate(0, sampling_rate);
     }
 
     oss_sink::~oss_sink()

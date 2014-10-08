@@ -63,7 +63,8 @@ namespace gr {
                                    const std::string device_name)
       : sync_block("audio_windows_source",
                       io_signature::make(0, 0, 0),
-                      io_signature::make(1, 2, sizeof(float))),
+                      io_signature::make(1, 2, sizeof(float),
+                                         io_signature::PINNED_RATE)),
         d_sampling_freq(sampling_freq),
         d_device_name(device_name.empty() ? default_device_name() : device_name),
         d_fd(-1), d_buffer(0), d_chunk_size(0)
@@ -116,6 +117,7 @@ namespace gr {
 	}
       }
 #endif
+      set_output_rate(0, d_sampling_freq);
     }
 
     windows_source::~windows_source()
