@@ -5,21 +5,78 @@
 ###################################################
  -->
 <block>
-	<name>Constellation Soft Decoder</name>
-	<key>digital_constellation_soft_decoder_cf</key>
-	<import>from gnuradio import digital</import>
-	<make>digital.constellation_soft_decoder_cf($constellation)</make>
-	<param>
-		<name>Constellation Object</name>
-		<key>constellation</key>
-		<type>raw</type>
-	</param>
-	<sink>
-		<name>in</name>
-		<type>complex</type>
-	</sink>
-	<source>
-		<name>out</name>
-		<type>float</type>
-	</source>
+  <name>Constellation Soft Decoder</name>
+  <key>digital_constellation_soft_decoder_cf</key>
+  <import>from gnuradio import digital</import>
+  <make>digital.constellation_soft_decoder_cf($constellation, $packetized)</make>
+
+  <param>
+    <name>Constellation Object</name>
+    <key>constellation</key>
+    <type>raw</type>
+  </param>
+
+  <param>
+    <name>Packetized</name>
+    <key>packetized</key>
+    <value>False</value>
+    <type>enum</type>
+    <hide>part</hide>
+    <option>
+      <name>Yes</name>
+      <key>True</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>False</key>
+    </option>
+  </param>
+
+  <param>
+    <name>Show Msg Ports</name>
+    <key>showports</key>
+    <value>True</value>
+    <type>enum</type>
+    <hide>part</hide>
+    <option>
+      <name>Yes</name>
+      <key>False</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>True</key>
+    </option>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+  </sink>
+
+  <sink>
+    <name>constellation</name>
+    <type>message</type>
+    <optional>1</optional>
+    <hide>$showports</hide>
+  </sink>
+
+  <sink>
+    <name>info</name>
+    <type>message</type>
+    <optional>1</optional>
+    <hide>$showports</hide>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>float</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>pdu</name>
+    <type>message</type>
+    <optional>1</optional>
+    <hide>$showports</hide>
+  </source>
 </block>
