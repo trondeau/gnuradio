@@ -32,12 +32,18 @@ class qa_packet_formatters : public CppUnit::TestCase
   CPPUNIT_TEST(test_default_format);
   CPPUNIT_TEST(test_default_parse);
   CPPUNIT_TEST(test_default_parse_soft);
+  CPPUNIT_TEST(test_counter_format);
+  CPPUNIT_TEST(test_counter_parse);
+  CPPUNIT_TEST(test_counter_parse_soft);
   CPPUNIT_TEST_SUITE_END();
 
  private:
   void test_default_format();
   void test_default_parse();
   void test_default_parse_soft();
+  void test_counter_format();
+  void test_counter_parse();
+  void test_counter_parse_soft();
 };
 
 #endif /* _QA_DIGITAL_PACKET_FORMATTERS_H_ */
