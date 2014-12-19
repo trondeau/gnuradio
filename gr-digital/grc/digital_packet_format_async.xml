@@ -1,0 +1,31 @@
+<block>
+  <name>Packet Header Formatter</name>
+  <key>digital_packet_format_async</key>
+  <import>from gnuradio import digital</import>
+  <make>digital.packet_format_async($formatter)</make>
+
+  <param>
+    <name>Formatter</name>
+    <key>formatter</key>
+    <type>raw</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>message</type>
+    <optional>1</optional>
+  </sink>
+
+  <source>
+    <name>header</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+  <source>
+    <name>payload</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+</block>

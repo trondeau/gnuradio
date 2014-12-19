@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+###################################################
+# packet_formatter_default object
+###################################################
+ -->
+<block>
+    <name>Default Packet Header Definition</name>
+    <key>variable_packet_formatter_default</key>
+    <import>from gnuradio import digital</import>
+    <var_make>
+#if int($access_code())==0 #
+self.$(id) = $(id) = digital.packet_formatter_default(digital.packet_utils.default_access_code)
+#else
+self.$(id) = $(id) = digital.packet_formatter_default($access_code)
+#end if
+    </var_make>
+    <var_value>digital.packet_formatter_default($access_code)</var_value>
+    <make></make>
+
+    <param>
+        <name>Access Code</name>
+        <key>access_code</key>
+        <value>0</value>
+        <type>string</type>
+    </param>
+
+</block>

@@ -65,6 +65,7 @@ install(FILES
     glfsr_source_f.h
     hdlc_deframer_bp.h
     hdlc_framer_pb.h
+    header_buffer.h
     header_payload_demux.h
     kurtotic_equalizer_cc.h
     lfsr.h
@@ -90,6 +91,11 @@ install(FILES
     ofdm_sampler.h
     ofdm_serializer_vcc.h
     ofdm_sync_sc_cfb.h
+    packet_formatter_default.h
+    packet_formatter_counter.h
+    packet_format_async.h
+    packet_parse_b.h
+    packet_parse_f.h
     packet_header_default.h
     packet_header_ofdm.h
     packet_headergenerator_bb.h
