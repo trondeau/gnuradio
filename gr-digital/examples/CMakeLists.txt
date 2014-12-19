@@ -95,3 +95,14 @@ install(
     DESTINATION ${GR_PKG_DIGITAL_EXAMPLES_DIR}/demod
     COMPONENT "digital_python"
 )
+
+
+# PACKET
+install(
+    FILES
+    packet/transmitter_sim.grc
+    packet/packet_sync.grc
+    packet/parse_packet_header.grc
+    DESTINATION ${GR_PKG_DIGITAL_EXAMPLES_DIR}/packet
+    COMPONENT "digital_python"
+)
