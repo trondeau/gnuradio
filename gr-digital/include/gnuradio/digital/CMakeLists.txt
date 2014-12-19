@@ -88,6 +88,7 @@ install(FILES
     ofdm_sync_sc_cfb.h
     packet_formatter_default.h
     packet_formatter_counter.h
+    packet_format_async.h
     packet_header_default.h
     packet_header_ofdm.h
     packet_headergenerator_bb.h

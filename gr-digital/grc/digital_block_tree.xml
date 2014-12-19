@@ -71,6 +71,7 @@
     <block>digital_crc32_bb</block>
     <block>digital_crc32_async_bb</block>
     <block>digital_framer_sink_1</block>
+    <block>digital_packet_format_async</block>
     <block>digital_header_payload_demux</block>
     <block>digital_packet_headergenerator_bb</block>
     <block>digital_packet_headergenerator_bb_default</block>
