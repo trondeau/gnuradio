@@ -87,3 +87,17 @@ install(
     DESTINATION ${GR_PKG_DIGITAL_EXAMPLES_DIR}/demod
     COMPONENT "digital_python"
 )
+
+
+# PACKET
+install(
+    FILES
+    packet/tx_packet.grc
+    packet/tx_packet_fec.grc
+    packet/rx_packet.grc
+    packet/rx_packet_soft.grc
+    packet/parse_packet_header.grc
+    packet/parse_packet_header_soft.grc
+    DESTINATION ${GR_PKG_DIGITAL_EXAMPLES_DIR}/packet
+    COMPONENT "digital_python"
+)
