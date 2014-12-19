@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2012 Free Software Foundation, Inc.
+ * Copyright 2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,20 +20,29 @@
  * Boston, MA 02110-1301, USA.
  */
 
-%template(packet_header_default_sptr) boost::shared_ptr<gr::digital::packet_header_default>;
-%pythoncode %{
-packet_header_default_sptr.__repr__ = lambda self: "<packet_header_default>"
-packet_header_default = packet_header_default .make;
-%}
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-%template(packet_header_ofdm_sptr) boost::shared_ptr<gr::digital::packet_header_ofdm>;
-%pythoncode %{
-packet_header_ofdm_sptr.__repr__ = lambda self: "<packet_header_ofdm>"
-packet_header_ofdm = packet_header_ofdm .make;
-%}
+#include <cppunit/TextTestRunner.h>
+#include <cppunit/XmlOutputter.h>
 
-%template(packet_formatter_default_sptr) boost::shared_ptr<gr::digital::packet_formatter_default>;
-%pythoncode %{
-packet_formatter_default_sptr.__repr__ = lambda self: "<packet_formatter_default>"
-packet_formatter_default = packet_formatter_default .make;
-%}
+#include <gnuradio/unittests.h>
+#include "qa_digital.h"
+#include <iostream>
+#include <fstream>
+
+int
+main(int argc, char **argv)
+{
+  CppUnit::TextTestRunner runner;
+  std::ofstream xmlfile(get_unittest_path("digital.xml").c_str());
+  CppUnit::XmlOutputter *xmlout = new CppUnit::XmlOutputter(&runner.result(), xmlfile);
+
+  runner.addTest(qa_digital::suite());
+  runner.setOutputter(xmlout);
+
+  bool was_successful = runner.run("", false);
+
+  return was_successful ? 0 : 1;
+}

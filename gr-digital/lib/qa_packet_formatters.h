@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2012 Free Software Foundation, Inc.
+ * Copyright 2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,20 +20,24 @@
  * Boston, MA 02110-1301, USA.
  */
 
-%template(packet_header_default_sptr) boost::shared_ptr<gr::digital::packet_header_default>;
-%pythoncode %{
-packet_header_default_sptr.__repr__ = lambda self: "<packet_header_default>"
-packet_header_default = packet_header_default .make;
-%}
+#ifndef _QA_DIGITAL_PACKET_FORMATTERS_H_
+#define _QA_DIGITAL_PACKET_FORMATTERS_H_
 
-%template(packet_header_ofdm_sptr) boost::shared_ptr<gr::digital::packet_header_ofdm>;
-%pythoncode %{
-packet_header_ofdm_sptr.__repr__ = lambda self: "<packet_header_ofdm>"
-packet_header_ofdm = packet_header_ofdm .make;
-%}
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestCase.h>
 
-%template(packet_formatter_default_sptr) boost::shared_ptr<gr::digital::packet_formatter_default>;
-%pythoncode %{
-packet_formatter_default_sptr.__repr__ = lambda self: "<packet_formatter_default>"
-packet_formatter_default = packet_formatter_default .make;
-%}
+class qa_packet_formatters : public CppUnit::TestCase
+{
+  CPPUNIT_TEST_SUITE(qa_packet_formatters);
+  CPPUNIT_TEST(test_default_format);
+  CPPUNIT_TEST(test_default_parse);
+  CPPUNIT_TEST(test_default_parse_soft);
+  CPPUNIT_TEST_SUITE_END();
+
+ private:
+  void test_default_format();
+  void test_default_parse();
+  void test_default_parse_soft();
+};
+
+#endif /* _QA_DIGITAL_PACKET_FORMATTERS_H_ */

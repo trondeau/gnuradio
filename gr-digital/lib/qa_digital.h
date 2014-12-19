@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2012 Free Software Foundation, Inc.
+ * Copyright 2014 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,20 +20,19 @@
  * Boston, MA 02110-1301, USA.
  */
 
-%template(packet_header_default_sptr) boost::shared_ptr<gr::digital::packet_header_default>;
-%pythoncode %{
-packet_header_default_sptr.__repr__ = lambda self: "<packet_header_default>"
-packet_header_default = packet_header_default .make;
-%}
+#ifndef _QA_GR_DIGITAL_H_
+#define _QA_GR_DIGITAL_H_
 
-%template(packet_header_ofdm_sptr) boost::shared_ptr<gr::digital::packet_header_ofdm>;
-%pythoncode %{
-packet_header_ofdm_sptr.__repr__ = lambda self: "<packet_header_ofdm>"
-packet_header_ofdm = packet_header_ofdm .make;
-%}
+#include <gnuradio/attributes.h>
+#include <cppunit/TestSuite.h>
 
-%template(packet_formatter_default_sptr) boost::shared_ptr<gr::digital::packet_formatter_default>;
-%pythoncode %{
-packet_formatter_default_sptr.__repr__ = lambda self: "<packet_formatter_default>"
-packet_formatter_default = packet_formatter_default .make;
-%}
+//! collect all the tests for the gr-digital directory
+
+class __GR_ATTR_EXPORT qa_digital
+{
+ public:
+  //! return suite of tests for all of gr-digital directory
+  static CppUnit::TestSuite *suite();
+};
+
+#endif /* _QA_GR_DIGITAL_H_ */

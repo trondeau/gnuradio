@@ -86,6 +86,7 @@ install(FILES
     ofdm_sampler.h
     ofdm_serializer_vcc.h
     ofdm_sync_sc_cfb.h
+    packet_formatter_default.h
     packet_header_default.h
     packet_header_ofdm.h
     packet_headergenerator_bb.h
