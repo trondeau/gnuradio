@@ -145,6 +145,7 @@ list(APPEND gnuradio_runtime_libs
 )
 
 #Add libraries for winsock2.h on Windows
+INCLUDE(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX(windows.h HAVE_WINDOWS_H)
 IF(HAVE_WINDOWS_H)
     ADD_DEFINITIONS(-DHAVE_WINDOWS_H -DUSING_WINSOCK -DWIN32_LEAN_AND_MEAN)
