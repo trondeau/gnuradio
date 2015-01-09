@@ -72,16 +72,22 @@ namespace gr {
 
       int k = 0; // Position in out
       for(int i = 0; i < 12 && k < d_header_len; i += d_bits_per_byte, k++) {
-	output[k] = (unsigned char) ((nbytes_in >> i) & d_mask);
+	bytes_out[k] = (unsigned char) ((nbytes_in >> i) & d_mask);
       }
       for(int i = 0; i < 12 && k < d_header_len; i += d_bits_per_byte, k++) {
-	output[k] = (unsigned char) ((d_header_number >> i) & d_mask);
+	bytes_out[k] = (unsigned char) ((d_header_number >> i) & d_mask);
       }
       for(int i = 0; i < 8 && k < d_header_len; i += d_bits_per_byte, k++) {
-	output[k] = (unsigned char) ((crc >> i) & d_mask);
+	bytes_out[k] = (unsigned char) ((crc >> i) & d_mask);
       }
       d_header_number++;
       d_header_number &= 0x0FFF;
+
+      // Package output data into a PMT vector
+      output = pmt::init_u8vector(header_size, bytes_out);
+
+      // Creating the output pmt copies data; free our own here.
+      volk_free(bytes_out);
 
       return true;
     }

@@ -91,6 +91,7 @@ install(FILES
     packet_formatter_1.h
     packet_formatter_ofdm.h
     packet_format_async.h
+    packet_format_bb.h
     packet_parse_b.h
     packet_parse_f.h
     packet_header_default.h

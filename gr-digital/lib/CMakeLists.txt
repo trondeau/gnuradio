@@ -107,6 +107,7 @@ list(APPEND digital_sources
     packet_formatter_1.cc
     packet_formatter_ofdm.cc
     packet_format_async_impl.cc
+    packet_format_bb_impl.cc
     packet_parse_b_impl.cc
     packet_parse_f_impl.cc
     packet_header_default.cc
