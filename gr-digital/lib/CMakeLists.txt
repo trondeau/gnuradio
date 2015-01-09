@@ -104,6 +104,8 @@ list(APPEND digital_sources
     ofdm_sync_sc_cfb_impl.cc
     packet_formatter_default.cc
     packet_formatter_counter.cc
+    packet_formatter_1.cc
+    packet_formatter_ofdm.cc
     packet_format_async_impl.cc
     packet_parse_b_impl.cc
     packet_parse_f_impl.cc
