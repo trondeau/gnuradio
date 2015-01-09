@@ -25,7 +25,6 @@
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
 #include <gnuradio/digital/packet_formatter_default.h>
-#include <boost/enable_shared_from_this.hpp>
 
 namespace gr {
   namespace digital {

@@ -78,10 +78,21 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char*)input_items[0];
 
+      std::vector<tag_t> tags;
+      get_tags_in_range(
+	  tags, 0,
+	  nitems_read(0),
+	  nitems_read(0)+d_formatter->header_nbits()
+      );
+
       std::vector<pmt::pmt_t> info;
       d_formatter->parse(noutput_items, in, info);
 
       for(size_t i = 0; i < info.size(); i++) {
+	for (unsigned j = 0; j < tags.size(); j++) {
+          if(!pmt::dict_has_key(info[i], tags[j].key))
+            info[i] = pmt::dict_add(info[i], tags[j].key, tags[j].value);
+	}
         message_port_pub(d_out_port, info[i]);
       }
 
