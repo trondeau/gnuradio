@@ -40,6 +40,9 @@ namespace gr {
      public:
       packet_formatter_ofdm(const std::vector<std::vector<int> > &occupied_carriers,
                             int n_syms,
+                            const std::string &len_tag_key="packet_len",
+                            const std::string &frame_len_tag_key="frame_len",
+                            const std::string &num_tag_key="packet_num",
                             int bits_per_header_sym=1,
                             int bits_per_payload_sym=1,
                             bool scramble_header=false);
@@ -86,12 +89,16 @@ namespace gr {
        */
       static sptr make(const std::vector<std::vector<int> > &occupied_carriers,
                        int n_syms,
+                       const std::string &len_tag_key="packet_len",
+                       const std::string &frame_len_tag_key="frame_len",
+                       const std::string &num_tag_key="packet_num",
                        int bits_per_header_sym=1,
                        int bits_per_payload_sym=1,
                        bool scramble_header=false);
 
 
     protected:
+      pmt::pmt_t d_frame_len_tag_key; //!< Tag key of the additional frame length tag
       const std::vector<std::vector<int> > d_occupied_carriers; //!< Which carriers/symbols carry data
       int d_syms_per_set; //!< Helper variable: Total number of elements in d_occupied_carriers
       int d_bits_per_payload_sym;

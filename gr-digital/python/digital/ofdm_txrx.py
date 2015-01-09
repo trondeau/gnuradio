@@ -1,23 +1,23 @@
 #
 # Copyright 2013 Free Software Foundation, Inc.
-# 
+#
 # This file is part of GNU Radio
-# 
+#
 # GNU Radio is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3, or (at your option)
 # any later version.
-# 
+#
 # GNU Radio is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-# 
+#
 """
 OFDM Transmitter / Receiver hier blocks.
 
@@ -187,13 +187,13 @@ class ofdm_tx(gr.hier_block2):
         crc = digital.crc32_bb(False, self.packet_length_tag_key)
         header_constellation  = _get_constellation(bps_header)
         header_mod = digital.chunks_to_symbols_bc(header_constellation.points())
-        formatter_object = digital.packet_header_ofdm(
+        formatter_object = digital.packet_formatter_ofdm(
             occupied_carriers=occupied_carriers, n_syms=1,
             bits_per_header_sym=self.bps_header,
             bits_per_payload_sym=self.bps_payload,
             scramble_header=scramble_bits
         )
-        header_gen = digital.packet_headergenerator_bb(formatter_object.base(), self.packet_length_tag_key)
+        header_gen = digital.packet_format_bb(formatter_object, self.packet_length_tag_key)
         header_payload_mux = blocks.tagged_stream_mux(
                 itemsize=gr.sizeof_gr_complex*1,
                 lengthtagname=self.packet_length_tag_key,
@@ -367,16 +367,17 @@ class ofdm_rx(gr.hier_block2):
                 self.frame_length_tag_key
         )
         header_demod     = digital.constellation_decoder_cb(header_constellation.base())
-        header_formatter = digital.packet_header_ofdm(
-                occupied_carriers, 1,
-                packet_length_tag_key,
-                frame_length_tag_key,
-                packet_num_tag_key,
-                bps_header,
-                bps_payload,
-                scramble_header=scramble_bits
+        header_formatter = digital.packet_formatter_ofdm(
+            occupied_carriers, 1,
+            packet_length_tag_key,
+            frame_length_tag_key,
+            packet_num_tag_key,
+            bps_header,
+            bps_payload,
+            scramble_header=scramble_bits
         )
-        header_parser = digital.packet_headerparser_b(header_formatter.formatter())
+
+        header_parser = digital.packet_parse_b(header_formatter)
         self.connect(
                 (hpd, 0),
                 header_fft,
@@ -386,7 +387,7 @@ class ofdm_rx(gr.hier_block2):
                 header_demod,
                 header_parser
         )
-        self.msg_connect(header_parser, "header_data", hpd, "header_data")
+        self.msg_connect(header_parser, "info", hpd, "header_data")
         if debug_log:
             self.connect((chanest, 1),      blocks.file_sink(gr.sizeof_gr_complex * fft_len, 'channel-estimate.dat'))
             self.connect((chanest, 0),      blocks.file_sink(gr.sizeof_gr_complex * fft_len, 'post-hdr-chanest.dat'))
@@ -447,5 +448,3 @@ class ofdm_rx(gr.hier_block2):
             self.connect(payload_demod,      blocks.file_sink(1,                            'post-payload-demod.dat'))
             self.connect(payload_pack,       blocks.file_sink(1,                            'post-payload-pack.dat'))
             self.connect(crc,                blocks.file_sink(1,                            'post-payload-crc.dat'))
-
-

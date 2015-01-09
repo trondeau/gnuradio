@@ -50,7 +50,10 @@ namespace gr {
       : public packet_formatter_default
     {
      public:
-      packet_formatter_1(long header_len, int bits_per_byte=1);
+      packet_formatter_1(long header_len,
+                         const std::string &len_tag_key="packet_len",
+                         const std::string &num_tag_key="packet_num",
+                         int bits_per_byte=1);
       virtual ~packet_formatter_1();
 
       void set_header_num(unsigned header_num) { d_header_number = header_num; };
@@ -93,10 +96,15 @@ namespace gr {
        */
       virtual size_t header_nbytes() const;
 
-      static sptr make(long header_len, int bits_per_byte=1);
+      static sptr make(long header_len,
+                       const std::string &len_tag_key="packet_len",
+                       const std::string &num_tag_key="packet_num",
+                       int bits_per_byte=1);
 
     protected:
       long d_header_len;
+      pmt::pmt_t d_len_tag_key;
+      pmt::pmt_t d_num_tag_key;
       int d_bits_per_byte;
       unsigned d_header_number;
       unsigned d_mask;

@@ -45,24 +45,32 @@ namespace gr {
     packet_formatter_ofdm::sptr
     packet_formatter_ofdm::make(const std::vector<std::vector<int> > &occupied_carriers,
                                 int n_syms,
+                                const std::string &len_tag_key,
+                                const std::string &frame_len_tag_key,
+                                const std::string &num_tag_key,
                                 int bits_per_header_sym,
                                 int bits_per_payload_sym,
                                 bool scramble_header)
     {
       return packet_formatter_ofdm::sptr
         (new packet_formatter_ofdm(occupied_carriers, n_syms,
+                                   len_tag_key, frame_len_tag_key, num_tag_key,
                                    bits_per_header_sym, bits_per_payload_sym,
                                    scramble_header));
     }
 
     packet_formatter_ofdm::packet_formatter_ofdm(const std::vector<std::vector<int> > &occupied_carriers,
                                                  int n_syms,
+                                                 const std::string &len_tag_key,
+                                                 const std::string &frame_len_tag_key,
+                                                 const std::string &num_tag_key,
                                                  int bits_per_header_sym,
                                                  int bits_per_payload_sym,
                                                  bool scramble_header)
       : packet_formatter_1(_get_header_len_from_occupied_carriers(occupied_carriers, n_syms),
-                           bits_per_header_sym),
-        d_occupied_carriers(occupied_carriers),
+                           len_tag_key, num_tag_key, bits_per_header_sym),
+      d_frame_len_tag_key(pmt::string_to_symbol(frame_len_tag_key)),
+      d_occupied_carriers(occupied_carriers),
       d_syms_per_set(0),
       d_bits_per_payload_sym(bits_per_payload_sym),
       d_scramble_mask(d_header_len, 0)
@@ -118,14 +126,14 @@ namespace gr {
       }
 
       int packet_len = 0; // # of bytes in this frame
-      if(pmt::dict_has_key(info[0], pmt::intern("packet_len"))) {
-        long len = pmt::to_long(pmt::dict_ref(info[0], pmt::intern("packet_len"), pmt::PMT_NIL));
+      if(pmt::dict_has_key(info[0], d_len_tag_key)) {
+        long len = pmt::to_long(pmt::dict_ref(info[0], d_len_tag_key, pmt::PMT_NIL));
         packet_len = len * 8 / d_bits_per_payload_sym;
         if(len * 8 % d_bits_per_payload_sym) {
           packet_len++;
         }
-        info[0] = pmt::dict_delete(info[0], pmt::intern("packet_len"));
-        info[0] = pmt::dict_add(info[0], pmt::intern("packet_len"),
+        info[0] = pmt::dict_delete(info[0], d_len_tag_key);
+        info[0] = pmt::dict_add(info[0], d_len_tag_key,
                                 pmt::from_long(packet_len));
       }
 
@@ -137,7 +145,7 @@ namespace gr {
 	frame_len++;
 	i += d_occupied_carriers[k].size();
       }
-      info[0] = pmt::dict_add(info[0], pmt::intern("frame_len"),
+      info[0] = pmt::dict_add(info[0],  d_frame_len_tag_key,
                               pmt::from_long(frame_len));
       return true;
     }

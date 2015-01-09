@@ -31,16 +31,25 @@ namespace gr {
   namespace digital {
 
     packet_formatter_1::sptr
-    packet_formatter_1::make(long header_len, int bits_per_byte)
+    packet_formatter_1::make(long header_len,
+                             const std::string &len_tag_key,
+                             const std::string &num_tag_key,
+                             int bits_per_byte)
     {
       return packet_formatter_1::sptr
-        (new packet_formatter_1(header_len, bits_per_byte));
+        (new packet_formatter_1(header_len, len_tag_key,
+                                num_tag_key, bits_per_byte));
     }
 
     const unsigned MASK_LUT[9] = {0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x2F, 0x7F, 0xFF};
-    packet_formatter_1::packet_formatter_1(long header_len, int bits_per_byte)
+    packet_formatter_1::packet_formatter_1(long header_len,
+                                           const std::string &len_tag_key,
+                                           const std::string &num_tag_key,
+                                           int bits_per_byte)
       : packet_formatter_default(""),
         d_header_len(header_len),
+        d_len_tag_key(pmt::string_to_symbol(len_tag_key)),
+        d_num_tag_key(num_tag_key.empty() ? pmt::PMT_NIL : pmt::string_to_symbol(num_tag_key)),
         d_bits_per_byte(bits_per_byte),
         d_header_number(0)
     {
@@ -107,7 +116,7 @@ namespace gr {
 	header_len |= (((int) input[k]) & d_mask) << i;
       }
 
-      d_info = pmt::dict_add(d_info, pmt::intern("packet_len"),
+      d_info = pmt::dict_add(d_info, d_len_tag_key,
                              pmt::from_long(header_len));
 
       if(k >= d_header_len) {
@@ -119,7 +128,7 @@ namespace gr {
         header_num |= (((int) input[k]) & d_mask) << i;
       }
 
-      d_info = pmt::dict_add(d_info, pmt::intern("packet_num"),
+      d_info = pmt::dict_add(d_info, d_num_tag_key,
                              pmt::from_long(header_num));
 
       if(k >= d_header_len) {
