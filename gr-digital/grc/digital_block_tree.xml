@@ -80,6 +80,7 @@
     <block>digital_packet_headerparser_b</block>
     <block>digital_packet_headerparser_b_default</block>
     <block>digital_packet_sink</block>
+    <block>digital_packet_gateway</block>
     <block>digital_hdlc_framer_pb</block>
     <block>digital_hdlc_deframer_bp</block>
     <block>digital_simple_framer</block>

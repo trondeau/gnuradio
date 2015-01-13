@@ -118,11 +118,6 @@ namespace gr {
         if(!pmt::eq(p_pkt_len, pmt::PMT_NIL)) {
           d_pkt_len = pmt::to_long(p_pkt_len);
         }
-
-        pmt::pmt_t p_hdr_len = pmt::dict_ref(msg, pmt::intern("skip samps"), pmt::PMT_NIL);
-        if(!pmt::eq(p_hdr_len, pmt::PMT_NIL)) {
-          d_hdr_len = pmt::to_long(p_hdr_len);
-        }
       }
 
       if(d_output) {
@@ -164,15 +159,6 @@ namespace gr {
       // Process as a finite packet and produce a PDU
       else {
         if(d_ok) {
-          // Eat all skipped samples that the packet parser told us
-          // about. After this, we are at the payload samples.
-          if(d_hdr_len > 0) {
-            nbits = std::min(noutput_items, d_hdr_len);
-            d_hdr_len -= nbits;
-            consume_each(nbits);
-            return 0;
-          }
-
           nbits = std::min(noutput_items, d_pkt_len-d_nbits);
           nsamps = nbits / d_bps;
           for(int i = 0; i < nsamps; i++) {

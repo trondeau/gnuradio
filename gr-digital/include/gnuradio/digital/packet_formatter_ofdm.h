@@ -77,6 +77,9 @@ namespace gr {
       /*!
        * \param occupied_carriers See carrier allocator
        * \param n_syms The number of OFDM symbols the header should be (usually 1)
+       * \param len_tag_key The stream tag key used to set the length of the packet.
+       * \param frame_len_tag_key The stream tag key used to set the length of the frame.
+       * \param num_tag_key The tag key that carries the frame number.
        * \param bits_per_header_sym Bits per complex symbol in the header, e.g. 1 if
        *                            the header is BPSK modulated, 2 if it's QPSK
        *                            modulated etc.
