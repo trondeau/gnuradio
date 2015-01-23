@@ -32,18 +32,20 @@ namespace gr {
   namespace digital {
 
     packet_gateway::sptr
-    packet_gateway::make(size_t itemsize, int mtu)
+    packet_gateway::make(size_t itemsize, int mtu, int bps)
     {
       return gnuradio::get_initial_sptr
-        (new packet_gateway_impl(itemsize, mtu));
+        (new packet_gateway_impl(itemsize, mtu, bps));
     }
 
-    packet_gateway_impl::packet_gateway_impl(size_t itemsize, int mtu)
+    packet_gateway_impl::packet_gateway_impl(size_t itemsize, int mtu, int bps)
       : block("packet_gateway",
               io_signature::make(1, 1, itemsize),
               io_signature::make(1, 1, itemsize)),
         d_itemsize(itemsize), d_mtu(mtu)
     {
+      set_bps(bps);
+
       d_mode = ST_WAITING;
       d_skipped = 0;
       d_avail = 0;
@@ -52,6 +54,9 @@ namespace gr {
       message_port_register_in(pmt::mp("info"));
       set_msg_handler(pmt::mp("info"),
                       boost::bind(&packet_gateway_impl::handle_info, this, _1));
+
+      set_min_output_buffer(4*d_mtu*itemsize);
+      set_output_multiple(d_mtu);
     }
 
     packet_gateway_impl::~packet_gateway_impl()
@@ -64,7 +69,7 @@ namespace gr {
       if(pmt::is_dict(msg)) {
         pmt::pmt_t p_pkt_len = pmt::dict_ref(msg, pmt::intern("payload bits"), pmt::PMT_NIL);
         if(!pmt::eq(p_pkt_len, pmt::PMT_NIL)) {
-          d_pkt_len = pmt::to_long(p_pkt_len);
+          d_pkt_len = pmt::to_long(p_pkt_len) / d_bps;
         }
 
         pmt::pmt_t p_to_skip = pmt::dict_ref(msg, pmt::intern("skip samps"), pmt::PMT_NIL);
@@ -75,6 +80,23 @@ namespace gr {
         d_written = 0;
         GR_LOG_DEBUG(d_logger, boost::format("received info;  pkt_len: %1%  skip: %2%") \
                      % d_pkt_len % d_to_skip);
+      }
+    }
+
+    int
+    packet_gateway_impl::bps() const
+    {
+      return d_bps;
+    }
+
+    void
+    packet_gateway_impl::set_bps(int bps)
+    {
+      if(bps > 0) {
+        d_bps = bps;
+      }
+      else {
+        throw std::runtime_error("packet_gateway: bps must be > 0");
       }
     }
 
@@ -99,8 +121,8 @@ namespace gr {
           d_skipped += to_consume;
         }
         ret = 0;
-        //GR_LOG_DEBUG(d_logger, boost::format("--> skipping: %1%    avail: %2%") \
-        //             % d_skipped % d_avail);
+        //GR_LOG_DEBUG(d_logger, boost::format("skipping: %1%    avail: %2%   nout: %3%") \
+        //             % d_skipped % d_avail % noutput_items);
         break;
 
       case(ST_PROCESSING):

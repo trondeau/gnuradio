@@ -33,6 +33,7 @@ namespace gr {
     private:
       size_t d_itemsize;
       int d_mtu, d_avail;
+      int d_bps;
 
       uint64_t d_to_skip, d_skipped;
       uint64_t d_pkt_len, d_written;
@@ -44,11 +45,14 @@ namespace gr {
 
       packet_gateway_mode_t d_mode;
 
+      void handle_info(pmt::pmt_t msg);
+
     public:
-      packet_gateway_impl(size_t itemsize, int mtu=1500);
+      packet_gateway_impl(size_t itemsize, int mtu=1500, int bps=1);
       ~packet_gateway_impl();
 
-      void handle_info(pmt::pmt_t msg);
+      int bps() const;
+      void set_bps(int bps);
 
       int general_work(int noutput_items,
                        gr_vector_int &ninput_items,

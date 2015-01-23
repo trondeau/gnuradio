@@ -45,7 +45,7 @@ namespace gr {
       // gr::digital::packet_gateway::sptr
       typedef boost::shared_ptr<packet_gateway> sptr;
 
-      static sptr make(size_t itemsize, int mtu=1500);
+      static sptr make(size_t itemsize, int mtu=1500, int bps=1);
     };
 
   } /* namespace digital */

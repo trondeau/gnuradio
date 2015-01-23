@@ -8,7 +8,7 @@
   <name>Packet Gateway</name>
   <key>digital_packet_gateway</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_gateway($type.size*$vlen, $mtu)</make>
+  <make>digital.packet_gateway($type.size*$vlen, $mtu, $bps)</make>
   <callback>set_enabled($enabled)</callback>
 
   <param>
@@ -46,6 +46,13 @@
     <name>MTU</name>
     <key>mtu</key>
     <value>1500</value>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Bits/Sym</name>
+    <key>bps</key>
+    <value>1</value>
     <type>int</type>
   </param>
 
