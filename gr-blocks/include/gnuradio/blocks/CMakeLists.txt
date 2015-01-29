@@ -174,6 +174,7 @@ install(FILES
     udp_sink.h
     udp_source.h
     unpack_k_bits_bb.h
+    user_trigger.h
     vco_f.h
     vco_c.h
     vector_map.h

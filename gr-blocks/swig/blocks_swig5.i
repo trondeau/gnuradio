@@ -66,6 +66,7 @@
 #include "gnuradio/blocks/unpacked_to_packed_bb.h"
 #include "gnuradio/blocks/unpacked_to_packed_ss.h"
 #include "gnuradio/blocks/unpacked_to_packed_ii.h"
+#include "gnuradio/blocks/user_trigger.h"
 #include "gnuradio/blocks/vco_f.h"
 #include "gnuradio/blocks/vco_c.h"
 #include "gnuradio/blocks/xor_bb.h"
@@ -108,6 +109,7 @@
 %include "gnuradio/blocks/unpacked_to_packed_bb.h"
 %include "gnuradio/blocks/unpacked_to_packed_ss.h"
 %include "gnuradio/blocks/unpacked_to_packed_ii.h"
+%include "gnuradio/blocks/user_trigger.h"
 %include "gnuradio/blocks/vco_f.h"
 %include "gnuradio/blocks/vco_c.h"
 %include "gnuradio/blocks/xor_bb.h"
@@ -148,6 +150,7 @@ GR_SWIG_BLOCK_MAGIC2(blocks, unpack_k_bits_bb);
 GR_SWIG_BLOCK_MAGIC2(blocks, unpacked_to_packed_bb);
 GR_SWIG_BLOCK_MAGIC2(blocks, unpacked_to_packed_ss);
 GR_SWIG_BLOCK_MAGIC2(blocks, unpacked_to_packed_ii);
+GR_SWIG_BLOCK_MAGIC2(blocks, user_trigger);
 GR_SWIG_BLOCK_MAGIC2(blocks, vco_f);
 GR_SWIG_BLOCK_MAGIC2(blocks, vco_c);
 GR_SWIG_BLOCK_MAGIC2(blocks, xor_bb);

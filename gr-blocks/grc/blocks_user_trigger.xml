@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+###################################################
+## User Trigger
+###################################################
+ -->
+<block>
+  <name>User_Trigger</name>
+  <key>blocks_user_trigger</key>
+  <import>from gnuradio import blocks</import>
+  <import>import pmt</import>
+  <make>blocks.user_trigger()</make>
+  <callback>trigger($trig)</callback>
+
+  <param>
+    <name>Trigger</name>
+    <key>trig</key>
+    <value>1</value>
+    <type>raw</type>
+  </param>
+
+  <source>
+    <name>trig</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+</block>
