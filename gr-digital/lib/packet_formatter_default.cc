@@ -288,6 +288,7 @@ namespace gr {
     inline void
     packet_formatter_default::enter_have_sync()
     {
+      //std::cerr << "packet_formatter_default: have sync" << std::endl;
       d_state = STATE_HAVE_SYNC;
       d_hdr_reg = 0;
       d_hdr_count = 0;
@@ -296,6 +297,7 @@ namespace gr {
     inline void
     packet_formatter_default::enter_have_header(int payload_len)
     {
+      //std::cerr << "packet_formatter_default: have header" << std::endl;
       d_state = STATE_HAVE_HEADER;
       d_pkt_len = payload_len;
       d_pkt_count = 0;

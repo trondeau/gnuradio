@@ -114,6 +114,8 @@ namespace gr {
     bool
     packet_formatter_counter::header_ok()
     {
+      //std::cerr << "packet_formatter_counter: header_ok" << std::endl;
+
       // confirm that two copies of header info are identical
       return (((d_hdr_reg >> 48) & 0xffff) ^ ((d_hdr_reg >> 32) & 0xffff)) == 0;
     }
@@ -121,6 +123,8 @@ namespace gr {
     int
     packet_formatter_counter::header_payload()
     {
+      //std::cerr << "packet_formatter_counter: header_payload" << std::endl;
+
       uint16_t counter = (d_hdr_reg) & 0xffff;
       uint16_t bps = (d_hdr_reg >> 16) & 0xffff;
       uint16_t len = (d_hdr_reg >> 32) & 0xffff;

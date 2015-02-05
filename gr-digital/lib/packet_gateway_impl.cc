@@ -56,7 +56,7 @@ namespace gr {
                       boost::bind(&packet_gateway_impl::handle_info, this, _1));
 
       set_min_output_buffer(4*d_mtu*itemsize);
-      set_output_multiple(d_mtu);
+      //set_output_multiple(d_mtu);
     }
 
     packet_gateway_impl::~packet_gateway_impl()
@@ -128,8 +128,8 @@ namespace gr {
       case(ST_PROCESSING):
         skip = d_to_skip - d_skipped;
         d_skipped += std::min(skip, (uint64_t)noutput_items);
-        GR_LOG_DEBUG(d_logger, boost::format("skipped: %1%  to skip: %2%  skip: %3%  nout: %4% -> %5%") \
-                     % d_skipped % d_to_skip % skip % noutput_items % (noutput_items-skip));
+        //GR_LOG_DEBUG(d_logger, boost::format("skipped: %1%  to skip: %2%  skip: %3%  nout: %4% -> %5%") \
+        //             % d_skipped % d_to_skip % skip % noutput_items % (noutput_items-skip));
         if(d_skipped == d_to_skip) {
           to_write = std::min(d_pkt_len - d_written, (uint64_t)(noutput_items-skip));
 
@@ -144,10 +144,10 @@ namespace gr {
           to_consume = skip + to_write;
           ret = to_write;
 
-          GR_LOG_DEBUG(d_logger, boost::format("processing;  skipped: %1%  to_write: %2%  written: %3%") \
-                       % d_skipped % to_write % d_written);
-          GR_LOG_DEBUG(d_logger, boost::format("             to consume: %1%  returning: %2%") \
-                       % to_consume % ret);
+          //GR_LOG_DEBUG(d_logger, boost::format("processing;  skipped: %1%  to_write: %2%  written: %3%") \
+          //             % d_skipped % to_write % d_written);
+          //GR_LOG_DEBUG(d_logger, boost::format("             to consume: %1%  returning: %2%") \
+          //             % to_consume % ret);
         }
 
         if(d_skipped > d_to_skip)
