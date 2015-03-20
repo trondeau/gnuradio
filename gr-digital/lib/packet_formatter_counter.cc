@@ -28,6 +28,7 @@
 #include <string.h>
 #include <volk/volk.h>
 #include <gnuradio/digital/packet_formatter_counter.h>
+#include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/math.h>
 
 namespace gr {
@@ -62,31 +63,12 @@ namespace gr {
       uint8_t* bytes_out = (uint8_t*)volk_malloc(header_size*sizeof(uint8_t),
                                                  volk_get_alignment());
 
-      uint16_t len = static_cast<uint16_t>(nbytes_in);
-      volk_16u_byteswap(&len, 1);
-
-      uint64_t ac = d_access_code;
-      size_t ac_bytes = d_access_code_len/8;
-      volk_64u_byteswap(&ac, 1);
-      ac = ac >> (64-d_access_code_len);
-
-      uint16_t bps = d_bps;
-      volk_16u_byteswap(&bps, 1);
-
-      uint16_t counter = d_counter;;
-      volk_16u_byteswap(&counter, 1);
-
-      // Copy access code, header info, and input to the output buffer
-      int offset = 0;
-      memcpy(bytes_out, &ac, ac_bytes);
-      offset += ac_bytes;
-      memcpy(&bytes_out[offset], &len, sizeof(uint16_t));
-      offset += sizeof(uint16_t);
-      memcpy(&bytes_out[offset], &len, sizeof(uint16_t));
-      offset += sizeof(uint16_t);
-      memcpy(&bytes_out[offset], &bps, sizeof(uint16_t));
-      offset += sizeof(uint16_t);
-      memcpy(&bytes_out[offset], &counter, sizeof(uint16_t));
+      header_buffer header(bytes_out);
+      header.add_field(d_access_code_len/8, d_access_code);
+      header.add_field(sizeof(uint16_t), (uint16_t)(nbytes_in));
+      header.add_field(sizeof(uint16_t), (uint16_t)(nbytes_in));
+      header.add_field(sizeof(uint16_t), (uint16_t)(d_bps));
+      header.add_field(sizeof(uint16_t), (uint16_t)(d_counter));
 
       // Package output data into a PMT vector
       output = pmt::init_u8vector(header_size, bytes_out);
