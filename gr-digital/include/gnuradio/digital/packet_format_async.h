@@ -80,9 +80,14 @@ namespace gr {
        *        code and a header that repeats the PDU's frame length
        *        twice.
        * \param padding Adds trailing 0's. See set_padding.
+       * \param separate_header If true, creates two output ports to
+       *        send the header and payload as different
+       *        messages. This is generally used when we want to use
+       *        different modulations on the header and payload.
        */
       static sptr make(const packet_formatter_default::sptr &formatter,
-                       unsigned int padding=0);
+                       unsigned int padding=0,
+                       bool separate_header=false);
 
       /*!
        * Sets the amount of padding of 0's on the end of the

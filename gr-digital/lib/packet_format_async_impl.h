@@ -34,6 +34,7 @@ namespace gr {
      private:
       packet_formatter_default::sptr d_formatter;
       unsigned int d_padding;
+      bool d_separate_header;
 
       pmt::pmt_t d_in_port;
       pmt::pmt_t d_hdr_port, d_pld_port;
@@ -42,7 +43,8 @@ namespace gr {
 
      public:
       packet_format_async_impl(const packet_formatter_default::sptr &formatter,
-                               unsigned int padding=0);
+                               unsigned int padding=0,
+                               bool separate_header=false);
       ~packet_format_async_impl();
 
       void set_padding(unsigned int padding=0);

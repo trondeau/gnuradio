@@ -2,7 +2,7 @@
   <name>Packet Header Formatter (Async)</name>
   <key>digital_packet_format_async</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_format_async($formatter, $padding)</make>
+  <make>digital.packet_format_async($formatter, $padding, not $separate_header)</make>
 
   <param>
     <name>Formatter</name>
@@ -17,6 +17,22 @@
     <type>int</type>
   </param>
 
+  <param>
+    <name>Separate Header</name>
+    <key>separate_header</key>
+    <value>False</value>
+    <type>enum</type>
+    <hide>part</hide>
+    <option>
+      <name>Yes</name>
+      <key>False</key>
+    </option>
+    <option>
+      <name>No</name>
+      <key>True</key>
+    </option>
+  </param>
+
   <sink>
     <name>in</name>
     <type>message</type>
@@ -24,15 +40,16 @@
   </sink>
 
   <source>
-    <name>header</name>
+    <name>payload</name>
     <type>message</type>
     <optional>1</optional>
   </source>
 
   <source>
-    <name>payload</name>
+    <name>header</name>
     <type>message</type>
     <optional>1</optional>
+    <hide>$separate_header</hide>
   </source>
 
 </block>
