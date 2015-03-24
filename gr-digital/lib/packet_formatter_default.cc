@@ -227,7 +227,7 @@ namespace gr {
 	      // we have a full header, check to see if it has been received properly
 	      if(header_ok()) {
                 int payload_len = header_payload();
-		enter_have_header(8*payload_len);
+		enter_have_header(payload_len);
                 info.push_back(d_info);
               }
 	      else {
@@ -289,7 +289,7 @@ namespace gr {
     {
       //std::cerr << "packet_formatter_default: have header" << std::endl;
       d_state = STATE_HAVE_HEADER;
-      d_pkt_len = payload_len;
+      d_pkt_len = 8*payload_len;
       d_pkt_count = 0;
       d_count = 0;
     }
