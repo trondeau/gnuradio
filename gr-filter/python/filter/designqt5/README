@@ -1,0 +1,8 @@
+Todos:
+
+ * Provide configuration for colors, styles
+ ** Also font sizes
+ * Provide moveable poles and zeros
+ ** add and remove poles/zeros
+ * Cross-hair on magnitude graph that returns the freq/mag value based
+   on the mouse's x value.
