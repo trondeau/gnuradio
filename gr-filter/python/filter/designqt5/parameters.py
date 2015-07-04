@@ -94,3 +94,6 @@ class parameters(QtWidgets.QVBoxLayout):
             #                                          "Filter Design Failed:\n{0}".format(e),
             #                                          QtWidgets.QMessageBox.Ok)
             return None
+
+    def iir(self):
+        return self.filterParams.iir

@@ -32,6 +32,10 @@ try:
 except ImportError:
     sys.stderr.write("Error: Program requires PyQt4 and gr-qtgui.\n")
     sys.exit(1)
+except AttributeError:
+    sys.stderr.write("Could not load the QApplication.\n"
+                     "You might be trying to mix QT4 and QT5.\n")
+    sys.exit(1)
 
 
 try:
@@ -73,8 +77,7 @@ class my_top_block(gr.top_block):
         self.filt = filter.fft_filter_ccc(1, self.filt_taps)
         thr = blocks.throttle(gr.sizeof_gr_complex, 100*npts)
         self.snk1 = qtgui.freq_sink_c(npts, filter.firdes.WIN_BLACKMAN_hARRIS,
-                                      0, Rs,
-                                      "Complex Freq Example", 1)
+                                      0, Rs, "", 1)
 
         self.connect(src1, (src,0))
         self.connect(src2, (src,1))
@@ -96,9 +99,7 @@ class my_top_block(gr.top_block):
 if __name__ == "__main__":
     tb = my_top_block();
     tb.start()
-    mw = filter_design.launch(sys.argv, tb.update_filter)
+    mw = filter_design.launch(sys.argv, None, tb.update_filter)
     mw.show()
     tb.qapp.exec_()
     tb.stop()
-
-

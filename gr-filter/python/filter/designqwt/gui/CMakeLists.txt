@@ -22,13 +22,12 @@ include(GrPython)
 
 GR_PYTHON_INSTALL(
     FILES
-	bandgraphicsview.py
-	banditems.py
-	icons_rc.py
-	idealbanditems.py
-	polezero_plot.py
-	pyqt_filter_stacked.py
-    DESTINATION ${GR_PYTHON_DIR}/gnuradio/filter
+    bandgraphicsview.py
+    banditems.py
+    icons_rc.py
+    idealbanditems.py
+    polezero_plot.py
+    pyqt_filter_stacked.py
+    DESTINATION ${GR_PYTHON_DIR}/gnuradio/filter/designqwt
     COMPONENT "filter_python"
 )
-

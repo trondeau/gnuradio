@@ -20,7 +20,6 @@
 
 import sys, os, re, csv, copy
 import warnings
-from optparse import OptionParser
 from gnuradio import filter
 
 try:
@@ -43,37 +42,37 @@ except ImportError:
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.pyqt_filter_stacked import Ui_MainWindow
+    from gnuradio.filter.designqwt.pyqt_filter_stacked import Ui_MainWindow
 except ImportError:
     print "Could not import from pyqt_filter_stacked. Please build with \"pyuic4 pyqt_filter_stacked.ui -o pyqt_filter_stacked.py\""
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.banditems import *
+    from gnuradio.filter.designqwt.banditems import *
 except ImportError:
     print "Could not import from banditems. Please check whether banditems.py is in the library path"
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.polezero_plot import *
+    from gnuradio.filter.designqwt.polezero_plot import *
 except ImportError:
     print "Could not import from polezero_plot. Please check whether polezero_plot.py is in the library path"
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.idealbanditems import *
+    from gnuradio.filter.designqwt.idealbanditems import *
 except ImportError:
     print "Could not import from idealbanditems. Please check whether idealbanditems.py is in the library path"
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.api_object import *
+    from gnuradio.filter.designqwt.api_object import *
 except ImportError:
     print "Could not import from api_object. Please check whether api_object.py is in the library path"
     raise SystemExit, 1
 
 try:
-    from gnuradio.filter.fir_design import *
+    from gnuradio.filter.designqwt.fir_design import *
 except ImportError:
     print "Could not import from fir_design. Please check whether fir_design.py is in the library path"
     raise SystemExit, 1
@@ -86,11 +85,16 @@ except AttributeError:
 
 # Gnuradio Filter design tool main window
 class gr_plot_filter(QtGui.QMainWindow):
-    def __init__(self, options, callback=None, restype=""):
+    def __init__(self, options, callback=None):
         QtGui.QWidget.__init__(self, None)
         self.gui = Ui_MainWindow()
-        self.callback = callback
         self.gui.setupUi(self)
+
+        restype = None
+        self.callback = callback
+        if(options):
+            if(type(options.type) is str):
+                restype = options.type.lower()
 
         #Remove other filter combobox entry if
         #some restriction is specified
@@ -2271,21 +2275,10 @@ class gr_plot_filter(QtGui.QMainWindow):
         self.gui.nTapsEdit.setText(Qt.QString("%1").arg(self.taps.size))
 
 
-def setup_options():
-    usage="%prog: [options] (input_filename)"
-    description = ""
-
-    parser = OptionParser(conflict_handler="resolve",
-                          usage=usage, description=description)
-    return parser
-
-def launch(args, callback=None, restype=""):
-    parser = setup_options()
-    (options, args) = parser.parse_args ()
-
+def launch(args, options=None, callback=None, restype=""):
     if callback == None:
         app = Qt.QApplication(args)
-        gplt = gr_plot_filter(options, callback, restype)
+        gplt = gr_plot_filter(options, callback)
         app.exec_()
         if gplt.iir:
             retobj = ApiObject()
@@ -2296,17 +2289,10 @@ def launch(args, callback=None, restype=""):
             retobj.update_all("fir", gplt.params, gplt.taps, 1)
             return retobj
     else:
-        gplt = gr_plot_filter(options, callback, restype)
+        gplt = gr_plot_filter(options, callback)
         return gplt
 
-def main(args):
-    parser = setup_options()
-    (options, args) = parser.parse_args ()
-
+def main(args, options=None):
     app = Qt.QApplication(args)
     gplt = gr_plot_filter(options)
-    app.exec_()
-
-if __name__ == '__main__':
-    main(sys.argv)
-
+    sys.exit(app.exec_())

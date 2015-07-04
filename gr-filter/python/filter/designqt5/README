@@ -1,8 +1,87 @@
+The filter design program is a tool to help us build, analyze, and
+understand the consequences of our digital filters. The interface
+allows us to specify the properties of different filters and returns
+the results in the form of graphs to represent the filter in different
+domains, the taps that make up the filter, and the number of taps of
+the filter to provide an understanding of its complexity.
+
+
+Stand-alone Operation
+
+The filter design tool can be launched as a stand-alone program from
+the command line as 'gr_filter_design'. This mode allows us to build
+and analyze the filter parameters we need, and we can also save the
+filter designs to a file, which allows us to open this file in our
+programs to make use of one that we have specifically crafted for a
+purpose. The file is a comma-separated value (CSV) file that provides
+the parameters for the filter design as well as the taps. The
+different types of filters will produce a different set of parameters,
+one for each row. The first column in each row is the label for that
+parameter followed by its value. The final row is the set of taps with
+the label 'taps' followed by the list of taps in CSV format. The
+values of the taps may be either float or complex depending on the
+type of filter.
+
+
+Calling from Another Program
+
+We can launch the filter design tool from a Python program and have
+the results returned to us for direct use there. There are two modes
+for this operation. The first way is to directly call the main_window
+of the filter design tool:
+
+import sys
+from gnuradio.filter.designqt5 import main_window
+filtobj = main_window.launch(None, sys.argv)
+
+This launches the program. When we are done designing the filter,
+closing the design tool window returns the filter object to the
+calling project, in this case as 'filtobj'. The filter object has a
+number of functions to get the information about the filter:
+
+* filtobj.get_restype: Tells us if it's an IIR or FIR filter.
+* filtobj.get_params(): Returns a dictionary of all of the filter
+  parameters, specific to the filter type.
+* filtobj.get_taps(): The taps as a Python list.
+
+See the example "gr_filtdes_api.py" to see how this works.
+
+
+The second way to interact with the filter design program is to
+declare a callback function. The callback function locally should
+expect to accept the filter object described above. Whenever the
+"Design" button is pressed in the tool, this callback is launched and
+given the new filter object.
+
+There are two examples of how to interact with the design tool through
+the callback function. The "gr_filtdes_callback.py" example just prints
+the information from the filter object to the console. The
+"gr_filtdes_live_upd.py" examples launches a flowgraph that shows two
+noisy sine waves passing through a filter. When we design a new
+filter, the callback function updates the taps of the filter and we
+can see the new filter applied against the running signal.
+
+NOTE: Currently, the QT5 version of the filter design tool does not
+work with the live update example because GNU Radio uses QT4 in the
+QTGUI blocks.
+
+
 Todos:
 
- * Provide configuration for colors, styles
- ** Also font sizes
- * Provide moveable poles and zeros
- ** add and remove poles/zeros
+ * Provide configuration for:
+   * line color
+   * line style
+   * font size
+ * Pole/Zero plot
+   * Make moveable poles and zeros
+   * Add and remove poles/zeros
+ * Complete band-edge diagram
  * Cross-hair on magnitude graph that returns the freq/mag value based
    on the mouse's x value.
+ * IIR filter design
+   * Support Bessel types
+   * Support analog design types
+
+ * Provide a quantization factor and a float-to-fixed point
+   translation to make it easy to move the taps to fixed-point
+   algorithms, such as in FPGAs or DSPs.

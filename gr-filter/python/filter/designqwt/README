@@ -1,0 +1,14 @@
+This is the filter design tool written using PyQWT. It is deprecated
+in favor of QT4/5 and will be removed in the next API version change
+of GNU Radio.
+
+The current benefits of this version of the filter design tool is that
+it uses PyQWT, which we have been using for a while in GNU Radio and
+so may already be available on your system. However, work on PyQWT has
+stalled and is significantly lagging, so we are moving to a
+better-supported toolkit, PyQtGraph.
+
+The real benefit of this tool is that it supports interactive
+Pole/Zero and Band-Edge Diagram plots. The design and callbacks for
+this are not yet available in the Qt4/Qt5 versions, though they will
+be before this version is removed.

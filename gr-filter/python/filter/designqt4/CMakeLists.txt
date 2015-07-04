@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-#
-# Copyright 2009,2012 Free Software Foundation, Inc.
+# Copyright 2015 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -18,11 +16,20 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-#
 
-import sys
-from optparse import OptionParser
-from gnuradio.filter import filter_design
+########################################################################
+include(GrPython)
 
-(options, args) = filter_design.parser.parse_args()
-filter_design.main(args, options)
+GR_PYTHON_INSTALL(
+    FILES
+    __init__.py
+    api_object.py
+    firfilters.py
+    iirfilters.py
+    main_window.py
+    parameters.py
+    plots.py
+    utils.py
+    DESTINATION ${GR_PYTHON_DIR}/gnuradio/filter/designqt4
+    COMPONENT "filter_python"
+)

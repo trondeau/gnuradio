@@ -20,6 +20,11 @@
 ########################################################################
 include(GrPython)
 
+add_subdirectory(filter_design)
+add_subdirectory(designqwt)
+add_subdirectory(designqt4)
+add_subdirectory(designqt5)
+
 GR_PYTHON_INSTALL(
     FILES
     __init__.py

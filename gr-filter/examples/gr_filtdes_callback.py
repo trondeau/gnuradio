@@ -41,8 +41,14 @@ def print_params(filtobj):
     print "Filter params", filtobj.get_params()
     print "Filter Coefficients", filtobj.get_taps()
 
-app = Qt.QApplication(sys.argv)
+try:
+    app = Qt.QApplication(sys.argv)
+except AttributeError:
+    sys.stderr.write("Could not load the QApplication.\n"
+                     "You might be trying to mix QT4 and QT5.\n")
+    sys.exit(1)
+
 #launch function returns gr_filter_design mainwindow object
-main_win = filter_design.launch(sys.argv, print_params)
+main_win = filter_design.launch(sys.argv, None, print_params)
 main_win.show()
 app.exec_()

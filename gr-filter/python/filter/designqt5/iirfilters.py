@@ -272,6 +272,7 @@ class IIRFilterParams(QtWidgets.QGroupBox):
     def __init__(self):
         super(IIRFilterParams, self).__init__("")
 
+        self.iir = True
         self.filterParamsLowpass = paramsLowpass()
         self.filterParamsHighpass = paramsHighpass()
         self.filterParamsBandpass = paramsBandpass()

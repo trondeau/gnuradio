@@ -30,22 +30,36 @@ from plots import *
 from api_object import *
 
 class main_window(QtWidgets.QMainWindow):
-    def __init__(self, options, callback=None, restype=None):
+    def __init__(self, options, callback=None):
         super(main_window, self).__init__(None)
 
+        self.action_open = QtWidgets.QAction('&Open', self)
+        self.action_save = QtWidgets.QAction('&Save', self)
+        self.action_exit = QtWidgets.QAction('&Exit', self)
+
+        self.shortcut_open = QtWidgets.QShortcut(self)
+        self.shortcut_open.setKey(QtGui.QKeySequence.Open)
+        self.shortcut_open.activated.connect(self.action_open_dialog)
+
+        self.shortcut_save = QtWidgets.QShortcut(self)
+        self.shortcut_save.setKey(QtGui.QKeySequence.Save)
+        self.shortcut_save.activated.connect(self.action_save_dialog)
+
         self.menu_file = self.menuBar().addMenu('&File')
-        self.action_open = self.menu_file.addAction('&Open')
-        self.action_save = self.menu_file.addAction('&Save')
-        self.action_exit = self.menu_file.addAction('E&xit')
+        self.menu_file.addAction(self.action_open)
+        self.menu_file.addAction(self.action_save)
+        self.menu_file.addAction(self.action_exit)
         self.menu_analysis = self.menuBar().addMenu('&Analysis')
 
-        if(type(restype) is str):
-            self.restype = restype.lower()
+        self.restype = None
         self.callback = callback
+        if(options):
+            if(type(options.type) is str):
+                self.restype = options.type.lower()
 
         centralWidget = QtWidgets.QWidget(self)
         self.mainLayout = QtWidgets.QHBoxLayout()
-        self.paramWidget = parameters(restype)
+        self.paramWidget = parameters(self.restype)
         self.mainLayout.addLayout(self.paramWidget)
 
         self.plotWidget = plots()
@@ -64,12 +78,8 @@ class main_window(QtWidgets.QMainWindow):
         self.setGeometry(10, 10, 2000, 1200)
         self.setWindowTitle("GNU Radio Filter Design Tool")
 
-        self.action_save.triggered.connect(self.action_save_dialog)
-        self.action_open.triggered.connect(self.action_open_dialog)
-        self.action_exit.triggered.connect(QtWidgets.qApp.quit)
         self.paramWidget.designButton.setShortcut(QtCore.Qt.Key_Return)
-        self.action_save.setShortcut(QtGui.QKeySequence.Save)
-        self.action_open.setShortcut(QtGui.QKeySequence.Open)
+        self.action_exit.triggered.connect(QtWidgets.qApp.quit)
 
         # Add checkable items into the menu Analysis item
         self.actions = []
@@ -103,6 +113,8 @@ class main_window(QtWidgets.QMainWindow):
 
     def action_save_dialog(self):
         filename = QtWidgets.QFileDialog.getSaveFileName(self, "Save CSV Filter File", ".", "")[0]
+        if filename == "":
+            return
         try:
             handle = open(filename, "wb")
         except IOError:
@@ -131,7 +143,6 @@ class main_window(QtWidgets.QMainWindow):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, "Open CSV Filter File", ".", "")[0]
         if(len(filename) == 0):
             return
-
         try:
             handle = open(filename, "rb")
         except IOError:
@@ -169,25 +180,10 @@ class main_window(QtWidgets.QMainWindow):
         self.paramWidget.setFilterParams(filterInfo)
         self.design()
 
-
-def setup_options():
-    usage="%prog: [options] (input_filename)"
-    description = ""
-
-    parser = OptionParser(conflict_handler="resolve",
-                          usage=usage, description=description)
-    parser.add_option("-t", "--type", type="choice", choices=['FIR', 'IIR', 'fir', 'iir', ''],
-                      default='', help="restrict filter to either FIR or IIR")
-
-    return parser
-
-def launch(args, callback=None, restype=None):
-    parser = setup_options()
-    (options, args) = parser.parse_args()
-
+def launch(args, options=None, callback=None):
     if callback == None:
         app = QtWidgets.QApplication(args)
-        gplt = main_window(options, callback, restype)
+        gplt = main_window(options, callback)
         app.exec_()
         if gplt.paramWidget.iir():
             retobj = ApiObject()
@@ -198,15 +194,12 @@ def launch(args, callback=None, restype=None):
             retobj.update_all("fir", gplt.params, gplt.taps, 1)
             return retobj
     else:
-        gplt = main_window(options, callback, restype)
+        gplt = main_window(options, callback)
         return gplt
 
-def main():
-    parser = setup_options()
-    (options, args) = parser.parse_args()
-
+def main(args, options=None):
     app = QtWidgets.QApplication(args)
-    mw = main_window(options, None, options.type)
+    mw = main_window(options, None)
     sys.exit(app.exec_())
 
 if __name__ == '__main__':

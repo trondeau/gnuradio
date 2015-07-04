@@ -1,8 +1,10 @@
+This version of the filter design tool is a temporary step towards the
+QT5 version that will be fully supported once GNU Radio switches to
+using QT5 for everything. They work identically except for the
+versions of QT and PyQtGraph being supported. The changes are fairly
+minimal; mostly in the module names that have changed and in a few
+niceties provided in QT5.
+
 Todos:
 
- * Provide configuration for colors, styles
- ** Also font sizes
- * Provide moveable poles and zeros
- ** add and remove poles/zeros
- * Cross-hair on magnitude graph that returns the freq/mag value based
-   on the mouse's x value.
+ * Same todo's as QT5 version

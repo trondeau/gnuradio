@@ -39,9 +39,11 @@ class main_window(QtGui.QMainWindow):
         self.action_exit = self.menu_file.addAction('E&xit')
         self.menu_analysis = self.menuBar().addMenu('&Analysis')
 
-        if(type(restype) is str):
-            self.restype = restype.lower()
+        self.restype = None
         self.callback = callback
+        if(options):
+            if(type(options.type) is str):
+                self.restype = options.type.lower()
 
         centralWidget = QtGui.QWidget(self)
         self.mainLayout = QtGui.QHBoxLayout()
@@ -102,7 +104,9 @@ class main_window(QtGui.QMainWindow):
 
 
     def action_save_dialog(self):
-        filename = QtGui.QFileDialog.getSaveFileName(self, "Save CSV Filter File", ".", "")[0]
+        filename = QtGui.QFileDialog.getSaveFileName(self, "Save CSV Filter File", ".", "")
+        if filename == "":
+            return
         try:
             handle = open(filename, "wb")
         except IOError:
@@ -128,7 +132,8 @@ class main_window(QtGui.QMainWindow):
         handle.close()
 
     def action_open_dialog(self):
-        filename = QtGui.QFileDialog.getOpenFileName(self, "Open CSV Filter File", ".", "")[0]
+        filename = QtGui.QFieDialog.getOpenFileName(self, "Open CSV Filter File", ".", "")[0]
+        print filename
         if(len(filename) == 0):
             return
 
@@ -181,13 +186,10 @@ def setup_options():
 
     return parser
 
-def launch(args, callback=None, restype=None):
-    parser = setup_options()
-    (options, args) = parser.parse_args()
-
+def launch(args, options=None, callback=None):
     if callback == None:
         app = QtGui.QApplication(args)
-        gplt = main_window(options, callback, restype)
+        gplt = main_window(options, callback)
         app.exec_()
         if gplt.paramWidget.iir():
             retobj = ApiObject()
@@ -198,16 +200,10 @@ def launch(args, callback=None, restype=None):
             retobj.update_all("fir", gplt.params, gplt.taps, 1)
             return retobj
     else:
-        gplt = main_window(options, callback, restype)
+        gplt = main_window(options, callback)
         return gplt
 
-def main():
-    parser = setup_options()
-    (options, args) = parser.parse_args()
-
+def main(args, options=None):
     app = QtGui.QApplication(args)
-    mw = main_window(options, None, options.type)
+    mw = main_window(options)
     sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    main()

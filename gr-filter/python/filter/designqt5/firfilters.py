@@ -401,6 +401,7 @@ class FIRFilterParams(QtWidgets.QGroupBox):
     def __init__(self):
         super(FIRFilterParams, self).__init__("")
 
+        self.iir = False
         self.filterParamsLowpass = paramsLowpass()
         self.filterParamsHighpass = paramsHighpass()
         self.filterParamsBandpass = paramsBandpass()
