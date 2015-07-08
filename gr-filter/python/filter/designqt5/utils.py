@@ -35,10 +35,10 @@ EQUIRIPPLE = 1000
 
 filterTypesDict = {
     "Low Pass": 0,
-    "Band Pass": 1,
-    "Complex Band Pass": 2,
-    "Band Notch": 3,
-    "High Pass": 4,
+    "High Pass": 1,
+    "Band Pass": 2,
+    "Complex Band Pass": 3,
+    "Band Notch": 4,
     "Root Raised Cosine": 5,
     "Gaussian": 6,
     "Half Band": 7
@@ -46,10 +46,10 @@ filterTypesDict = {
 
 filterParamTypesDict = {
     "lpf": "Low Pass" ,
+    "hpf": "High Pass",
     "bpf": "Band Pass",
     "cbpf": "Complex Band Pass",
     "bnf": "Band Notch",
-    "hpf": "High Pass",
     "rrc": "Root Raised Cosine",
     "gaus": "Gaussian",
     "hb": "Half Band"
@@ -64,6 +64,17 @@ windowTypeDict = {
     "Rectangular": firdes.WIN_RECTANGULAR,
     "Bartlett": firdes.WIN_BARTLETT,
     "Equiripple": EQUIRIPPLE,
+}
+
+windowNumCvt = {
+    firdes.WIN_HANN: 0,
+    firdes.WIN_HAMMING: 1,
+    firdes.WIN_BLACKMAN: 2,
+    firdes.WIN_BLACKMAN_HARRIS: 3,
+    firdes.WIN_KAISER: 4,
+    firdes.WIN_RECTANGULAR: 5,
+    firdes.WIN_BARTLETT: 6,
+    EQUIRIPPLE: 7,
 }
 
 windowTypeDictRev = {
@@ -168,10 +179,10 @@ class Filter:
             self.ripple = params['ripple']
 
         if params.has_key('srate'):
-            self.ripple = params['srate']
+            self.symbol_rate = params['srate']
 
         if params.has_key('rolloff'):
-            self.ripple = params['rolloff']
+            self.rolloff = params['rolloff']
 
         if params.has_key('ntaps'):
             self._ntaps = params['ntaps']
@@ -345,13 +356,13 @@ class Filter:
     def band_pass(self):
         self.iir = False
         self._taps = firdes.band_pass_2(self.gain,
-                                       self.samp_rate,
-                                       self.start_passband,
-                                       self.stop_passband,
-                                       self.transition_band,
-                                       self.atten,
-                                       self.window,
-                                       self.win_beta)
+                                        self.samp_rate,
+                                        self.start_passband,
+                                        self.stop_passband,
+                                        self.transition_band,
+                                        self.atten,
+                                        self.window,
+                                        self.win_beta)
         self._ntaps = len(self._taps)
         self.filt_params = {
             'filttype': 'bpf',
@@ -408,7 +419,7 @@ class Filter:
                                           self.win_beta)
         self._ntaps = len(self._taps)
         self.filt_params = {
-            'filttype': 'bpf',
+            'filttype': 'bnf',
             'fs': self.samp_rate,
             'gain': self.gain,
             'pbend': self.stop_passband,
@@ -436,7 +447,8 @@ class Filter:
             'gain': self.gain,
             'srate': self.symbol_rate,
             'rolloff': self.rolloff,
-            'ntaps': self.ntaps()
+            'ntaps': self.ntaps(),
+            'wintypes': self.window
         }
 
     def gaussian(self):
@@ -451,7 +463,8 @@ class Filter:
             'gain': self.gain,
             'srate': self.symbol_rate,
             'rolloff': self.rolloff,
-            'ntaps': self.ntaps()
+            'ntaps': self.ntaps(),
+            'wintypes': self.window
         }
 
     def iir_low_pass(self, wtype):

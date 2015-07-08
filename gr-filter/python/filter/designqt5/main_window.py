@@ -159,19 +159,20 @@ class main_window(QtWidgets.QMainWindow):
             if (row[0] == "restype"):
                 restype = row[1]
             elif(row[0] == "taps"):
-                testcpx = re.findall("[+-]?\d+\.*\d*[Ee]?[-+]?\d+j", row[1])
-                if(len(testcpx) > 0): # it's a complex
+                if(row[1].find('j') > -1): # it's a complex
                     taps = [complex(r) for r in row[1:]]
                 else:
                     taps = [float(r) for r in row[1:]]
             elif(row[0] == "b" or row[0] == "a"):
-                testcpx = re.findall("[+-]?\d+\.*\d*[Ee]?[-+]?\d+j", row[1])
-                if(len(testcpx) > 0): # it's a complex
+                if(row[1].find('j') > -1): # it's a complex
                     b_a[row[0]] = [complex(r) for r in row[1:]]
                 else:
                     b_a[row[0]]= [float(r) for r in row[1:]]
             else:
-                params[row[0]] = row[1]
+                try:
+                    params[row[0]] = float(row[1])
+                except ValueError: #string
+                    params[row[0]] = row[1]
         handle.close()
 
         filterInfo = Filter(params)

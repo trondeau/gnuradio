@@ -250,10 +250,27 @@ class paramsBandpass(filterParams):
 
         return self.filter
 
-class paramsComplexBandpass(paramsBandpass):
+class paramsComplexBandpass(filterParams):
     def __init__(self):
         super(paramsComplexBandpass, self).__init__()
+
         self.type = "complex_band_pass_2"
+        self.filter.start_passband = 8000
+        self.filter.stop_passband = 10000
+        self.filter.transition_band = 1000
+        self.filter.atten = 40
+        self.filter.ripple = 0.1
+        self.filter.win_beta = 6.76
+
+        self.layout = QtGui.QFormLayout(self)
+        self.startPassbandLineEdit.setText("{0}".format(self.filter.start_passband))
+        self.layout.addRow("Start of Pass Band", self.startPassbandLineEdit)
+        self.stopPassbandLineEdit.setText("{0}".format(self.filter.stop_passband))
+        self.layout.addRow("End of Pass Band", self.stopPassbandLineEdit)
+        self.transitionBandLineEdit.setText("{0}".format(self.filter.transition_band))
+        self.layout.addRow("Transition Width", self.transitionBandLineEdit)
+        self.attenLineEdit.setText("{0}".format(self.filter.atten))
+        self.layout.addRow("Atten. (dB)", self.attenLineEdit)
 
     def setParams(self, infilter):
         self.filter = infilter
@@ -470,10 +487,10 @@ class FIRFilterParams(QtWidgets.QGroupBox):
             self.changedWindowType)
 
     def setFilterParams(self, params):
-        self.sampleRateLineEdit.setText(params.samp_rate)
-        self.gainLineEdit.setText(params.gain)
+        self.sampleRateLineEdit.setText(str(params.samp_rate))
+        self.gainLineEdit.setText(str(params.gain))
         self.filterParamBoxesDict[params.filttype].setParams(params)
-        self.windowTypeComboBox.setCurrentText(windowTypeDictRev[int(params.window)])
+        self.windowTypeComboBox.setCurrentText(windowNumCvt[int(params.window)])
         self.filtTypeComboBox.setCurrentIndex(filterTypesDict[params.filttype])
 
     def changedFilterType(self, ftype):
