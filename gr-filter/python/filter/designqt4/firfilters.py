@@ -408,10 +408,34 @@ class paramsHalfband(filterParams):
         super(paramsHalfband, self).__init__()
 
         self.type = "halfband"
-        self.filter.symbol_rate = 8000
-        self.filter.rolloff = 40
-        self.filter.ntaps = 0.1
+        self.filter.samp_rate = 32e3 # hack
+        self.filter.stop_passband = self.filter.samp_rate/2.0
+        self.filter.start_stopband = self.filter.samp_rate/2.0 + self.filter.samp_rate/8.0
+        self.filter.transition_band = self.filter.start_stopband - self.filter.stop_passband
+        self.filter.atten = 40
+        self.filter.ripple = 0.1
         self.filter.win_beta = 6.76
+
+        self.layout = QtGui.QFormLayout(self)
+        self.transitionBandLineEdit.setText("{0}".format(self.filter.transition_band))
+        self.layout.addRow("Transition Width", self.transitionBandLineEdit)
+        self.attenLineEdit.setText("{0}".format(self.filter.atten))
+        self.layout.addRow("Atten. (dB)", self.attenLineEdit)
+
+    def setParams(self, infilter):
+        self.filter = infilter
+        self.transitionBandLineEdit.setText("{0}".format(self.filter.transition_band))
+        self.attenLineEdit.setText("{0}".format(self.filter.atten))
+
+    def design(self, gain, samp_rate, window):
+        super(paramsHalfband,self).design(gain, samp_rate, window)
+
+        self.filter.transition_band = self.transitionBandLineEdit.text()
+        self.filter.atten = self.attenLineEdit.text()
+
+        self.filter.half_band()
+
+        return self.filter
 
 
 class FIRFilterParams(QtGui.QGroupBox):

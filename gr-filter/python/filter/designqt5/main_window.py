@@ -171,12 +171,15 @@ class main_window(QtWidgets.QMainWindow):
             else:
                 try:
                     params[row[0]] = float(row[1])
-                except ValueError: #string
+                except ValueError: # string
                     params[row[0]] = row[1]
         handle.close()
 
-        filterInfo = Filter(params)
-        filterInfo.set_taps(taps)
+        filterInfo = Filter(params, restype)
+        if(restype == "fir"):
+            filterInfo.set_taps(taps)
+        else:
+            filterInfo.set_taps(b_a['b'], b_a['a'])
 
         self.paramWidget.setFilterParams(filterInfo)
         self.design()

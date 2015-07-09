@@ -81,6 +81,10 @@ class parameters(QtWidgets.QVBoxLayout):
         self.insertWidget(index, self.filterParams)
 
     def setFilterParams(self, params):
+        if params.iir:
+            self.fselectComboBox.setCurrentIndex(1)
+        else:
+            self.fselectComboBox.setCurrentIndex(0)
         self.filterParams.setFilterParams(params)
 
     def design(self):

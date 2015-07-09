@@ -272,6 +272,10 @@ class IIRFilterParams(QtWidgets.QGroupBox):
     def __init__(self):
         super(IIRFilterParams, self).__init__("")
 
+        self.ftypes = ["Low Pass", "High Pass",
+                       "Band Pass", "Band Notch"
+        ]
+
         self.iir = True
         self.filterParamsLowpass = paramsLowpass()
         self.filterParamsHighpass = paramsHighpass()
@@ -283,19 +287,19 @@ class IIRFilterParams(QtWidgets.QGroupBox):
         self.filterParamsBandstop.setVisible(False)
 
         self.filterParamBoxesDict = {
-            "Low Pass": self.filterParamsLowpass,
-            "High Pass": self.filterParamsHighpass,
-            "Band Pass": self.filterParamsBandpass,
-            "Band Stop": self.filterParamsBandstop,
+            self.ftypes[0]: self.filterParamsLowpass,
+            self.ftypes[1]: self.filterParamsHighpass,
+            self.ftypes[2]: self.filterParamsBandpass,
+            self.ftypes[3]: self.filterParamsBandstop,
         }
 
         self.paramVlayout = QtWidgets.QVBoxLayout(self)
 
         self.filtTypeComboBox = QtWidgets.QComboBox()
-        self.filtTypeComboBox.addItem("Low Pass")
-        self.filtTypeComboBox.addItem("Band Pass")
-        self.filtTypeComboBox.addItem("Band Stop")
-        self.filtTypeComboBox.addItem("High Pass")
+        self.filtTypeComboBox.addItem(self.ftypes[0])
+        self.filtTypeComboBox.addItem(self.ftypes[1])
+        self.filtTypeComboBox.addItem(self.ftypes[2])
+        self.filtTypeComboBox.addItem(self.ftypes[3])
         self.paramVlayout.addWidget(self.filtTypeComboBox)
 
         self.windowTypeComboBox = QtWidgets.QComboBox()
@@ -314,8 +318,8 @@ class IIRFilterParams(QtWidgets.QGroupBox):
 
     def setFilterParams(self, params):
         self.filterParamBoxesDict[params.filttype].setParams(params)
-        self.windowTypeComboBox.setCurrentText(windowTypeDictRev[int(params.window)])
-        self.filtTypeComboBox.setCurrentIndex(filterTypesDict[params.filttype])
+        self.windowTypeComboBox.setCurrentText(params.window)
+        self.filtTypeComboBox.setCurrentIndex(iirFilterTypesDict[params.filttype])
 
     def changedFilterType(self, ftype):
         if(self.filterParamBoxesDict.has_key(ftype)):
@@ -329,10 +333,9 @@ class IIRFilterParams(QtWidgets.QGroupBox):
             self.paramVlayout.insertWidget(index, self.filterParams)
 
     def design(self):
-        filt = self.filterParams.design(iirTypes[self.windowTypeComboBox.currentText()])
-        #try:
-        #    filt = self.filterParams.design(windowTypeDict[self.windowTypeComboBox.currentText()])
-        #except StandardError, e:
-        #    reply = QtWidgets.QMessageBox.information(self, 'IIR design error', e.args[0],
-        #                                              QtWidgets.QMessageBox.Ok)
+        try:
+            filt = self.filterParams.design(iirTypes[self.windowTypeComboBox.currentText()])
+        except StandardError, e:
+            reply = QtWidgets.QMessageBox.information(self, 'IIR design error', e.args[0],
+                                                      QtWidgets.QMessageBox.Ok)
         return filt

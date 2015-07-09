@@ -88,12 +88,35 @@ windowTypeDictRev = {
     EQUIRIPPLE: "Equiripple",
 }
 
+iirFilterTypesDict = {
+    "Low Pass": 0,
+    "High Pass": 1,
+    "Band Pass": 2,
+    "Band Notch": 3,
+}
+
 iirTypes = {
     "Elliptic": "ellip",
     "Butterworth": "butter",
     "Chebyshev-1": "cheby1",
     "Chebyshev-2": "cheby2",
     "Bessel": "bessel",
+}
+
+iirTypeCvt = {
+    "Elliptic": 0,
+    "Butterworth": 1,
+    "Chebyshev-1": 2,
+    "Chebyshev-2": 3,
+    "Bessel": 4,
+}
+
+iirTypesRev = {
+    "ellip": "Elliptic",
+    "butter": "Butterworth",
+    "cheby1": "Chebyshev-1",
+    "cheby2": "Chebyshev-2",
+    "bessel": "Bessel",
 }
 
 
@@ -111,7 +134,12 @@ class GrLineEdit(QtGui.QLineEdit):
         return eng_notation.str_to_num(str(text))
 
 class Filter:
-    def __init__(self, params=None):
+    def __init__(self, params=None, restype='fir'):
+        if(restype == 'iir'):
+            self.iir = True
+        else:
+            self.iir = False
+
         if(params):
             self.set_params(params)
             self._taps = []
@@ -186,14 +214,63 @@ class Filter:
 
         if params.has_key('filttype'):
             # FIXME: protect this call
-            self.filttype = filterParamTypesDict[params['filttype']]
+            if not self.iir:
+                self.filttype = filterParamTypesDict[params['filttype']]
+            else:
+                self.window = iirTypesRev[params['filttype']]
+
+        if params.has_key('bandtype'):
+            # confusing how we set IIR filters
+            self.filttype = filterParamTypesDict[params['bandtype']]
+
+        if params.has_key('gstop'):
+            self.atten = params['gstop']
+
+        if params.has_key('pbedge'):
+            if type(params['pbedge']) == float:
+                self.start_passband = params['pbedge']
+                self.stop_passband = params['pbedge']
+            else: # list of [p0, p1]
+                pbedge = [float(x) for x in params['pbedge'].strip('[').strip(']').split(',')]
+                if self.filttype == "Band Pass":
+                    self.start_passband = pbedge[0]
+                    self.stop_passband = pbedge[1]
+                else: # Band notch
+                    self.start_passband = pbedge[1]
+                    self.stop_passband = pbedge[0]
+
+        if params.has_key('sbedge'):
+            if type(params['sbedge']) == float:
+                self.start_stopband = params['sbedge']
+                self.stop_stopband = params['sbedge']
+            else: # list of [s0, s1]
+                sbedge = [float(x) for x in params['sbedge'].strip('[').strip(']').split(',')]
+                if self.filttype == "Band Pass":
+                    self.start_stopband = sbedge[1]
+                    self.stop_stopband = sbedge[0]
+                else: # Band notch
+                    self.start_stopband = sbedge[0]
+                    self.stop_stopband = sbedge[1]
+
+        if params.has_key('gpass'):
+            self.gain = params['gpass']
+
+        if params.has_key('ripple'):
+            self.ripple = params['ripple']
+
 
     def params(self):
         return self.filt_params
 
-    def set_taps(self, t):
-        self._taps = list(t)
-        self._ntaps = len(t)
+    def set_taps(self, b, a=None):
+        if a == None:
+            self._taps = list(b)
+            self._ntaps = len(b)
+        else:
+            self._taps = []
+            self._taps.append(list(b))
+            self._taps.append(list(a))
+            self._ntaps = len(self._taps[0])
 
     def taps(self):
         if not isinstance(self._taps[0], scipy.ndarray):
@@ -463,6 +540,40 @@ class Filter:
             'ntaps': self.ntaps(),
             'wintype': self.window
         }
+
+    def half_band(self):
+        self.iir = False
+        if(self.window != EQUIRIPPLE):
+            self._taps = firdes.low_pass_2(self.gain,
+                                           self.samp_rate,
+                                           self.samp_rate/4.0,
+                                           self.transition_band,
+                                           self.atten,
+                                           self.window,
+                                           self.win_beta)
+        else:
+            self._taps = optfir.low_pass(self.gain,
+                                         self.samp_rate,
+                                         self.samp_rate/4.0,
+                                         self.samp_rate/4.0 + self.transition_band,
+                                         self.ripple,
+                                         self.atten)
+
+        self._ntaps = len(self._taps)
+        self.filt_params = {
+            'filttype': 'hb',
+            'fs': self.samp_rate,
+            'gain': self.gain,
+            'pbend': self.samp_rate/4.0,
+            'sbstart': self.samp_rate/4.0 + self.transition_band,
+            'atten': self.atten,
+            'wintype': self.window,
+            'winbeta': self.win_beta,
+            'ntaps': self.ntaps()
+        }
+
+        if(self.window == EQUIRIPPLE):
+            self.filt_params['ripple'] = self.ripple
 
     def iir_low_pass(self, wtype):
         self.iir = True

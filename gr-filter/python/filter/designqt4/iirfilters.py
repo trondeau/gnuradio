@@ -276,6 +276,7 @@ class IIRFilterParams(QtGui.QGroupBox):
                        "Band Pass", "Band Notch"
         ]
 
+        self.iir = True
         self.filterParamsLowpass = paramsLowpass()
         self.filterParamsHighpass = paramsHighpass()
         self.filterParamsBandpass = paramsBandpass()
@@ -317,8 +318,8 @@ class IIRFilterParams(QtGui.QGroupBox):
 
     def setFilterParams(self, params):
         self.filterParamBoxesDict[params.filttype].setParams(params)
-        self.windowTypeComboBox.setCurrentText(windowTypeDictRev[int(params.window)])
-        self.filtTypeComboBox.setCurrentIndex(filterTypesDict[params.filttype])
+        self.windowTypeComboBox.setCurrentIndex(iirTypeCvt[params.window])
+        self.filtTypeComboBox.setCurrentIndex(iirFilterTypesDict[params.filttype])
 
     def changedFilterType(self, ftype):
         if(self.filterParamBoxesDict.has_key(self.ftypes[ftype])):
@@ -332,10 +333,10 @@ class IIRFilterParams(QtGui.QGroupBox):
             self.paramVlayout.insertWidget(index, self.filterParams)
 
     def design(self):
-        filt = self.filterParams.design(iirTypes[str(self.windowTypeComboBox.currentText())])
-        #try:
-        #    filt = self.filterParams.design(windowTypeDict[self.windowTypeComboBox.currentText()])
-        #except StandardError, e:
-        #    reply = QtGui.QMessageBox.information(self, 'IIR design error', e.args[0],
-        #                                              QtGui.QMessageBox.Ok)
+        try:
+            filt = self.filterParams.design(iirTypes[str(self.windowTypeComboBox.currentText())])
+        except StandardError, e:
+            reply = QtGui.QMessageBox.information(self, 'IIR design error', e.args[0],
+                                                  QtGui.QMessageBox.Ok)
+            filt = None
         return filt

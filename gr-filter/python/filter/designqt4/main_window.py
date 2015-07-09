@@ -125,8 +125,8 @@ class main_window(QtGui.QMainWindow):
         for k in self.params.keys():
             csvhandle.writerow([k, self.params[k]])
         if self.paramWidget.iir():
-            csvhandle.writerow(["b",] + self.b)
-            csvhandle.writerow(["a",] + self.a)
+            csvhandle.writerow(["b",] + self.taps[0])
+            csvhandle.writerow(["a",] + self.taps[1])
         else:
             csvhandle.writerow(["taps",] + self.taps)
         handle.close()
@@ -166,11 +166,13 @@ class main_window(QtGui.QMainWindow):
                     params[row[0]] = float(row[1])
                 except ValueError: # string
                     params[row[0]] = row[1]
-
         handle.close()
 
-        filterInfo = Filter(params)
-        filterInfo.set_taps(taps)
+        filterInfo = Filter(params, restype)
+        if(restype == "fir"):
+            filterInfo.set_taps(taps)
+        else:
+            filterInfo.set_taps(b_a['b'], b_a['a'])
 
         self.paramWidget.setFilterParams(filterInfo)
         self.design()

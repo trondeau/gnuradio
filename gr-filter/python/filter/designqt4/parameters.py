@@ -81,6 +81,10 @@ class parameters(QtGui.QVBoxLayout):
         self.insertWidget(index, self.filterParams)
 
     def setFilterParams(self, params):
+        if params.iir:
+            self.fselectComboBox.setCurrentIndex(1)
+        else:
+            self.fselectComboBox.setCurrentIndex(0)
         self.filterParams.setFilterParams(params)
 
     def design(self):
@@ -90,9 +94,9 @@ class parameters(QtGui.QVBoxLayout):
             return filt
 
         except RuntimeError, e:
-            #reply = QtGui.QMessageBox.information(self.parent, 'Filter Design Error',
-            #                                          "Filter Design Failed:\n{0}".format(e),
-            #                                          QtGui.QMessageBox.Ok)
+            reply = QtGui.QMessageBox.information(self.parent, 'Filter Design Error',
+                                                  "Filter Design Failed:\n{0}".format(e),
+                                                  QtGui.QMessageBox.Ok)
             return None
 
     def iir(self):
