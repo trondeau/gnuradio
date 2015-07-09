@@ -30,7 +30,7 @@ from plots import *
 from api_object import *
 
 class main_window(QtGui.QMainWindow):
-    def __init__(self, options, callback=None, restype=None):
+    def __init__(self, options, callback=None):
         super(main_window, self).__init__(None)
 
         self.menu_file = self.menuBar().addMenu('&File')
@@ -47,7 +47,7 @@ class main_window(QtGui.QMainWindow):
 
         centralWidget = QtGui.QWidget(self)
         self.mainLayout = QtGui.QHBoxLayout()
-        self.paramWidget = parameters(restype)
+        self.paramWidget = parameters(self.restype)
         self.mainLayout.addLayout(self.paramWidget)
 
         self.plotWidget = plots()

@@ -40,7 +40,10 @@ def print_params(filtobj):
     print "Filter params", filtobj.get_params()
     print "Filter Coefficients", filtobj.get_taps()
 
+(options, args) = filter_design.parser.parse_args()
+options.type = "iir"
+
 app = Qt.QApplication(sys.argv)
-main_win = filter_design.launch(sys.argv, callback = print_params, restype = "iir")
+main_win = filter_design.launch(sys.argv, options, callback = print_params)
 main_win.show()
 app.exec_()
