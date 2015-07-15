@@ -27,8 +27,8 @@ usage="%prog: [options] (input_filename)"
 description = "The GNU Radio filter design tool"
 parser = OptionParser(conflict_handler="resolve",
                       usage=usage, description=description)
-parser.add_option("-G", "--gui", type="choice", choices=['QWT', 'QT4', 'QT5'],
-                  default='QT4', help="Set the GUI backend [QWT, QT4, or QT5]")
+parser.add_option("-G", "--gui", type="choice", choices=['QWT', 'QT4'],
+                  default='QT4', help="Set the GUI backend [QWT, QT4]")
 parser.add_option("-t", "--type", type="choice", choices=['FIR', 'IIR', 'fir', 'iir'],
                   default=None, help="restrict filter to either FIR or IIR")
 (options, args) = parser.parse_args()
@@ -54,15 +54,15 @@ elif(options.gui == "QT4"):
                          "or use another GUI type.\n")
         sys.exit(1)
 
-elif(options.gui == "QT5"):
-    try:
-        from PyQt5 import QtWidgets
-        from gnuradio.filter.designqt5 import main_window
-    except ImportError:
-        sys.stderr.write("GUI type set to QT5 but either PyQt5 or PyQtGraph not found. "
-                         "Please make sure PyQT5 and PyQtGraph are installed "
-                         "or use another GUI type.\n")
-        sys.exit(1)
+#elif(options.gui == "QT5"):
+#    try:
+#        from PyQt5 import QtWidgets
+#        from gnuradio.filter.designqt5 import main_window
+#    except ImportError:
+#        sys.stderr.write("GUI type set to QT5 but either PyQt5 or PyQtGraph not found. "
+#                         "Please make sure PyQT5 and PyQtGraph are installed "
+#                         "or use another GUI type.\n")
+#        sys.exit(1)
 
 else:
     sys.stderr.write("GUI type '{0}' selected is not valid.\n".format(options.gui))
