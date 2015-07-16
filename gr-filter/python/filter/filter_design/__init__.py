@@ -31,6 +31,8 @@ parser.add_option("-G", "--gui", type="choice", choices=['QWT', 'QT4'],
                   default='QT4', help="Set the GUI backend [QWT, QT4]")
 parser.add_option("-t", "--type", type="choice", choices=['FIR', 'IIR', 'fir', 'iir'],
                   default=None, help="restrict filter to either FIR or IIR")
+parser.add_option("-Q", "--qss", type="str", default=None,
+                  help="Provide a QSS file to control display properties")
 (options, args) = parser.parse_args()
 
 

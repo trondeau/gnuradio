@@ -19,6 +19,7 @@
 #
 
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtCore import pyqtProperty
 import pyqtgraph as pg
 import sys, warnings
 
@@ -44,77 +45,77 @@ class StandardPlots(QtGui.QTabWidget):
             self.addTab(self.tabwidgets[tab], tab)
 
         labelstyle = {'font-size': '32px'}
-        self.width = 4
-        self.color = "FF6905"
+        self._width = 0
+        self._color = "FF6905"
 
         # Specifics of Magnitude Response
         plot = self.tabwidgets[self.tablabels[0]]
         plot.setLabel('left', 'Magnitude', 'dB', **labelstyle)
         plot.setLabel('bottom', 'Frequency', 'Hz', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self.getWidth()})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self.getWidth()})
         self.plotFreq = plot.plot(range(0), range(0))
-        self.plotFreq.setPen({'color': self.color, "width": self.width})
+        self.plotFreq.setPen({'color': self._color, "width": self.getWidth()})
 
         # Specifics of Filter Taps
         plot = self.tabwidgets[self.tablabels[1]]
         plot.setLabel('left', 'Amplitude', '', **labelstyle)
         plot.setLabel('bottom', 'Tap Number', '', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotTime = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
         self.plotTimeIm = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
-        self.plotTime.setPen({'color': self.color, "width": self.width})
-        self.plotTimeIm.setPen({'color': "000000", "width": self.width})
+        self.plotTime.setPen({'color': self._color, "width": self._width})
+        self.plotTimeIm.setPen({'color': "000000", "width": self._width})
 
         # Specifics of Phase Response
         plot = self.tabwidgets[self.tablabels[2]]
         plot.setLabel('left', 'Phase (Radians)', '', **labelstyle)
         plot.setLabel('bottom', 'Frequency', 'Hz', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotPhase = plot.plot(range(0), range(0))
-        self.plotPhase.setPen({'color': self.color, "width": self.width})
+        self.plotPhase.setPen({'color': self._color, "width": self._width})
 
         # Specifics of Group Delay
         plot = self.tabwidgets[self.tablabels[3]]
         plot.setLabel('left', 'Group Delay', 's', **labelstyle)
         plot.setLabel('bottom', 'Frequency', 'Hz', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotGroupDel = plot.plot(range(0), range(0))
-        self.plotGroupDel.setPen({'color': self.color, "width": self.width})
+        self.plotGroupDel.setPen({'color': self._color, "width": self._width})
 
         # Specifics of Phase Delay
         plot = self.tabwidgets[self.tablabels[4]]
         plot.setLabel('left', 'Phase Delay', '', **labelstyle)
         plot.setLabel('bottom', 'Frequency', 'Hz', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotPhaseDel = plot.plot(range(0), range(0))
-        self.plotPhaseDel.setPen({'color': self.color, "width": self.width})
+        self.plotPhaseDel.setPen({'color': self._color, "width": self._width})
 
         # Specifics of Impulse Response
         plot = self.tabwidgets[self.tablabels[5]]
         plot.setLabel('left', 'Amplitude', '', **labelstyle)
         plot.setLabel('bottom', 'n (samples)', '', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotImpulseResponse = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
         self.plotImpulseResponseIm = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
-        self.plotImpulseResponse.setPen({'color': self.color, "width": self.width})
-        self.plotImpulseResponseIm.setPen({'color': "000000", "width": self.width})
+        self.plotImpulseResponse.setPen({'color': self._color, "width": self._width})
+        self.plotImpulseResponseIm.setPen({'color': "000000", "width": self._width})
 
         # Specifics of Step Response
         plot = self.tabwidgets[self.tablabels[6]]
         plot.setLabel('left', 'Amplitude', '', **labelstyle)
         plot.setLabel('bottom', 'n (samples)', '', **labelstyle)
-        plot.getAxis('left').setPen({'color': self.color, "width": self.width})
-        plot.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+        plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.plotStepResponse = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
         self.plotStepResponseIm = plot.plot(range(0), range(0), symbol='o', symbolsize=16)
-        self.plotStepResponse.setPen({'color': self.color, "width": self.width})
-        self.plotStepResponseIm.setPen({'color': "000000", "width": self.width})
+        self.plotStepResponse.setPen({'color': self._color, "width": self._width})
+        self.plotStepResponseIm.setPen({'color': "000000", "width": self._width})
 
         # Specifics of Filter Coeffs
         self.tabwidgets[self.tablabels[7]] = QtGui.QTextEdit(self)
@@ -124,7 +125,7 @@ class StandardPlots(QtGui.QTabWidget):
         p = self.filterCoeffs.palette()
         p.setColor(QtGui.QPalette.Base, QtGui.QColor("#000000"))
         self.filterCoeffs.setPalette(p)
-        self.filterCoeffs.setTextColor(QtGui.QColor("#"+self.color))
+        self.filterCoeffs.setTextColor(QtGui.QColor("#"+self._color))
 
         self.setMovable(True)
 
@@ -150,11 +151,11 @@ class StandardPlots(QtGui.QTabWidget):
             self.filterCoeffs.setText("taps = " + str(filterInfo.taps()))
 
             alpha = "88"
-            self.plotTimeIm.setPen({'color': self.color+alpha, 'width': self.width,
+            self.plotTimeIm.setPen({'color': self._color+alpha, 'width': self._width,
                                     'style': QtCore.Qt.DashLine})
-            self.plotImpulseResponseIm.setPen({'color': self.color+alpha, 'width': self.width,
+            self.plotImpulseResponseIm.setPen({'color': self._color+alpha, 'width': self._width,
                                                'style': QtCore.Qt.DashLine})
-            self.plotStepResponseIm.setPen({'color': self.color+alpha, 'width': self.width,
+            self.plotStepResponseIm.setPen({'color': self._color+alpha, 'width': self._width,
                                             'style': QtCore.Qt.DashLine})
 
         # Call for IIR filters
@@ -168,7 +169,7 @@ class StandardPlots(QtGui.QTabWidget):
                                       "a = " + str(filterInfo.taps()[1]))
 
             alpha = "88"
-            self.plotTimeIm.setPen({'color': self.color+alpha, 'width': self.width,
+            self.plotTimeIm.setPen({'color': self._color+alpha, 'width': self._width,
                                     'style': QtCore.Qt.DashLine})
 
         # Call for regular FIR filters
@@ -190,29 +191,69 @@ class StandardPlots(QtGui.QTabWidget):
             index = self.indexOf(self.tabwidgets[sendername])
             self.removeTab(index)
 
+    def getWidth(self):
+        return self._width
+
+    def setWidth(self, value):
+        self._width = value
+        self.updateStyle()
+
+    def getColor(self):
+        return self._color
+
+    def setColor(self, value):
+        self._color = str(value)
+        self.updateStyle()
+
+    def updateStyle(self):
+        self.plotFreq.setPen({'color': self._color, "width": self._width})
+        self.plotTime.setPen({'color': self._color, "width": self._width})
+        self.plotTimeIm.setPen({'color': "000000", "width": self._width})
+        self.plotPhase.setPen({'color': self._color, "width": self._width})
+        self.plotGroupDel.setPen({'color': self._color, "width": self._width})
+        self.plotPhaseDel.setPen({'color': self._color, "width": self._width})
+        self.plotImpulseResponse.setPen({'color': self._color, "width": self._width})
+        self.plotImpulseResponseIm.setPen({'color': "000000", "width": self._width})
+        self.plotStepResponse.setPen({'color': self._color, "width": self._width})
+        self.plotStepResponseIm.setPen({'color': "000000", "width": self._width})
+        self.filterCoeffs.setTextColor(QtGui.QColor("#"+self._color))
+
+        for i in self.tablabels:
+            plot = self.tabwidgets[i]
+            if type(plot) is QtGui.QTextEdit:
+                continue
+            plot.getAxis('left').setPen({'color': self._color, "width": self._width})
+            plot.getAxis('bottom').setPen({'color': self._color, "width": self._width})
+
+        super(StandardPlots, self).update()
+
+    width = pyqtProperty(int, fget=getWidth, fset=setWidth)
+    color = pyqtProperty(str, fget=getColor, fset=setColor)
+
 
 class DesignPlots(QtGui.QTabWidget):
     def __init__(self, parent=None):
         super(DesignPlots, self).__init__(parent)
 
         labelstyle = {'font-size': '32px'}
-        self.width = 4
-        self.color = "FF6905"
-        self.colorgrey = "888888"
+        self._width = 1
+        self._symsize = 16
+        self._color = "FF6905"
+        self._border_color = "888888"
 
         self.pzwidget = pg.PlotWidget()
-        self.pzwidget.getAxis('left').setPen({'color': self.color, "width": self.width})
-        self.pzwidget.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        self.pzwidget.getAxis('left').setPen({'color': self._color, "width": self._width})
+        self.pzwidget.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.pzplot_zeros = self.pzwidget.plot(range(0), range(0),
                                                pen=None, symbol='o',
-                                               symbolPen=pg.mkPen({'color': self.colorgrey, 'width': 2}),
-                                               symbolBrush=pg.mkBrush(self.color),
-                                               symbolSize=16)
+                                               symbolPen=pg.mkPen({'color': self._border_color, 'width': 2}),
+                                               symbolBrush=pg.mkBrush(self._color),
+                                               symbolSize=self._symsize)
         self.pzplot_poles = self.pzwidget.plot(range(0), range(0),
                                                pen=None, symbol='x',
-                                               symbolPen=pg.mkPen({'color': self.colorgrey, 'width': 2}),
-                                               symbolBrush=pg.mkBrush(self.color),
-                                               symbolSize=16)
+                                               symbolPen=pg.mkPen({'color': self._border_color, 'width': 2}),
+                                               symbolBrush=pg.mkBrush(self._color),
+                                               symbolSize=self._symsize)
         self.pzwidget.setXRange(-3, 3)
         self.pzwidget.setYRange(-2, 2)
         self.addTab(self.pzwidget, "Pole-Zero Plot")
@@ -224,10 +265,10 @@ class DesignPlots(QtGui.QTabWidget):
         self.pzwidget.scene().sigMouseMoved.connect(self.mouseMoved)
 
         self.bdwidget = pg.PlotWidget()
-        self.bdwidget.getAxis('left').setPen({'color': self.color, "width": self.width})
-        self.bdwidget.getAxis('bottom').setPen({'color': self.color, "width": self.width})
+        self.bdwidget.getAxis('left').setPen({'color': self._color, "width": self._width})
+        self.bdwidget.getAxis('bottom').setPen({'color': self._color, "width": self._width})
         self.bdplot = self.bdwidget.plot(range(0), range(0))
-        self.bdplot.setPen({'color': self.color, "width": self.width})
+        self.bdplot.setPen({'color': self._color, "width": self._width})
         self.addTab(self.bdwidget, "Band Diagram")
 
         self.setMovable(True)
@@ -248,7 +289,53 @@ class DesignPlots(QtGui.QTabWidget):
         else:
             self.pzplot_poles.setData(range(0), range(0))
 
+    def getWidth(self):
+        return self._width
 
+    def setWidth(self, value):
+        self._width = value
+        self.updateStyle()
+
+    def getColor(self):
+        return self._color
+
+    def setColor(self, value):
+        self._color = str(value)
+        self.updateStyle()
+
+    def getBorderColor(self):
+        return self._border_color
+
+    def setBorderColor(self, value):
+        self._border_color = str(value)
+        self.updateStyle()
+
+    def getSymbolSize(self):
+        return self._symsize
+
+    def setSymbolSize(self, value):
+        self._symsize = value
+        self.updateStyle()
+
+    def updateStyle(self):
+        self.pzwidget.getAxis('left').setPen({'color': self._color, "width": self._width})
+        self.pzwidget.getAxis('bottom').setPen({'color': self._color, "width": self._width})
+        self.bdwidget.getAxis('left').setPen({'color': self._color, "width": self._width})
+        self.bdwidget.getAxis('bottom').setPen({'color': self._color, "width": self._width})
+        self.bdplot.setPen({'color': self._color, "width": self._width})
+
+        self.pzplot_zeros.setSymbolPen(pg.mkPen(self._border_color))
+        self.pzplot_zeros.setSymbolBrush(pg.mkBrush(self._color))
+        self.pzplot_zeros.setSymbolSize(self._symsize)
+        self.pzplot_poles.setSymbolPen(pg.mkPen(self._border_color))
+        self.pzplot_poles.setSymbolBrush(pg.mkBrush(self._color))
+        self.pzplot_poles.setSymbolSize(self._symsize)
+
+
+    width = pyqtProperty(int, fget=getWidth, fset=setWidth)
+    symbol_color = pyqtProperty(str, fget=getColor, fset=setColor)
+    symbol_border = pyqtProperty(str, fget=getBorderColor, fset=setBorderColor)
+    symbol_size = pyqtProperty(int, fget=getSymbolSize, fset=setSymbolSize)
 
 class plots(QtGui.QGroupBox):
     def __init__(self, parent=None):

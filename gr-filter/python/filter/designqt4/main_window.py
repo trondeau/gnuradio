@@ -33,6 +33,7 @@ class main_window(QtGui.QMainWindow):
     def __init__(self, options, callback=None):
         super(main_window, self).__init__(None)
 
+
         self.menu_file = self.menuBar().addMenu('&File')
         self.action_open = self.menu_file.addAction('&Open')
         self.action_save = self.menu_file.addAction('&Save')
@@ -44,6 +45,12 @@ class main_window(QtGui.QMainWindow):
         if(options):
             if(type(options.type) is str):
                 self.restype = options.type.lower()
+
+            if options.qss:
+                self.qapp = QtGui.qApp
+                qssinfo = open(options.qss).read()
+                self.qapp.setStyleSheet(qssinfo)
+
 
         centralWidget = QtGui.QWidget(self)
         self.mainLayout = QtGui.QHBoxLayout()
