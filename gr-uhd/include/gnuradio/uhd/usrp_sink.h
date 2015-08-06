@@ -212,12 +212,22 @@ namespace gr {
         return set_center_freq(::uhd::tune_request_t(freq), chan);
       }
 
+      void set_center_freq0(double freq)
+      {
+        set_center_freq(::uhd::tune_request_t(freq), 0);
+      }
+
       /*!
        * Get the center frequency.
        * \param chan the channel index 0 to N-1
        * \return the frequency in Hz
        */
       virtual double get_center_freq(size_t chan = 0) = 0;
+
+      double get_center_freq0()
+      {
+        return get_center_freq(0);
+      }
 
       /*!
        * Get the tunable frequency range.
@@ -232,6 +242,11 @@ namespace gr {
        * \param chan the channel index 0 to N-1
        */
       virtual void set_gain(double gain, size_t chan = 0) = 0;
+
+      void set_gain0(double gain)
+      {
+        set_gain(gain, 0);
+      }
 
       /*!
        * Set the named gain on the dboard.
@@ -267,6 +282,11 @@ namespace gr {
        * \return the actual gain in dB
        */
       virtual double get_gain(size_t chan = 0) = 0;
+
+      double get_gain0()
+      {
+        return get_gain(0);
+      }
 
       /*!
        * Get the actual dboard gain setting of named stage.
