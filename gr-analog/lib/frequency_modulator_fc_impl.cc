@@ -78,5 +78,30 @@ namespace gr {
       return noutput_items;
     }
 
+    void
+    frequency_modulator_fc_impl::setup_rpc()
+    {
+      GR_INFO("FREQ_MOD", "CALLED SETUP_RPC");
+#ifdef GR_CTRLPORT
+      GR_INFO("FREQ_MOD", "CALLED SETUP_RPC: INSIDE");
+
+      add_rpc_variable(
+        rpcbasic_sptr(new rpcbasic_register_get<frequency_modulator_fc, float>(
+	  alias(), "sensitivity",
+	  &frequency_modulator_fc::sensitivity,
+	  pmt::mp(0.0f), pmt::mp(10.0f), pmt::mp(0.0f),
+	  "", "FM Sensitivity", RPC_PRIVLVL_MIN,
+          DISPTIME | DISPOPTSTRIP)));
+
+      add_rpc_variable(
+        rpcbasic_sptr(new rpcbasic_register_set<frequency_modulator_fc, float>(
+	  alias(), "sensitivity",
+	  &frequency_modulator_fc::set_sensitivity,
+	  pmt::mp(0.0f), pmt::mp(10.0f), pmt::mp(0.0f),
+	  "", "FM Sensitivity",
+	  RPC_PRIVLVL_MIN, DISPNULL)));
+#endif /* GR_CTRLPORT */
+    }
+
   } /* namespace analog */
 } /* namespace gr */
