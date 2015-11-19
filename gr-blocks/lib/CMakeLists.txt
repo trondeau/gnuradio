@@ -191,6 +191,7 @@ list(APPEND gr_blocks_sources
     tagged_stream_to_pdu_impl.cc
     tagged_stream_multiply_length_impl.cc
     tags_strobe_impl.cc
+    test_tag_variable_rate_ff_impl.cc
     threshold_ff_impl.cc
     throttle_impl.cc
     transcendental_impl.cc

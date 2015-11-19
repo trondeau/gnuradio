@@ -66,6 +66,7 @@
       <block>blocks_message_strobe</block>
       <block>blocks_message_strobe_random</block>
       <block>blocks_tags_strobe</block>
+      <block>blocks_test_tag_variable_rate_ff</block>
    </cat>
    <cat>
       <name>File Operators</name>
@@ -194,6 +195,7 @@
       <block>blocks_tagged_stream_mux</block>
       <block>blocks_tagged_stream_align</block>
       <block>blocks_stream_to_tagged_stream</block>
+      <block>blocks_test_tag_variable_rate_ff</block>
    </cat>
    <cat>
       <name>Type Converters</name>
