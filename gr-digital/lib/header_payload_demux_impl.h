@@ -1,18 +1,18 @@
 /* -*- c++ -*- */
 /* Copyright 2012 Free Software Foundation, Inc.
- * 
+ *
  * This file is part of GNU Radio
- * 
+ *
  * GNU Radio is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * GNU Radio is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with GNU Radio; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -29,7 +29,7 @@ namespace gr {
 
     class header_payload_demux_impl : public header_payload_demux
     {
-     private:
+    private:
       int d_header_len; //!< Number of bytes per header
       int d_items_per_symbol; //!< Bytes per symbol
       int d_gi; //!< Bytes per guard interval
@@ -61,45 +61,38 @@ namespace gr {
       //! Helper function that returns true if a trigger signal is detected.
       //  Searches input 1 (if active), then the tags. Returns the offset in the input buffer
       //  (or -1 if none is found)
-      int find_trigger_signal(
-	int nread,
-	int noutput_items,
-	gr_vector_const_void_star &input_items);
+      int find_trigger_signal(int nread,
+                              int noutput_items,
+                              gr_vector_const_void_star &input_items);
 
       //! Copies n symbols from in to out, makes sure tags are propagated properly. Does neither consume nor produce.
-      void copy_n_symbols(
-	  const unsigned char *in,
-	  unsigned char *out,
-	  int port,
-	  int n_symbols
-      );
+      void copy_n_symbols(const unsigned char *in,
+                          unsigned char *out,
+                          int port,
+                          int n_symbols);
 
       //! Scans a given range for tags in d_special_tags
-      void update_special_tags(
-	  int range_start,
-	  int range_end
-      );
+      void update_special_tags(int range_start,
+                               int range_end);
 
       //! Adds all tags in d_special_tags and timing info to the first item of the header.
       void add_special_tags();
 
 
-     public:
-      header_payload_demux_impl(
-	int header_len,
-	int items_per_symbol,
-	int guard_interval,
-	const std::string &length_tag_key,
-	const std::string &trigger_tag_key,
-	bool output_symbols,
-	size_t itemsize,
-	const std::string &timing_tag_key,
-	const double samp_rate,
-	const std::vector<std::string> &special_tags
-      );
+    public:
+      header_payload_demux_impl(int header_len,
+                                int items_per_symbol,
+                                int guard_interval,
+                                const std::string &length_tag_key,
+                                const std::string &trigger_tag_key,
+                                bool output_symbols,
+                                size_t itemsize,
+                                const std::string &timing_tag_key,
+                                const double samp_rate,
+                                const std::vector<std::string> &special_tags);
       ~header_payload_demux_impl();
 
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
+      void forecast(int noutput_items, gr_vector_int &ninput_items_required);
 
       int general_work(int noutput_items,
 		       gr_vector_int &ninput_items,
@@ -111,4 +104,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DIGITAL_HEADER_PAYLOAD_DEMUX_IMPL_H */
-

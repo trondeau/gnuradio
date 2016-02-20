@@ -1,18 +1,18 @@
 /* -*- c++ -*- */
 /* Copyright 2012 Free Software Foundation, Inc.
- * 
+ *
  * This file is part of GNU Radio
- * 
+ *
  * GNU Radio is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * GNU Radio is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with GNU Radio; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -125,22 +125,19 @@ namespace gr {
        * \param samp_rate Sampling rate at the input. Necessary to calculate the rx time of packets.
        * \param special_tags A vector of strings denoting tags which shall be preserved (see \ref hpd_tag_handling)
        */
-      static sptr make(
-          int header_len,
-          int items_per_symbol=1,
-          int guard_interval=0,
-          const std::string &length_tag_key="frame_len",
-          const std::string &trigger_tag_key="",
-          bool output_symbols=false,
-          size_t itemsize=sizeof(gr_complex),
-          const std::string &timing_tag_key="",
-          const double samp_rate=1.0,
-          const std::vector<std::string> &special_tags=std::vector<std::string>()
-      );
+      static sptr make(int header_len,
+                       int items_per_symbol=1,
+                       int guard_interval=0,
+                       const std::string &length_tag_key="frame_len",
+                       const std::string &trigger_tag_key="",
+                       bool output_symbols=false,
+                       size_t itemsize=sizeof(gr_complex),
+                       const std::string &timing_tag_key="",
+                       const double samp_rate=1.0,
+                       const std::vector<std::string> &special_tags=std::vector<std::string>());
     };
 
   } // namespace digital
 } // namespace gr
 
 #endif /* INCLUDED_DIGITAL_HEADER_PAYLOAD_DEMUX_H */
-
