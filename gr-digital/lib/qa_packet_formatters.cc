@@ -118,8 +118,9 @@ qa_packet_formatters::test_default_parse()
   formatter = gr::digital::packet_formatter_default::make(ac);
   formatter->set_threshold(0);
 
+  int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse(nbits, bits, info);
+  bool ret = formatter->parse(nbits, bits, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
@@ -184,8 +185,9 @@ qa_packet_formatters::test_default_parse_soft()
   formatter = gr::digital::packet_formatter_default::make(ac);
   formatter->set_threshold(0);
 
+  int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse_soft(nbits, soft, info);
+  bool ret = formatter->parse_soft(nbits, soft, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
@@ -311,8 +313,9 @@ qa_packet_formatters::test_counter_parse()
   formatter = gr::digital::packet_formatter_counter::make(ac, expected_bps);
   formatter->set_threshold(0);
 
+  int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse(nbits, bits, info);
+  bool ret = formatter->parse(nbits, bits, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
@@ -388,8 +391,9 @@ qa_packet_formatters::test_counter_parse_soft()
   formatter = gr::digital::packet_formatter_counter::make(ac, expected_bps);
   formatter->set_threshold(0);
 
+  int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse_soft(nbits, soft, info);
+  bool ret = formatter->parse_soft(nbits, soft, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());

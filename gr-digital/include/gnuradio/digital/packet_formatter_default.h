@@ -25,6 +25,7 @@
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
 #include <gnuradio/digital/header_buffer.h>
+#include <gnuradio/logger.h>
 #include <boost/enable_shared_from_this.hpp>
 
 namespace gr {
@@ -178,10 +179,15 @@ namespace gr {
        *        Each packet has a single PMT dictionary of info, so
        *        the vector length is the number of packets received
        *        extracted during one call to this parser function.
+       * \param nbits_processed Number of input bits actually
+       *        processed; If all goes well, this is nbits_in. A
+       *        premature return after a bad header could be less than
+       *        this.
        */
       virtual bool parse(int nbits_in,
                          const unsigned char *input,
-                         std::vector<pmt::pmt_t> &info);
+                         std::vector<pmt::pmt_t> &info,
+                         int &nbits_processed);
 
       /*!
        * Parses a header of the form:
@@ -212,10 +218,15 @@ namespace gr {
        *        Each packet has a single PMT dictionary of info, so
        *        the vector length is the number of packets received
        *        extracted during one call to this parser function.
+       * \param nbits_processed Number of input bits actually
+       *        processed; If all goes well, this is nbits_in. A
+       *        premature return after a bad header could be less than
+       *        this.
        */
       virtual bool parse_soft(int nbits_in,
                               const float *input,
-                              std::vector<pmt::pmt_t> &info);
+                              std::vector<pmt::pmt_t> &info,
+                              int &nbits_processed);
 
       /*!
        * Returns the length of the formatted header in bits.
@@ -275,6 +286,8 @@ namespace gr {
 
       uint16_t d_bps;                //!< bits/sec of payload modulation
 
+      int d_nbits;                   //!< num bits processed since reset
+
       //! Enter Search state of the state machine to find the access code.
       virtual void enter_search();
 
@@ -291,7 +304,12 @@ namespace gr {
        *  rest of data in d_info dictionary.
        */
       virtual int header_payload();
-  };
+
+      /*! Used by blocks to access the logger system.
+       */
+      gr::logger_ptr d_logger;
+      gr::logger_ptr d_debug_logger;
+    };
 
   } // namespace digital
 } // namespace gr

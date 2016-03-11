@@ -78,14 +78,20 @@ namespace gr {
     {
       const float *in = (const float*)input_items[0];
 
+      int count = 0;
       std::vector<pmt::pmt_t> info;
-      d_formatter->parse_soft(noutput_items, in, info);
+      bool ret = d_formatter->parse_soft(noutput_items, in, info, count);
 
-      for(size_t i = 0; i < info.size(); i++) {
-        message_port_pub(d_out_port, info[i]);
+      if(ret) {
+        for(size_t i = 0; i < info.size(); i++) {
+          message_port_pub(d_out_port, info[i]);
+        }
+      }
+      else {
+        message_port_pub(d_out_port, pmt::PMT_F);
       }
 
-      return noutput_items;
+      return count;
     }
 
   } /* namespace digital */

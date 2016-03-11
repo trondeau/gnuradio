@@ -50,6 +50,8 @@ namespace gr {
       d_threshold = 0;
       d_data_reg = 0;
       d_bps = 1; // set in child classes that use this
+
+      configure_default_loggers(d_logger, d_debug_logger, "packet formatter");
     }
 
     packet_formatter_default::~packet_formatter_default()
@@ -124,16 +126,17 @@ namespace gr {
     bool
     packet_formatter_default::parse(int nbits_in,
                                     const unsigned char *input,
-                                    std::vector<pmt::pmt_t> &info)
+                                    std::vector<pmt::pmt_t> &info,
+                                    int &nbits_processed)
     {
-      int count = 0;
+      nbits_processed = 0;
 
-      while(count < nbits_in) {
+      while(nbits_processed < nbits_in) {
         switch(d_state) {
 	case STATE_SYNC_SEARCH:    // Look for the access code correlation
-	  while(count < nbits_in) {
+	  while(nbits_processed < nbits_in) {
             // shift in new data
-            d_data_reg = (d_data_reg << 1) | ((input[count++]) & 0x1);
+            d_data_reg = (d_data_reg << 1) | ((input[nbits_processed++]) & 0x1);
 
             // compute hamming distance between desired access code and current data
             uint64_t wrong_bits = 0;
@@ -150,8 +153,8 @@ namespace gr {
           break;
 
 	case STATE_HAVE_SYNC:
-	  while(count <= nbits_in) {    // Shift bits one at a time into header
-            d_hdr_reg.insert_bit(input[count++]);
+	  while(nbits_processed <= nbits_in) {    // Shift bits one at a time into header
+            d_hdr_reg.insert_bit(input[nbits_processed++]);
             if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
 	      // we have a full header, check to see if it has been received properly
 	      if(header_ok()) {
@@ -161,6 +164,7 @@ namespace gr {
               }
 	      else {
 		enter_search();    // bad header
+                return false;
               }
               break;
             }
@@ -175,17 +179,18 @@ namespace gr {
     bool
     packet_formatter_default::parse_soft(int nbits_in,
                                          const float *input,
-                                         std::vector<pmt::pmt_t> &info)
+                                         std::vector<pmt::pmt_t> &info,
+                                         int &nbits_processed)
     {
-      int count = 0;
+      nbits_processed = 0;
 
-      while(count < nbits_in) {
+      while(nbits_processed < nbits_in) {
         switch(d_state) {
 	case STATE_SYNC_SEARCH:    // Look for the access code correlation
 
-	  while(count < nbits_in) {
+	  while(nbits_processed < nbits_in) {
             // shift in new data
-            d_data_reg = (d_data_reg << 1) | (gr::branchless_binary_slicer(input[count++]) & 0x1);
+            d_data_reg = (d_data_reg << 1) | (gr::branchless_binary_slicer(input[nbits_processed++]) & 0x1);
 
             // compute hamming distance between desired access code and current data
             uint64_t wrong_bits = 0;
@@ -202,8 +207,8 @@ namespace gr {
           break;
 
 	case STATE_HAVE_SYNC:
-	  while(count < nbits_in) {    // Shift bits one at a time into header
-            d_hdr_reg.insert_bit(gr::branchless_binary_slicer(input[count++]));
+	  while(nbits_processed < nbits_in) {    // Shift bits one at a time into header
+            d_hdr_reg.insert_bit(gr::branchless_binary_slicer(input[nbits_processed++]));
 
             if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
 	      // we have a full header, check to see if it has been received properly
