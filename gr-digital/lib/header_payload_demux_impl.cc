@@ -300,7 +300,7 @@ namespace gr {
       }
       if(d_uses_trigger_tag) {
         std::vector<tag_t> tags;
-        get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0)+noutput_items, d_trigger_tag_key);
+        get_tags_in_window(tags, 0, 0, noutput_items, d_trigger_tag_key);
         uint64_t min_offset = ULLONG_MAX;
         int tag_index = -1;
         for(unsigned i = 0; i < tags.size(); i++) {

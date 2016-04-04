@@ -111,8 +111,6 @@ namespace gr {
       d_bps = bps;
 
       d_info = pmt::make_dict();
-      d_info = pmt::dict_add(d_info, pmt::intern("skip samps"),
-                             pmt::from_long(d_count));
       d_info = pmt::dict_add(d_info, pmt::intern("payload bits"),
                              pmt::from_long(8*len));
       d_info = pmt::dict_add(d_info, pmt::intern("bps"),

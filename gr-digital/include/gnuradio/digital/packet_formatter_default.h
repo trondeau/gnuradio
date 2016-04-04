@@ -256,7 +256,7 @@ namespace gr {
       static sptr make(const std::string &access_code);
 
     protected:
-      enum state_t {STATE_SYNC_SEARCH, STATE_HAVE_SYNC, STATE_HAVE_HEADER};
+      enum state_t {STATE_SYNC_SEARCH, STATE_HAVE_SYNC};
 
       uint64_t d_access_code;        //!< register to hold the access code
       size_t d_access_code_len;      //!< length in bits of the access code
@@ -272,7 +272,6 @@ namespace gr {
       int d_pkt_len;                 //!< Length of the packet to put into the output buffer
       int d_pkt_count;               //!< Number of bytes/soft bits already received
       pmt::pmt_t d_info;             //!< info captured from the header
-      int d_count;                   //!< count samples since last payload start
 
       uint16_t d_bps;                //!< bits/sec of payload modulation
 

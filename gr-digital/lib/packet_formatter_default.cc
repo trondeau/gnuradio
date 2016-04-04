@@ -45,7 +45,6 @@ namespace gr {
         throw std::runtime_error("packet_formatter_default: Setting access code failed");
       }
 
-      d_count = 0;
       d_pkt_len = 0;
       enter_search();
       d_threshold = 0;
@@ -132,11 +131,9 @@ namespace gr {
       while(count < nbits_in) {
         switch(d_state) {
 	case STATE_SYNC_SEARCH:    // Look for the access code correlation
-
 	  while(count < nbits_in) {
             // shift in new data
             d_data_reg = (d_data_reg << 1) | ((input[count++]) & 0x1);
-            d_count++;
 
             // compute hamming distance between desired access code and current data
             uint64_t wrong_bits = 0;
@@ -153,10 +150,8 @@ namespace gr {
           break;
 
 	case STATE_HAVE_SYNC:
-	  while(count < nbits_in) {    // Shift bits one at a time into header
+	  while(count <= nbits_in) {    // Shift bits one at a time into header
             d_hdr_reg.insert_bit(input[count++]);
-            d_count++;
-
             if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
 	      // we have a full header, check to see if it has been received properly
 	      if(header_ok()) {
@@ -167,19 +162,6 @@ namespace gr {
 	      else {
 		enter_search();    // bad header
               }
-              break;
-            }
-          }
-          break;
-
-	case STATE_HAVE_HEADER:
-	  while(count < nbits_in) {
-            if(d_pkt_count < d_pkt_len/d_bps) {
-              count++;
-              d_pkt_count++;
-            }
-            if(d_pkt_count == d_pkt_len/d_bps) {
-              enter_search();
               break;
             }
           }
@@ -204,7 +186,6 @@ namespace gr {
 	  while(count < nbits_in) {
             // shift in new data
             d_data_reg = (d_data_reg << 1) | (gr::branchless_binary_slicer(input[count++]) & 0x1);
-            d_count++;
 
             // compute hamming distance between desired access code and current data
             uint64_t wrong_bits = 0;
@@ -223,7 +204,6 @@ namespace gr {
 	case STATE_HAVE_SYNC:
 	  while(count < nbits_in) {    // Shift bits one at a time into header
             d_hdr_reg.insert_bit(gr::branchless_binary_slicer(input[count++]));
-            d_count++;
 
             if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
 	      // we have a full header, check to see if it has been received properly
@@ -235,19 +215,6 @@ namespace gr {
 	      else {
 		enter_search();    // bad header
               }
-              break;
-            }
-          }
-          break;
-
-	case STATE_HAVE_HEADER:
-	  while(count < nbits_in) {
-            if(d_pkt_count < d_pkt_len/d_bps) {
-              count++;
-              d_pkt_count++;
-            }
-            if(d_pkt_count == d_pkt_len/d_bps) {
-              enter_search();
               break;
             }
           }
@@ -287,10 +254,9 @@ namespace gr {
     inline void
     packet_formatter_default::enter_have_header(int payload_len)
     {
-      d_state = STATE_HAVE_HEADER;
+      d_state = STATE_SYNC_SEARCH;
       d_pkt_len = payload_len;
       d_pkt_count = 0;
-      d_count = 0;
     }
 
     bool
@@ -308,8 +274,6 @@ namespace gr {
       uint16_t len = d_hdr_reg.extract_field16(0, 16);
 
       d_info = pmt::make_dict();
-      d_info = pmt::dict_add(d_info, pmt::intern("skip samps"),
-                             pmt::from_long(d_count));
       d_info = pmt::dict_add(d_info, pmt::intern("payload bits"),
                              pmt::from_long(8*len));
       return static_cast<int>(len);
