@@ -200,7 +200,10 @@ namespace gr {
       float corr = 0;
       for(size_t i = 0; i < d_symbols.size(); i++)
         corr += abs(d_symbols[i]*conj(d_symbols[i]));
-      d_thresh = threshold*corr*corr;
+
+      // Half the user-specified threshold to account for summing two
+      // consecutive correlation values in the work function.
+      d_thresh = (threshold + (1-threshold)/2.0f)*corr*corr;
     }
 
     void
@@ -242,11 +245,16 @@ namespace gr {
       int isps = (int)(d_sps + 0.5f);
       int i = 0;
       while(i < noutput_items) {
-        // Look for the correlator output to cross the threshold
-        if (d_corr_mag[i] <= d_thresh) {
+        // Look for the correlator output to cross the threshold Sum
+        // power over two consecutive symbols in case we're offset in
+        // time. If off by 1/2 a symbol, the peak of any one point is
+        // much lower.
+        float corr_mag = d_corr_mag[i] + d_corr_mag[i+1];
+        if (corr_mag <= d_thresh) {
           i++;
           continue;
         }
+
         // Go to (just past) the current correlator output peak
         while ((i < (noutput_items-1)) &&
                (d_corr_mag[i] < d_corr_mag[i+1]))
@@ -262,8 +270,9 @@ namespace gr {
         add_item_tag(0, nitems_written(0) + i, pmt::intern("corr_start"),
                      pmt::from_double(d_corr_mag[i]), d_src_id);
 
+#if 0
         // Use Parabolic interpolation to estimate a fractional
-        // sample delay. There are more accurate methods as 
+        // sample delay. There are more accurate methods as
         // the sample delay estimate using this method is biased.
         // But this method is simple and fast.
         // center between [-0.5,0.5] units of samples
@@ -275,6 +284,15 @@ namespace gr {
           double denom = 2*(d_corr_mag[i-1]-2*d_corr_mag[i]+d_corr_mag[i+1]);
           center = nom/denom;
         }
+#else
+        // Calculates the center of mass between the three points around the peak.
+        // Estimate is linear.
+        double nom = 0, den = 0;
+        nom = d_corr_mag[i-1] + 2*d_corr_mag[i] + 3*d_corr_mag[i+1];
+        den = d_corr_mag[i-1] + d_corr_mag[i] + d_corr_mag[i+1];
+        double center = nom / den;
+        center = (center - 2.0); // adjust for bias in center of mass calculation
+#endif
 
         // Calculate the phase offset of the incoming signal.
         //
