@@ -1,5 +1,5 @@
 /* -*- c++ -*- */
-/* Copyright 2014-2015 Free Software Foundation, Inc.
+/* Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -24,6 +24,7 @@
 
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
+#include <gnuradio/digital/packet_formatter_base.h>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/logger.h>
 #include <boost/enable_shared_from_this.hpp>
@@ -36,47 +37,10 @@ namespace gr {
      * \ingroup packet_operators_blk
      *
      * \details
-
-     * Used to handle the default packet header. The formatters manage
-     * two functions:
+     * Used to handle the default packet header.
      *
-     * \li packet_formatter_default::format: takes in a
-     * payload and creates a header from it.
-     *
-     * \li packet_formatter_default::parse receive bits and extract
-     * the header info. These are expected to be hard bits (0 or 1)
-     * that have either been sliced or gone through an FEC decoder.
-     *
-     * This class is specifically designed to work with packets/frames
-     * in the asynchronous PDU architecture of GNU Radio. See the
-     * packet_format_async block for formatting the headers onto
-     * payloads and packet_parse_b block for parsing headers in a
-     * receiver.
-     *
-     * The Packet Format block takes in a PDU and uses a formatter
-     * class derived from this class to add a header onto the
-     * packet. The Packet Format blocks takes in the PDU, unpacks the
-     * message, and passes it to a formatter class' format function,
-     * which builds a header based on the payload. The header is
-     * passed back and emitted from formatter block as a separate
-     * output. The async format block, packet_format_async, has two
-     * message output ports. The 'header' port passes the header out
-     * as a PDU and the 'payload' passes the payload out as a PDU. The
-     * flowgraph can then separately modulate and combine these two
-     * pieces in the follow-on processing.
-     *
-     * The packet_sync_b block uses the formatter class by calling the
-     * 'parse' function to parse the received packet headers. This
-     * parser block is a sink for the data stream and emits a message
-     * from an 'info' port that contains an PMT dictionary of the
-     * information in the header. The formatter class determines the
-     * dictionary keys.
-     *
-     * This is the base class for dealing with formatting headers for
-     * different protocols and purposes. For other header formatting
-     * behaviors, create a child class from here and overload the
-     * format, parse, and parsing state machine functions as
-     * necessary.
+     * See the parent class packet_formatter_base for details of how
+     * these classes operate.
      *
      * The default header created in this base class consists of an
      * access code and the packet length. The length is encoded as a
@@ -104,11 +68,6 @@ namespace gr {
      * contains the following keys. All formatter blocks MUST produce
      * these two values in any dictionary.
      *
-     * \li "skip samps": the number of samples between the end of the
-     * last payload and the beginning of this payload. This is used by
-     * a decoder block to know where in the payload to begin
-     * demodulating the payload.
-     *
      * \li "payload bits": the number of bits in the payload. The
      * payload decoder will have to know how this relates to the
      * number of symbols received.
@@ -118,16 +77,11 @@ namespace gr {
      * \sa packet_formatter_ofdm
      */
     class DIGITAL_API packet_formatter_default
-      : public boost::enable_shared_from_this<gr::digital::packet_formatter_default>
+      : public packet_formatter_base
     {
      public:
-      typedef boost::shared_ptr<packet_formatter_default> sptr;
-
-      packet_formatter_default(const std::string &access_code);
+      packet_formatter_default(const std::string &access_code, int threshold);
       virtual ~packet_formatter_default();
-
-      sptr base() { return shared_from_this(); };
-      sptr formatter() { return shared_from_this(); };
 
       /*!
        * Creates a header from the access code and packet length and
@@ -192,11 +146,6 @@ namespace gr {
       virtual size_t header_nbits() const;
 
       /*!
-       * Returns the length of the formatted header in bytes.
-       */
-      virtual size_t header_nbytes() const;
-
-      /*!
        * Updates the access code. Must be a string of 1's and 0's and
        * <= 64 bits.
        */
@@ -221,33 +170,29 @@ namespace gr {
       /*!
        * Factory to create an async packet header formatter; returns
        * an sptr to the object.
+       *
+       * \param access_code An access code that is used to find and
+       * synchronize the start of a packet. Used in the parser and in
+       * other blocks like a corr_est block that helps trigger the
+       * receiver. Can be up to 64-bits long.
+       * \param threshold How many bits can be wrong in the access
+       * code and still count as correct.
        */
-      static sptr make(const std::string &access_code);
+      static sptr make(const std::string &access_code, int threshold);
 
     protected:
-      enum state_t {STATE_SYNC_SEARCH, STATE_HAVE_SYNC};
-
       uint64_t d_access_code;        //!< register to hold the access code
       size_t d_access_code_len;      //!< length in bits of the access code
 
-      state_t d_state;               //!< state of the state machine
       unsigned long long d_data_reg; //!< used to look for access_code
       unsigned long long d_mask;     /*!< masks access_code bits (top N bits are set where
                                        N is the number of bits in the access code) */
       unsigned int d_threshold;      //!< how many bits may be wrong in sync vector
 
-      header_buffer d_hdr_reg;
-
       int d_pkt_len;                 //!< Length of the packet to put into the output buffer
       int d_pkt_count;               //!< Number of bytes bits already received
-      pmt::pmt_t d_info;             //!< info captured from the header
-
-      uint16_t d_bps;                //!< bits/sec of payload modulation
 
       int d_nbits;                   //!< num bits processed since reset
-
-      //! Enter Search state of the state machine to find the access code.
-      virtual void enter_search();
 
       //! Access code found, start getting the header
       virtual void enter_have_sync();
@@ -262,11 +207,6 @@ namespace gr {
        *  rest of data in d_info dictionary.
        */
       virtual int header_payload();
-
-      /*! Used by blocks to access the logger system.
-       */
-      gr::logger_ptr d_logger;
-      gr::logger_ptr d_debug_logger;
     };
 
   } // namespace digital

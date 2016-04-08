@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2014 Free Software Foundation, Inc.
+ * Copyright 2015,2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -34,22 +34,19 @@ namespace gr {
   namespace digital {
 
     packet_parse_b::sptr
-    packet_parse_b::make(const packet_formatter_default::sptr &formatter,
-                         unsigned int threshold)
+    packet_parse_b::make(const packet_formatter_base::sptr &formatter)
     {
       return gnuradio::get_initial_sptr
-	(new packet_parse_b_impl(formatter, threshold));
+	(new packet_parse_b_impl(formatter));
     }
 
 
-    packet_parse_b_impl::packet_parse_b_impl(const packet_formatter_default::sptr &formatter,
-                                             unsigned int threshold)
+    packet_parse_b_impl::packet_parse_b_impl(const packet_formatter_base::sptr &formatter)
       : sync_block("packet_parse_b",
                    io_signature::make(1, 1, sizeof(char)),
                    io_signature::make(0, 0, 0))
     {
       d_formatter = formatter;
-      set_threshold(threshold);
 
       d_out_port = pmt::mp("info");
       message_port_register_out(d_out_port);
@@ -57,19 +54,6 @@ namespace gr {
 
     packet_parse_b_impl::~packet_parse_b_impl()
     {
-    }
-
-    void
-    packet_parse_b_impl::set_threshold(unsigned int thresh)
-    {
-      d_formatter->set_threshold(thresh);
-    }
-
-
-    unsigned int
-    packet_parse_b_impl::threshold() const
-    {
-      return d_formatter->threshold();
     }
 
     int

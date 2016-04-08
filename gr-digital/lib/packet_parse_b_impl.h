@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2014 Free Software Foundation, Inc.
+ * Copyright 2015,2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -35,8 +35,7 @@ namespace gr {
       pmt::pmt_t d_out_port;
 
      public:
-      packet_parse_b_impl(const packet_formatter_default::sptr &formatter,
-                          unsigned int threshold=0);
+      packet_parse_b_impl(const packet_formatter_default::sptr &formatter);
       ~packet_parse_b_impl();
 
       void set_threshold(unsigned int thresh);

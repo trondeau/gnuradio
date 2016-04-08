@@ -107,6 +107,7 @@ list(APPEND digital_sources
     ofdm_sampler_impl.cc
     ofdm_serializer_vcc_impl.cc
     ofdm_sync_sc_cfb_impl.cc
+    packet_formatter_base.cc
     packet_formatter_default.cc
     packet_formatter_counter.cc
     packet_format_async_impl.cc

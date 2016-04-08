@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2002,2013 Free Software Foundation, Inc.
+ * Copyright 2015,2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -53,7 +53,7 @@ qa_packet_formatters::test_default_format()
   }
 
   gr::digital::packet_formatter_default::sptr formatter;
-  formatter = gr::digital::packet_formatter_default::make(ac);
+  formatter = gr::digital::packet_formatter_default::make(ac, 0);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
@@ -115,8 +115,7 @@ qa_packet_formatters::test_default_parse()
 
   std::string ac = "1010101010101010"; //0xAAAA
   gr::digital::packet_formatter_default::sptr formatter;
-  formatter = gr::digital::packet_formatter_default::make(ac);
-  formatter->set_threshold(0);
+  formatter = gr::digital::packet_formatter_default::make(ac, 0);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;
@@ -142,74 +141,6 @@ qa_packet_formatters::test_default_parse()
 }
 
 void
-qa_packet_formatters::test_default_parse_soft()
-{
-  static const int nbytes = 106;
-  static const int nbits = 8*nbytes;
-  unsigned char *bytes = (unsigned char*)volk_malloc(nbytes*sizeof(unsigned char),
-                                                     volk_get_alignment());
-  unsigned char *bits = (unsigned char*)volk_malloc(nbits*sizeof(unsigned char),
-                                                    volk_get_alignment());
-  float *soft = (float*)volk_malloc(nbits*sizeof(float),
-                                    volk_get_alignment());
-
-  srand(time(NULL));
-
-  // Fill bytes with random values
-  for(unsigned int i = 0; i < nbytes; i++) {
-    bytes[i] = rand() % 256;
-  }
-
-  int index = 0;
-  bytes[index+0] = 0xAA;
-  bytes[index+1] = 0xAA;
-  bytes[index+2] = 0x00;
-  bytes[index+3] = 0x64;
-  bytes[index+4] = 0x00;
-  bytes[index+5] = 0x64;
-
-  gr::blocks::kernel::unpack_k_bits unpacker = gr::blocks::kernel::unpack_k_bits(8);
-  unpacker.unpack(bits, bytes, nbytes);
-
-  // Convert bits to +/-1 and add a small bit of noise
-  std::vector<float> sub(nbits, 1.0f);
-  volk_8i_s32f_convert_32f(soft, (const int8_t*)bits, 1.0, nbits);
-  volk_32f_s32f_multiply_32f(soft, soft, 2.0, nbits);
-  volk_32f_x2_subtract_32f(soft, soft, &sub[0], nbits);
-  for(unsigned int i = 0; i < nbits; i++) {
-    soft[i] += 0.1 * ((float)rand() / (float)RAND_MAX - 0.5);
-  }
-
-  std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::packet_formatter_default::sptr formatter;
-  formatter = gr::digital::packet_formatter_default::make(ac);
-  formatter->set_threshold(0);
-
-  int count = 0;
-  std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse_soft(nbits, soft, info, count);
-
-  CPPUNIT_ASSERT(ret);
-  CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
-
-  pmt::pmt_t dict = info[0];
-  int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
-                                                pmt::PMT_NIL));
-  int skip_samps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("skip samps"),
-                                              pmt::PMT_NIL));
-
-  int hdr_bits = (int)formatter->header_nbits();
-  int expected_bits = nbits - hdr_bits;
-  int expected_skip = index * 8 + hdr_bits;
-  CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
-  CPPUNIT_ASSERT_EQUAL(expected_skip, skip_samps);
-
-  volk_free(bytes);
-  volk_free(bits);
-}
-
-
-void
 qa_packet_formatters::test_counter_format()
 {
   static const int N = 4800;
@@ -226,7 +157,7 @@ qa_packet_formatters::test_counter_format()
 
   uint16_t expected_bps = 2;
   gr::digital::packet_formatter_counter::sptr formatter;
-  formatter = gr::digital::packet_formatter_counter::make(ac, expected_bps);
+  formatter = gr::digital::packet_formatter_counter::make(ac, 0, expected_bps);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
@@ -310,90 +241,11 @@ qa_packet_formatters::test_counter_parse()
   uint16_t expected_bps = 2;
   std::string ac = "1010101010101010"; //0xAAAA
   gr::digital::packet_formatter_counter::sptr formatter;
-  formatter = gr::digital::packet_formatter_counter::make(ac, expected_bps);
-  formatter->set_threshold(0);
+  formatter = gr::digital::packet_formatter_counter::make(ac, 0, expected_bps);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;
   bool ret = formatter->parse(nbits, bits, info, count);
-
-  CPPUNIT_ASSERT(ret);
-  CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
-
-  pmt::pmt_t dict = info[0];
-  int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
-                                                pmt::PMT_NIL));
-  int skip_samps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("skip samps"),
-                                              pmt::PMT_NIL));
-  int bps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("bps"),
-                                       pmt::PMT_NIL));
-  int counter = pmt::to_long(pmt::dict_ref(dict, pmt::intern("counter"),
-                                           pmt::PMT_NIL));
-
-  int hdr_bits = (int)formatter->header_nbits();
-  int expected_bits = nbits - hdr_bits;
-  int expected_skip = index * 8 + hdr_bits;
-  CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
-  CPPUNIT_ASSERT_EQUAL(expected_skip, skip_samps);
-  CPPUNIT_ASSERT_EQUAL(expected_bps, (uint16_t)bps);
-  CPPUNIT_ASSERT_EQUAL(0, counter);
-
-  volk_free(bytes);
-  volk_free(bits);
-}
-
-void
-qa_packet_formatters::test_counter_parse_soft()
-{
-  static const int nbytes = 110;
-  static const int nbits = 8*nbytes;
-  unsigned char *bytes = (unsigned char*)volk_malloc(nbytes*sizeof(unsigned char),
-                                                     volk_get_alignment());
-  unsigned char *bits = (unsigned char*)volk_malloc(nbits*sizeof(unsigned char),
-                                                    volk_get_alignment());
-  float *soft = (float*)volk_malloc(nbits*sizeof(float),
-                                    volk_get_alignment());
-
-  srand(time(NULL));
-
-  // Fill bytes with random values
-  for(unsigned int i = 0; i < nbytes; i++) {
-    bytes[i] = rand() % 256;
-  }
-
-  int index = 0;
-  bytes[index+0] = 0xAA;
-  bytes[index+1] = 0xAA;
-  bytes[index+2] = 0x00;
-  bytes[index+3] = 0x64;
-  bytes[index+4] = 0x00;
-  bytes[index+5] = 0x64;
-  bytes[index+6] = 0x00;
-  bytes[index+7] = 0x02;
-  bytes[index+8] = 0x00;
-  bytes[index+9] = 0x00;
-
-  gr::blocks::kernel::unpack_k_bits unpacker = gr::blocks::kernel::unpack_k_bits(8);
-  unpacker.unpack(bits, bytes, nbytes);
-
-  // Convert bits to +/-1 and add a small bit of noise
-  std::vector<float> sub(nbits, 1.0f);
-  volk_8i_s32f_convert_32f(soft, (const int8_t*)bits, 1.0, nbits);
-  volk_32f_s32f_multiply_32f(soft, soft, 2.0, nbits);
-  volk_32f_x2_subtract_32f(soft, soft, &sub[0], nbits);
-  for(unsigned int i = 0; i < nbits; i++) {
-    soft[i] += 0.1 * ((float)rand() / (float)RAND_MAX - 0.5);
-  }
-
-  uint16_t expected_bps = 2;
-  std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::packet_formatter_counter::sptr formatter;
-  formatter = gr::digital::packet_formatter_counter::make(ac, expected_bps);
-  formatter->set_threshold(0);
-
-  int count = 0;
-  std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse_soft(nbits, soft, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());

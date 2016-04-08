@@ -2,7 +2,7 @@
   <name>Packet Parser</name>
   <key>digital_packet_parse_b</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_parse_b($formatter, $threshold)</make>
+  <make>digital.packet_parse_b($formatter)</make>
 
   <param>
     <name>Formatter</name>
@@ -10,16 +10,9 @@
     <type>raw</type>
   </param>
 
-  <param>
-    <name>Threshold</name>
-    <key>threshold</key>
-    <value>0</value>
-    <type>int</type>
-  </param>
-
   <sink>
     <name>in</name>
-    <type>$type.input</type>
+    <type>byte</type>
   </sink>
 
   <source>

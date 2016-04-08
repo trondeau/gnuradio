@@ -35,14 +35,16 @@ namespace gr {
   namespace digital {
 
     packet_formatter_counter::sptr
-    packet_formatter_counter::make(const std::string &access_code, int bps)
+    packet_formatter_counter::make(const std::string &access_code,
+                                   int threshold, int bps)
     {
       return packet_formatter_counter::sptr
-        (new packet_formatter_counter(access_code, bps));
+        (new packet_formatter_counter(access_code, threshold, bps));
     }
 
-    packet_formatter_counter::packet_formatter_counter(const std::string &access_code, int bps)
-      : packet_formatter_default(access_code)
+    packet_formatter_counter::packet_formatter_counter(const std::string &access_code,
+                                                       int threshold, int bps)
+      : packet_formatter_default(access_code, threshold)
     {
       d_bps = bps;
       d_counter = 0;
@@ -84,12 +86,6 @@ namespace gr {
     packet_formatter_counter::header_nbits() const
     {
       return d_access_code_len + 8*4*sizeof(uint16_t);
-    }
-
-    size_t
-    packet_formatter_counter::header_nbytes() const
-    {
-      return d_access_code_len/8 + 4*sizeof(uint16_t);
     }
 
     bool

@@ -32,6 +32,8 @@ packet_header_ofdm_sptr.__repr__ = lambda self: "<packet_header_ofdm>"
 packet_header_ofdm = packet_header_ofdm .make;
 %}
 
+%template(packet_formatter_base_sptr) boost::shared_ptr<gr::digital::packet_formatter_base>;
+
 %template(packet_formatter_default_sptr) boost::shared_ptr<gr::digital::packet_formatter_default>;
 %pythoncode %{
 packet_formatter_default_sptr.__repr__ = lambda self: "<packet_formatter_default>"

@@ -63,7 +63,8 @@ namespace gr {
       : public packet_formatter_default
     {
      public:
-      packet_formatter_counter(const std::string &access_code, int bps);
+      packet_formatter_counter(const std::string &access_code,
+                               int threshold, int bps);
       virtual ~packet_formatter_counter();
 
       /*!
@@ -94,18 +95,24 @@ namespace gr {
       virtual size_t header_nbits() const;
 
       /*!
-       * Returns the length of the formatted header in bytes.
-       */
-      virtual size_t header_nbytes() const;
-
-      /*!
        * Factory to create an async packet header formatter; returns
        * an sptr to the object.
+       *
+       * \param access_code An access code that is used to find and
+       * synchronize the start of a packet. Used in the parser and in
+       * other blocks like a corr_est block that helps trigger the
+       * receiver. Can be up to 64-bits long.
+       * \param threshold How many bits can be wrong in the access
+       * code and still count as correct.
+       * \param bps The number of bits/second used in the payload's
+       * modulator.
        */
-      static sptr make(const std::string &access_code, int bps);
+      static sptr make(const std::string &access_code,
+                       int threshold, int bps);
 
     protected:
       uint16_t d_counter;    //!< keeps track of the number of packets transmitted
+      uint16_t d_bps;        //!< bits/sec of payload modulation
 
       //! Verify that the header is valid
       bool header_ok();

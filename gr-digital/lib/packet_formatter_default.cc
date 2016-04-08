@@ -1,5 +1,5 @@
 /* -*- c++ -*- */
-/* Copyright 2014-2015 Free Software Foundation, Inc.
+/* Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -33,25 +33,24 @@ namespace gr {
   namespace digital {
 
     packet_formatter_default::sptr
-    packet_formatter_default::make(const std::string &access_code)
+    packet_formatter_default::make(const std::string &access_code,
+                                   int threshold)
     {
       return packet_formatter_default::sptr
-        (new packet_formatter_default(access_code));
+        (new packet_formatter_default(access_code, threshold));
     }
 
-    packet_formatter_default::packet_formatter_default(const std::string &access_code)
+    packet_formatter_default::packet_formatter_default(const std::string &access_code,
+                                                       int threshold)
+      : packet_formatter_base(),
+        d_data_reg(0), d_mask(0), d_threshold(0),
+        d_pkt_len(0), d_pkt_count(0), d_nbits(0)
     {
       if(!set_access_code(access_code)) {
         throw std::runtime_error("packet_formatter_default: Setting access code failed");
       }
 
-      d_pkt_len = 0;
-      enter_search();
-      d_threshold = 0;
-      d_data_reg = 0;
-      d_bps = 1; // set in child classes that use this
-
-      configure_default_loggers(d_logger, d_debug_logger, "packet formatter");
+      set_threshold(threshold);
     }
 
     packet_formatter_default::~packet_formatter_default()
@@ -63,7 +62,6 @@ namespace gr {
     {
       d_access_code_len = access_code.length();	// # of bits in the access code
 
-      //if((access_code.size() % 8 != 0) || (access_code.size() > 64)) {
       if(access_code.size() > 64) {
         return false;
       }
@@ -88,9 +86,10 @@ namespace gr {
     void
     packet_formatter_default::set_threshold(unsigned int thresh)
     {
-      if(d_threshold > d_access_code_len)
+      if(d_threshold > d_access_code_len) {
         throw std::runtime_error("packet_formatter_default: Cannot set threshold " \
                                  "larger than the access code length.");
+      }
       d_threshold = thresh;
     }
 
@@ -182,18 +181,6 @@ namespace gr {
     packet_formatter_default::header_nbits() const
     {
       return d_access_code_len + 8*2*sizeof(uint16_t);
-    }
-
-    size_t
-    packet_formatter_default::header_nbytes() const
-    {
-      return d_access_code_len/8 + 2*sizeof(uint16_t);
-    }
-
-    inline void
-    packet_formatter_default::enter_search()
-    {
-      d_state = STATE_SYNC_SEARCH;
     }
 
     inline void

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2014 Free Software Foundation, Inc.
+ * Copyright 2015,2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -45,18 +45,14 @@ namespace gr {
      * code as a sync word to find the start of a frame.
      *
      * The block uses a formatter derived from a
-     * packet_formatter_default formatter class. The only thing
-     * this class is required to have in the header is an access code
-     * of up to 64 bits. This block uses the formatter and access code
-     * to do the frame synchronization. An access code is found if the
-     * received bits have fewer than \p threshold errors detected.
+     * packet_formatter_default formatter class.
      *
-     * Once the frame access code is detected, the block uses the
-     * formatter's parse_header to decode the remaining
-     * header. Generally, as in the default header case, the header
-     * will contain the length of the frame's payload. That and
-     * anything else in the header will generally go into the PDU's
-     * meta-data dictionary.
+     * Once the frame is detected (usually through the use of an
+     * access code), the block uses the formatter's parser to decode
+     * the remaining header. Generally, as in the default header case,
+     * the header will contain the length of the frame's payload. That
+     * and anything else in the header will generally go into the
+     * PDU's meta-data dictionary.
      *
      * The block will output a PDU that contains frame's header info
      * in the meta-data portion of the PDU and the payload itself. The
@@ -74,23 +70,8 @@ namespace gr {
        *
        * \param formatter The formatter class to use when reading the
        *        header.
-       * \param threshold How many bits in the access code the
-       *        \p formatter can miss and still trigger a hit.
        */
-      static sptr make(const packet_formatter_default::sptr &formatter,
-                       unsigned int threshold=0);
-
-      /*!
-       * Sets the threshold level for the formatter when finding the
-       * access code. See packet_formatter_default::set_threshold
-       * for more details.
-       */
-      virtual void set_threshold(unsigned int thresh) = 0;
-
-      /*!
-       * Gets the access code detection threshold from the formatter.
-       */
-      virtual unsigned int threshold() const = 0;
+      static sptr make(const packet_formatter_default::sptr &formatter);
     };
 
   } // namespace digital
