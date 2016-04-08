@@ -219,7 +219,6 @@ namespace gr {
         in += d_itemsize;
         nread++;
         d_state = STATE_FIND_TRIGGER;
-        GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_FIND_TRIGGER");
         // The following break was added to this state as well as STATE_FIND_TRIGGER
         // and STATE_HEADER. There appears to be a bug somewhere in this code without
         // the breaks that can lead to failure of this block. With the breaks in the code
@@ -239,14 +238,12 @@ namespace gr {
         consume_each (trigger_offset);
         in += trigger_offset * d_itemsize;
         d_state = STATE_HEADER;
-        GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_HEADER");
         break;
 
       case STATE_HEADER:
         if(check_items_available(d_header_len, ninput_items, noutput_items, nread)) {
           copy_n_symbols(in, out_header, PORT_HEADER, d_header_len);
           d_state = STATE_WAIT_FOR_MSG;
-          GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_WAIT_FOR_MSG");
           add_special_tags();
           produce(PORT_HEADER,
                   d_header_len * (d_output_symbols ? 1 : d_items_per_symbol));
@@ -265,7 +262,6 @@ namespace gr {
         consume_each (nread);
         in += nread * d_itemsize;
         d_state = STATE_PAYLOAD;
-        GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_PAYLOAD");
         break;
 
       case STATE_PAYLOAD:
@@ -277,7 +273,6 @@ namespace gr {
           consume_each ((d_curr_payload_len - 1) * (d_items_per_symbol + d_gi)); // Same here
           set_min_noutput_items(d_output_symbols ? 1 : (d_items_per_symbol + d_gi));
           d_state = STATE_FIND_TRIGGER;
-          GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_FIND_TRIGGER");
         }
 	break;
 
@@ -328,14 +323,12 @@ namespace gr {
       d_payload_tag_keys.clear();
       d_payload_tag_values.clear();
       d_state = STATE_HEADER_RX_FAIL;
-      //GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_HEADER_RX_FAIL");
 
       if(pmt::is_integer(header_data)) {
 	d_curr_payload_len = pmt::to_long(header_data);
 	d_payload_tag_keys.push_back(d_len_tag_key);
 	d_payload_tag_values.push_back(header_data);
 	d_state = STATE_HEADER_RX_SUCCESS;
-        GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_HEADER_RX_SUCCESS");
       }
       else if(pmt::is_dict(header_data)) {
 	pmt::pmt_t dict_items(pmt::dict_items(header_data));
@@ -346,7 +339,6 @@ namespace gr {
 	  if(pmt::equal(pmt::car(this_item), d_len_tag_key)) {
 	    d_curr_payload_len = pmt::to_long(pmt::cdr(this_item));
 	    d_state = STATE_HEADER_RX_SUCCESS;
-            GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_HEADER_RX_SUCCESS");
 	  }
 	  dict_items = pmt::cdr(dict_items);
 	}
@@ -365,7 +357,6 @@ namespace gr {
       if(d_state == STATE_HEADER_RX_SUCCESS) {
 	if((d_curr_payload_len * (d_output_symbols ? 1 : d_items_per_symbol)) > max_output_buffer(1)/2) {
 	  d_state = STATE_HEADER_RX_FAIL;
-          GR_LOG_DEBUG(d_debug_logger, "HPD state = STATE_HEADER_RX_FAIL");
 	  GR_LOG_INFO(d_logger, boost::format("Detected a packet larger than max frame size (%1% symbols)") \
                       % d_curr_payload_len);
 	}
