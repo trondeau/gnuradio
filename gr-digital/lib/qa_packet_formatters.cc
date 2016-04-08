@@ -127,14 +127,10 @@ qa_packet_formatters::test_default_parse()
   pmt::pmt_t dict = info[0];
   int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
                                                 pmt::PMT_NIL));
-  int skip_samps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("skip samps"),
-                                              pmt::PMT_NIL));
 
   int hdr_bits = (int)formatter->header_nbits();
   int expected_bits = nbits - hdr_bits;
-  int expected_skip = index * 8 + hdr_bits;
   CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
-  CPPUNIT_ASSERT_EQUAL(expected_skip, skip_samps);
 
   volk_free(bytes);
   volk_free(bits);
@@ -253,8 +249,6 @@ qa_packet_formatters::test_counter_parse()
   pmt::pmt_t dict = info[0];
   int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
                                                 pmt::PMT_NIL));
-  int skip_samps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("skip samps"),
-                                              pmt::PMT_NIL));
   int bps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("bps"),
                                        pmt::PMT_NIL));
   int counter = pmt::to_long(pmt::dict_ref(dict, pmt::intern("counter"),
@@ -262,9 +256,7 @@ qa_packet_formatters::test_counter_parse()
 
   int hdr_bits = (int)formatter->header_nbits();
   int expected_bits = nbits - hdr_bits;
-  int expected_skip = index * 8 + hdr_bits;
   CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
-  CPPUNIT_ASSERT_EQUAL(expected_skip, skip_samps);
   CPPUNIT_ASSERT_EQUAL(expected_bps, (uint16_t)bps);
   CPPUNIT_ASSERT_EQUAL(0, counter);
 

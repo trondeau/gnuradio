@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2014 Free Software Foundation, Inc.
+# Copyright 2015,2016 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -35,7 +35,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
 
     def test_packet_format_async_default(self):
         ac = packet_utils.default_access_code
-        formatter = digital.packet_formatter_default(ac)
+        formatter = digital.packet_formatter_default(ac, 0)
 
         pkt_header = digital.packet_format_async(formatter)
         snk_hdr = blocks.message_debug()
@@ -83,7 +83,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
     def test_packet_format_async_counter(self):
         bps = 2
         ac = packet_utils.default_access_code
-        formatter = digital.packet_formatter_counter(ac, 2)
+        formatter = digital.packet_formatter_counter(ac, 0, 2)
 
         pkt_header = digital.packet_format_async(formatter)
         snk_hdr = blocks.message_debug()
