@@ -1,24 +1,8 @@
 <block>
   <name>Packet Parser</name>
-  <key>digital_packet_parse_x</key>
+  <key>digital_packet_parse_b</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_parse_$(type)($formatter, $threshold)</make>
-
-  <param>
-    <name>Type</name>
-    <key>type</key>
-    <type>enum</type>
-    <option>
-      <name>Hard Bits</name>
-      <key>b</key>
-      <opt>input:byte</opt>
-    </option>
-    <option>
-      <name>Soft Bits</name>
-      <key>f</key>
-      <opt>input:float</opt>
-    </option>
-  </param>
+  <make>digital.packet_parse_b($formatter, $threshold)</make>
 
   <param>
     <name>Formatter</name>

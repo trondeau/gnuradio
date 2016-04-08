@@ -156,11 +156,13 @@ namespace gr {
 	  while(nbits_processed <= nbits_in) {    // Shift bits one at a time into header
             d_hdr_reg.insert_bit(input[nbits_processed++]);
             if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
+
 	      // we have a full header, check to see if it has been received properly
 	      if(header_ok()) {
                 int payload_len = header_payload();
 		enter_have_header(payload_len);
                 info.push_back(d_info);
+                return true;
               }
 	      else {
 		enter_search();    // bad header
@@ -173,63 +175,8 @@ namespace gr {
         }
       }
 
-      return true;
+      return false;
     }
-
-    bool
-    packet_formatter_default::parse_soft(int nbits_in,
-                                         const float *input,
-                                         std::vector<pmt::pmt_t> &info,
-                                         int &nbits_processed)
-    {
-      nbits_processed = 0;
-
-      while(nbits_processed < nbits_in) {
-        switch(d_state) {
-	case STATE_SYNC_SEARCH:    // Look for the access code correlation
-
-	  while(nbits_processed < nbits_in) {
-            // shift in new data
-            d_data_reg = (d_data_reg << 1) | (gr::branchless_binary_slicer(input[nbits_processed++]) & 0x1);
-
-            // compute hamming distance between desired access code and current data
-            uint64_t wrong_bits = 0;
-            uint64_t nwrong = d_threshold+1;
-
-            wrong_bits = (d_data_reg ^ d_access_code) & d_mask;
-            volk_64u_popcnt(&nwrong, wrong_bits);
-
-            if(nwrong <= d_threshold) {
-              enter_have_sync();
-              break;
-            }
-          }
-          break;
-
-	case STATE_HAVE_SYNC:
-	  while(nbits_processed < nbits_in) {    // Shift bits one at a time into header
-            d_hdr_reg.insert_bit(gr::branchless_binary_slicer(input[nbits_processed++]));
-
-            if(d_hdr_reg.length() == (header_nbits()-d_access_code_len)) {
-	      // we have a full header, check to see if it has been received properly
-	      if(header_ok()) {
-                int payload_len = header_payload();
-		enter_have_header(8*payload_len);
-                info.push_back(d_info);
-              }
-	      else {
-		enter_search();    // bad header
-              }
-              break;
-            }
-          }
-          break;
-        }
-      }
-
-      return true;
-    }
-
 
     size_t
     packet_formatter_default::header_nbits() const

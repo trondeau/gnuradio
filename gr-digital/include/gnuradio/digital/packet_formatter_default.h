@@ -43,18 +43,15 @@ namespace gr {
      * \li packet_formatter_default::format: takes in a
      * payload and creates a header from it.
      *
-     * \li packet_formatter_default::parse receive bits and
-     * extract the header info.
-     *
-     * Another version of the parser is
-     * packet_formatter_default::parse_soft that receives soft
-     * decisions instead of hard bits.
+     * \li packet_formatter_default::parse receive bits and extract
+     * the header info. These are expected to be hard bits (0 or 1)
+     * that have either been sliced or gone through an FEC decoder.
      *
      * This class is specifically designed to work with packets/frames
      * in the asynchronous PDU architecture of GNU Radio. See the
      * packet_format_async block for formatting the headers onto
-     * payloads and packet_parse_b and packet_parse_f blocks for
-     * parsing headers in a receiver.
+     * payloads and packet_parse_b block for parsing headers in a
+     * receiver.
      *
      * The Packet Format block takes in a PDU and uses a formatter
      * class derived from this class to add a header onto the
@@ -68,18 +65,18 @@ namespace gr {
      * flowgraph can then separately modulate and combine these two
      * pieces in the follow-on processing.
      *
-     * The packet_sync_b and packet_sync_f blocks use the same
-     * formatter class by calling the 'parse' or 'parse_soft' to parse
-     * the received packet headers. These parser blocks are sinks for
-     * the data stream and emit a message from an 'info' port that
-     * contains an PMT dictionary of the information in the
-     * header. The formatter class determines the dictionary keys.
+     * The packet_sync_b block uses the formatter class by calling the
+     * 'parse' function to parse the received packet headers. This
+     * parser block is a sink for the data stream and emits a message
+     * from an 'info' port that contains an PMT dictionary of the
+     * information in the header. The formatter class determines the
+     * dictionary keys.
      *
      * This is the base class for dealing with formatting headers for
      * different protocols and purposes. For other header formatting
      * behaviors, create a child class from here and overload the
-     * format, parse, parse_soft, and parsing state machine functions
-     * as necessary.
+     * format, parse, and parsing state machine functions as
+     * necessary.
      *
      * The default header created in this base class consists of an
      * access code and the packet length. The length is encoded as a
@@ -190,45 +187,6 @@ namespace gr {
                          int &nbits_processed);
 
       /*!
-       * Parses a header of the form:
-       *
-       * \verbatim
-           | access code | pkt len | pkt len | payload |
-         \endverbatim
-       *
-       * This is implemented as a state machine that starts off
-       * searching for the access code. Once found, the access code is
-       * used to find the start of the packet and the following
-       * header. This default header encodes the length of the payload
-       * a 16 bit integer twice. The state machine finds the header
-       * and checks that both payload length values are the same. It
-       * then goes into its final state that reads in the payload
-       * (based on the payload length) and produces a payload as a PMT
-       * f32 vector of soft decision bits.
-       *
-       * This form of the header parser is specifically intended for
-       * use with FEC decoders, in particular the
-       * gr::fec::async_decoder.
-       *
-       * \param nbits_in The number of soft decisions in the input array.
-       * \param input The input as soft decision floats.
-       * \param info A vector of pmt::dicts to hold any meta data or
-       *        info about the PDU. When parsing the header, the
-       *        formatter can add info from the header into this dict.
-       *        Each packet has a single PMT dictionary of info, so
-       *        the vector length is the number of packets received
-       *        extracted during one call to this parser function.
-       * \param nbits_processed Number of input bits actually
-       *        processed; If all goes well, this is nbits_in. A
-       *        premature return after a bad header could be less than
-       *        this.
-       */
-      virtual bool parse_soft(int nbits_in,
-                              const float *input,
-                              std::vector<pmt::pmt_t> &info,
-                              int &nbits_processed);
-
-      /*!
        * Returns the length of the formatted header in bits.
        */
       virtual size_t header_nbits() const;
@@ -281,7 +239,7 @@ namespace gr {
       header_buffer d_hdr_reg;
 
       int d_pkt_len;                 //!< Length of the packet to put into the output buffer
-      int d_pkt_count;               //!< Number of bytes/soft bits already received
+      int d_pkt_count;               //!< Number of bytes bits already received
       pmt::pmt_t d_info;             //!< info captured from the header
 
       uint16_t d_bps;                //!< bits/sec of payload modulation

@@ -95,7 +95,6 @@ install(FILES
     packet_formatter_counter.h
     packet_format_async.h
     packet_parse_b.h
-    packet_parse_f.h
     packet_header_default.h
     packet_header_ofdm.h
     packet_headergenerator_bb.h

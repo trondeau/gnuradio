@@ -74,7 +74,7 @@
     <block>digital_framer_sink_1</block>
     <block>variable_packet_formatter_default</block>
     <block>digital_packet_format_async</block>
-    <block>digital_packet_parse_x</block>
+    <block>digital_packet_parse_b</block>
     <block>digital_header_payload_demux</block>
     <block>digital_packet_headergenerator_bb</block>
     <block>digital_packet_headergenerator_bb_default</block>

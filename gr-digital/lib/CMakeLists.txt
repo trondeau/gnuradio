@@ -111,7 +111,6 @@ list(APPEND digital_sources
     packet_formatter_counter.cc
     packet_format_async_impl.cc
     packet_parse_b_impl.cc
-    packet_parse_f_impl.cc
     packet_header_default.cc
     packet_header_ofdm.cc
     packet_headergenerator_bb_impl.cc
