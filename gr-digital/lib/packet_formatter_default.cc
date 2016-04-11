@@ -213,7 +213,7 @@ namespace gr {
       uint16_t len = d_hdr_reg.extract_field16(0, 16);
 
       d_info = pmt::make_dict();
-      d_info = pmt::dict_add(d_info, pmt::intern("payload bits"),
+      d_info = pmt::dict_add(d_info, pmt::intern("payload symbols"),
                              pmt::from_long(8*len));
       return static_cast<int>(len);
     }

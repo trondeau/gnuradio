@@ -68,9 +68,11 @@ namespace gr {
      * contains the following keys. All formatter blocks MUST produce
      * these two values in any dictionary.
      *
-     * \li "payload bits": the number of bits in the payload. The
-     * payload decoder will have to know how this relates to the
-     * number of symbols received.
+     * \li "payload symbols": the number of symbols in the
+     * payload. The payload decoder will have to know how this relates
+     * to the number of bits received. This block knows nothing about
+     * the payload modulation or the number of bits/symbol. Use the
+     * gr::digital::packet_formatter_counter for that purpose.
      *
      * \sa packet_formatter_counter
      * \sa packet_formatter_1

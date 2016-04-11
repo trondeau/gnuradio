@@ -107,8 +107,8 @@ namespace gr {
       d_bps = bps;
 
       d_info = pmt::make_dict();
-      d_info = pmt::dict_add(d_info, pmt::intern("payload bits"),
-                             pmt::from_long(8*len));
+      d_info = pmt::dict_add(d_info, pmt::intern("payload symbols"),
+                             pmt::from_long(8*len / d_bps));
       d_info = pmt::dict_add(d_info, pmt::intern("bps"),
                              pmt::from_long(bps));
       d_info = pmt::dict_add(d_info, pmt::intern("counter"),
