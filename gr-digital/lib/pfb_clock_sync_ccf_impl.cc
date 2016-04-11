@@ -473,7 +473,8 @@ namespace gr {
           get_tags_in_range(xtags, 0, d_old_in, d_new_in);
           for(itags = xtags.begin(); itags != xtags.end(); itags++) {
             tag_t new_tag = *itags;
-            new_tag.offset = d_last_out + d_taps_per_filter/(2*d_sps) - 2;
+            //new_tag.offset = d_last_out + d_taps_per_filter/(2*d_sps) - 2;
+            new_tag.offset = d_last_out + d_taps_per_filter/4 - 2;
             add_item_tag(0, new_tag);
           }
           d_old_in = d_new_in;
