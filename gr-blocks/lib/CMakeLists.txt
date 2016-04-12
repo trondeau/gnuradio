@@ -152,6 +152,7 @@ list(APPEND gr_blocks_sources
     multiply_const_vff_impl.cc
     multiply_matrix_cc_impl.cc
     multiply_matrix_ff_impl.cc
+    multiply_by_tag_value_cc_impl.cc
     nlog10_ff_impl.cc
     nop_impl.cc
     null_sink_impl.cc

@@ -132,6 +132,7 @@ install(FILES
     multiply_const_vcc.h
     multiply_const_ff.h
     multiply_const_vff.h
+    multiply_by_tag_value_cc.h
     nlog10_ff.h
     nop.h
     null_sink.h
