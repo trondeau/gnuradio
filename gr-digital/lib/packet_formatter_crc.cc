@@ -60,6 +60,7 @@ namespace gr {
     {
       uint8_t* bytes_out = (uint8_t*)volk_malloc(header_nbytes(),
                                                  volk_get_alignment());
+      memset(bytes_out, 0, header_nbytes());
 
       // Should this throw instead of mask if the payload is too big
       // for 12-bit representation?
@@ -75,7 +76,7 @@ namespace gr {
       concat = (d_header_number << 12) | (nbytes_in);
 
       header_buffer header(bytes_out);
-      header.add_field32(concat, 24);
+      header.add_field32(concat, 24, true);
       header.add_field8(crc);
 
       d_header_number++;
@@ -127,8 +128,9 @@ namespace gr {
     bool
     packet_formatter_crc::header_ok()
     {
-      uint16_t pktnum = d_hdr_reg.extract_field16(0, 12);
-      uint16_t pktlen = d_hdr_reg.extract_field16(12, 12);
+      uint32_t pkt = d_hdr_reg.extract_field32(0, 24, true);
+      uint16_t pktlen = static_cast<uint16_t>((pkt >> 8) & 0x0fff);
+      uint16_t pktnum = static_cast<uint16_t>((pkt >> 20) & 0x0fff);
       uint8_t crc_rcvd = d_hdr_reg.extract_field8(24);
 
       // Check CRC8
@@ -143,8 +145,9 @@ namespace gr {
     int
     packet_formatter_crc::header_payload()
     {
-      uint16_t pktnum = d_hdr_reg.extract_field16(0, 12);
-      uint16_t pktlen = d_hdr_reg.extract_field16(12, 12);
+      uint32_t pkt = d_hdr_reg.extract_field32(0, 24, true);
+      uint16_t pktlen = static_cast<uint16_t>((pkt >> 8) & 0x0fff);
+      uint16_t pktnum = static_cast<uint16_t>((pkt >> 20) & 0x0fff);
 
       d_info = pmt::make_dict();
       d_info = pmt::dict_add(d_info, d_len_key_name,

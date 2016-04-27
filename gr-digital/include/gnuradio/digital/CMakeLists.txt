@@ -95,6 +95,7 @@ install(FILES
     packet_formatter_default.h
     packet_formatter_counter.h
     packet_formatter_crc.h
+    packet_formatter_ofdm.h
     packet_format_async.h
     packet_format_bb.h
     packet_parse_b.h

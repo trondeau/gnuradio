@@ -52,3 +52,9 @@ packet_formatter_counter = packet_formatter_counter .make;
 packet_formatter_crc_sptr.__repr__ = lambda self: "<packet_formatter_crc>"
 packet_formatter_crc = packet_formatter_crc .make;
 %}
+
+%template(packet_formatter_ofdm_sptr) boost::shared_ptr<gr::digital::packet_formatter_ofdm>;
+%pythoncode %{
+packet_formatter_ofdm_sptr.__repr__ = lambda self: "<packet_formatter_ofdm>"
+packet_formatter_ofdm = packet_formatter_ofdm .make;
+%}
