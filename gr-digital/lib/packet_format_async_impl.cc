@@ -33,13 +33,13 @@ namespace gr {
   namespace digital {
 
     packet_format_async::sptr
-    packet_format_async::make(const packet_formatter_default::sptr &formatter)
+    packet_format_async::make(const packet_formatter_base::sptr &formatter)
     {
       return gnuradio::get_initial_sptr
         (new packet_format_async_impl(formatter));
     }
 
-    packet_format_async_impl::packet_format_async_impl(const packet_formatter_default::sptr &formatter)
+    packet_format_async_impl::packet_format_async_impl(const packet_formatter_base::sptr &formatter)
       : block("packet_format_async",
               io_signature::make(0, 0, 0),
               io_signature::make(0, 0, 0))

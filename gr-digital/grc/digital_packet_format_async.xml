@@ -1,5 +1,5 @@
 <block>
-  <name>Packet Header Formatter</name>
+  <name>Packet Header Formatter (Async)</name>
   <key>digital_packet_format_async</key>
   <import>from gnuradio import digital</import>
   <make>digital.packet_format_async($formatter)</make>

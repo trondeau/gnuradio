@@ -25,7 +25,7 @@
 #define INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_H
 
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_default.h>
+#include <gnuradio/digital/packet_formatter_base.h>
 #include <gnuradio/block.h>
 
 namespace gr {
@@ -44,18 +44,19 @@ namespace gr {
      *
      * The header that is created and transmitted out of the 'header'
      * message port as a PDU. The header is based entirely on the \p
-     * formatter, which is a packet_formatter_default or a child
-     * class. All of these packet header formatters operate the same:
-     * they take in the payload data as well as possible extra
-     * metadata info about the PDU; the formatter then returns the
-     * output PDU as a PMT argument along with any changes to the
-     * metadata info PMT.
+     * formatter, which is an object derived from the
+     * packet_formatter_base class. All of these packet header
+     * formatters operate the same: they take in the payload data as
+     * well as possible extra metadata info about the PDU; the
+     * formatter then returns the output PDU as a PMT argument along
+     * with any changes to the metadata info PMT.
      *
      * For different packet header formatting needs, we can define new
-     * classes that inherit from the packet_formatter_default block
-     * and which overload the packet_formatter_default::format
+     * classes that inherit from the packet_formatter_base block
+     * and which overload the packet_formatter_base::format
      * function.
      *
+     * \sa packet_formatter_base
      * \sa packet_formatter_default
      * \sa packet_formatter_counter
      *
@@ -75,12 +76,9 @@ namespace gr {
        * Make a packet header block using a given \p formatter.
        *
        * \param formatter The formatter class to use when creating the
-       *        header for the packet. The default formatter is
-       *        packet_formatter_default and just applies an access
-       *        code and a header that repeats the PDU's frame length
-       *        twice.
+       *        header for the packet.
        */
-      static sptr make(const packet_formatter_default::sptr &formatter);
+      static sptr make(const packet_formatter_base::sptr &formatter);
     };
 
   } // namespace digital

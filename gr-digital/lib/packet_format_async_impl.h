@@ -32,7 +32,7 @@ namespace gr {
       : public packet_format_async
     {
      private:
-      packet_formatter_default::sptr d_formatter;
+      packet_formatter_base::sptr d_formatter;
 
       pmt::pmt_t d_in_port;
       pmt::pmt_t d_hdr_port, d_pld_port;
@@ -40,7 +40,7 @@ namespace gr {
       void append(pmt::pmt_t msg);
 
      public:
-      packet_format_async_impl(const packet_formatter_default::sptr &formatter);
+      packet_format_async_impl(const packet_formatter_base::sptr &formatter);
       ~packet_format_async_impl();
     };
 

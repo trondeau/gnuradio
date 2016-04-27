@@ -208,7 +208,7 @@ namespace gr {
        * Add an 8-bit field to the header.
        *
        * \param data The 8-bit data item.
-       * \param len Length (in bits) of \p data (here, always 1).
+       * \param len Length (in bits) of \p data.
        * \param be Set to 'true' if data is already big endian.
        */
       void add_field8(uint8_t data, int len=8, bool be=false);
