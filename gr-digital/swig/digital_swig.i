@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2015 Free Software Foundation, Inc.
+ * Copyright 2011-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -103,7 +103,9 @@
 #include "gnuradio/digital/packet_formatter_base.h"
 #include "gnuradio/digital/packet_formatter_default.h"
 #include "gnuradio/digital/packet_formatter_counter.h"
+#include "gnuradio/digital/packet_formatter_crc.h"
 #include "gnuradio/digital/packet_format_async.h"
+#include "gnuradio/digital/packet_format_bb.h"
 #include "gnuradio/digital/packet_parse_b.h"
 #include "gnuradio/digital/packet_header_default.h"
 #include "gnuradio/digital/packet_header_ofdm.h"
@@ -189,7 +191,9 @@
 %include "gnuradio/digital/packet_formatter_base.h"
 %include "gnuradio/digital/packet_formatter_default.h"
 %include "gnuradio/digital/packet_formatter_counter.h"
+%include "gnuradio/digital/packet_formatter_crc.h"
 %include "gnuradio/digital/packet_format_async.h"
+%include "gnuradio/digital/packet_format_bb.h"
 %include "gnuradio/digital/packet_parse_b.h"
 %include "gnuradio/digital/packet_header_default.h"
 %include "gnuradio/digital/packet_header_ofdm.h"
@@ -260,6 +264,7 @@ GR_SWIG_BLOCK_MAGIC2(digital, ofdm_sampler);
 GR_SWIG_BLOCK_MAGIC2(digital, ofdm_serializer_vcc);
 GR_SWIG_BLOCK_MAGIC2(digital, ofdm_sync_sc_cfb);
 GR_SWIG_BLOCK_MAGIC2(digital, packet_format_async);
+GR_SWIG_BLOCK_MAGIC2(digital, packet_format_bb);
 GR_SWIG_BLOCK_MAGIC2(digital, packet_parse_b);
 GR_SWIG_BLOCK_MAGIC2(digital, packet_headergenerator_bb);
 GR_SWIG_BLOCK_MAGIC2(digital, packet_headerparser_b);

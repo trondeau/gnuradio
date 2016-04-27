@@ -1,4 +1,4 @@
-# Copyright 2011-2015 Free Software Foundation, Inc.
+# Copyright 2011-2016 Free Software Foundation, Inc.
 #
 # This file is part of GNU Radio
 #
@@ -94,7 +94,9 @@ install(FILES
     packet_formatter_base.h
     packet_formatter_default.h
     packet_formatter_counter.h
+    packet_formatter_crc.h
     packet_format_async.h
+    packet_format_bb.h
     packet_parse_b.h
     packet_header_default.h
     packet_header_ofdm.h

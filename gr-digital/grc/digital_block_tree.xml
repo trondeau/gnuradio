@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
- Copyright 2011-2015 Free Software Foundation, Inc.
+ Copyright 2011-2016 Free Software Foundation, Inc.
 
  This file is part of GNU Radio
 
@@ -74,6 +74,7 @@
     <block>digital_framer_sink_1</block>
     <block>variable_packet_formatter_default</block>
     <block>digital_packet_format_async</block>
+    <block>digital_packet_format_bb</block>
     <block>digital_packet_parse_b</block>
     <block>digital_header_payload_demux</block>
     <block>digital_packet_headergenerator_bb</block>
