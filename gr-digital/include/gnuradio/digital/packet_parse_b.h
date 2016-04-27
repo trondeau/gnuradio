@@ -25,7 +25,7 @@
 #define INCLUDED_DIGITAL_PACKET_PARSE_B_H
 
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_default.h>
+#include <gnuradio/digital/packet_formatter_base.h>
 #include <gnuradio/sync_block.h>
 
 namespace gr {
@@ -45,7 +45,7 @@ namespace gr {
      * code as a sync word to find the start of a frame.
      *
      * The block uses a formatter derived from a
-     * packet_formatter_default formatter class.
+     * packet_formatter_base formatter class.
      *
      * Once the frame is detected (usually through the use of an
      * access code), the block uses the formatter's parser to decode
@@ -71,7 +71,7 @@ namespace gr {
        * \param formatter The formatter class to use when reading the
        *        header.
        */
-      static sptr make(const packet_formatter_default::sptr &formatter);
+      static sptr make(const packet_formatter_base::sptr &formatter);
     };
 
   } // namespace digital

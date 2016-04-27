@@ -31,11 +31,11 @@ namespace gr {
     class packet_parse_b_impl : public packet_parse_b
     {
      private:
-      packet_formatter_default::sptr d_formatter;
+      packet_formatter_base::sptr d_formatter;
       pmt::pmt_t d_out_port;
 
      public:
-      packet_parse_b_impl(const packet_formatter_default::sptr &formatter);
+      packet_parse_b_impl(const packet_formatter_base::sptr &formatter);
       ~packet_parse_b_impl();
 
       void set_threshold(unsigned int thresh);
