@@ -92,6 +92,10 @@
       <value>digital.psk_2()[0]</value>
     </param>
     <param>
+      <key>type</key>
+      <value>calcdist</value>
+    </param>
+    <param>
       <key>dims</key>
       <value>1</value>
     </param>
@@ -139,6 +143,10 @@
       <value>digital.psk_2()[0]</value>
     </param>
     <param>
+      <key>type</key>
+      <value>calcdist</value>
+    </param>
+    <param>
       <key>dims</key>
       <value>1</value>
     </param>
@@ -184,6 +192,10 @@
     <param>
       <key>const_points</key>
       <value>digital.psk_4()[0]</value>
+    </param>
+    <param>
+      <key>type</key>
+      <value>calcdist</value>
     </param>
     <param>
       <key>dims</key>
@@ -599,10 +611,10 @@
     </param>
   </block>
   <block>
-    <key>variable_packet_formatter_default</key>
+    <key>variable_header_format_default</key>
     <param>
       <key>access_code</key>
-      <value>0</value>
+      <value>digital.packet_utils.default_access_code</value>
     </param>
     <param>
       <key>comment</key>
@@ -610,11 +622,11 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>True</value>
+      <value>1</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(680, 11)</value>
+      <value>(720, 14)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -622,11 +634,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>formatter</value>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>threshold</key>
-      <value>0</value>
+      <value>3</value>
     </param>
   </block>
   <block>
@@ -1096,6 +1108,10 @@
       <value>enc_hdr</value>
     </param>
     <param>
+      <key>hdr_format</key>
+      <value>digital.header_format_default(digital.packet_utils.default_access_code, 0)</value>
+    </param>
+    <param>
       <key>hdr_const</key>
       <value>Const_HDR</value>
     </param>
@@ -1110,10 +1126,6 @@
     <param>
       <key>minoutbuf</key>
       <value>0</value>
-    </param>
-    <param>
-      <key>formatter</key>
-      <value>formatter</value>
     </param>
     <param>
       <key>pld_enc</key>
@@ -1137,6 +1149,10 @@
     <param>
       <key>autoscale</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>axislabels</key>
+      <value>True</value>
     </param>
     <param>
       <key>alias</key>
@@ -1486,6 +1502,10 @@
       <value>1.0</value>
     </param>
     <param>
+      <key>axislabels</key>
+      <value>True</value>
+    </param>
+    <param>
       <key>bw</key>
       <value>1</value>
     </param>
@@ -1775,6 +1795,10 @@
     <param>
       <key>autoscale</key>
       <value>False</value>
+    </param>
+    <param>
+      <key>axislabels</key>
+      <value>True</value>
     </param>
     <param>
       <key>alias</key>

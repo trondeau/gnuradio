@@ -805,7 +805,7 @@ FEC is Repetition (x3)</value>
     </param>
     <param>
       <key>header_len</key>
-      <value>(formatter.header_nbits() * int(1.0/hdr_dec.rate())) /  hdr_const.bits_per_symbol()</value>
+      <value>(hdr_format.header_nbits() * int(1.0/hdr_dec.rate())) /  hdr_const.bits_per_symbol()</value>
     </param>
     <param>
       <key>id</key>
@@ -850,49 +850,6 @@ FEC is Repetition (x3)</value>
     <param>
       <key>trigger_tag_key</key>
       <value>"time_est"</value>
-    </param>
-  </block>
-  <block>
-    <key>digital_packet_parse_b</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>formatter</key>
-      <value>formatter</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1056, 123)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>180</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>digital_packet_parse_b_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
     </param>
   </block>
   <block>
@@ -964,6 +921,49 @@ FEC is Repetition (x3)</value>
     <param>
       <key>type</key>
       <value>ccf</value>
+    </param>
+  </block>
+  <block>
+    <key>digital_protocol_parser_b</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>affinity</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>format</key>
+      <value>hdr_format</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(1024, 124)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>180</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>digital_protocol_parser_b_0</value>
+    </param>
+    <param>
+      <key>maxoutbuf</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>minoutbuf</key>
+      <value>0</value>
     </param>
   </block>
   <block>
@@ -1088,7 +1088,7 @@ FEC is Repetition (x3)</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(1352, 123)</value>
+      <value>(1352, 124)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1113,49 +1113,6 @@ FEC is Repetition (x3)</value>
     <param>
       <key>otype</key>
       <value>byte</value>
-    </param>
-  </block>
-  <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(904, 11)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>formatter</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Packet Formatter</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>type</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>digital.packet_formatter_default(digital.packet_utils.default_access_code, 0)</value>
     </param>
   </block>
   <block>
@@ -1242,6 +1199,49 @@ FEC is Repetition (x3)</value>
     <param>
       <key>value</key>
       <value> fec.dummy_decoder.make(8000)</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(904, 11)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>hdr_format</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Header Formatter</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>digital.header_format_default(digital.packet_utils.default_access_code, 0)</value>
     </param>
   </block>
   <block>
@@ -1385,7 +1385,7 @@ FEC is Repetition (x3)</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(968, 355)</value>
+      <value>(968, 372)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1851,12 +1851,6 @@ FEC is Repetition (x3)</value>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_parse_b_0</source_block_id>
-    <sink_block_id>digital_header_payload_demux_0</sink_block_id>
-    <source_key>info</source_key>
-    <sink_key>header_data</sink_key>
-  </connection>
-  <connection>
     <source_block_id>digital_pfb_clock_sync_xxx_0</source_block_id>
     <sink_block_id>digital_header_payload_demux_0</sink_block_id>
     <source_key>0</source_key>
@@ -1867,6 +1861,12 @@ FEC is Repetition (x3)</value>
     <sink_block_id>pad_sink_5</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
+  </connection>
+  <connection>
+    <source_block_id>digital_protocol_parser_b_0</source_block_id>
+    <sink_block_id>digital_header_payload_demux_0</sink_block_id>
+    <source_key>info</source_key>
+    <sink_key>header_data</sink_key>
   </connection>
   <connection>
     <source_block_id>fec_async_decoder_0</source_block_id>
@@ -1882,7 +1882,7 @@ FEC is Repetition (x3)</value>
   </connection>
   <connection>
     <source_block_id>fec_generic_decoder_0</source_block_id>
-    <sink_block_id>digital_packet_parse_b_0</sink_block_id>
+    <sink_block_id>digital_protocol_parser_b_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>

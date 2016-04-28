@@ -26,51 +26,51 @@
 
 #include <volk/volk.h>
 #include <gnuradio/io_signature.h>
-#include "packet_format_bb_impl.h"
+#include "protocol_formatter_bb_impl.h"
 #include <stdio.h>
 
 namespace gr {
   namespace digital {
 
-    packet_format_bb::sptr
-    packet_format_bb::make(const packet_formatter_base::sptr &formatter,
-                           const std::string &len_tag_key)
+    protocol_formatter_bb::sptr
+    protocol_formatter_bb::make(const header_format_base::sptr &format,
+                                const std::string &len_tag_key)
     {
       return gnuradio::get_initial_sptr
-        (new packet_format_bb_impl(formatter, len_tag_key));
+        (new protocol_formatter_bb_impl(format, len_tag_key));
     }
 
-    packet_format_bb_impl::packet_format_bb_impl(const packet_formatter_base::sptr &formatter,
-                                                 const std::string &len_tag_key)
-      : tagged_stream_block("packet_format_bb",
+    protocol_formatter_bb_impl::protocol_formatter_bb_impl(const header_format_base::sptr &format,
+                                                           const std::string &len_tag_key)
+      : tagged_stream_block("protocol_formatter_bb",
                             io_signature::make(1, 1, sizeof(char)),
                             io_signature::make(1, 1, sizeof(char)),
                             len_tag_key),
-        d_formatter(formatter)
+        d_format(format)
     {
-      set_output_multiple(d_formatter->header_nbytes());
+      set_output_multiple(d_format->header_nbytes());
 
       // This is the worst case rate, because we don't know the true value, of course
-      set_relative_rate(d_formatter->header_nbytes());
+      set_relative_rate(d_format->header_nbytes());
       set_tag_propagation_policy(TPP_DONT);
     }
 
-    packet_format_bb_impl::~packet_format_bb_impl()
+    protocol_formatter_bb_impl::~protocol_formatter_bb_impl()
     {
     }
 
     void
-    packet_format_bb_impl::set_header_formatter(packet_formatter_base::sptr &formatter)
+    protocol_formatter_bb_impl::set_header_format(header_format_base::sptr &format)
     {
       gr::thread::scoped_lock guard(d_setlock);
-      d_formatter = formatter;
+      d_format = format;
     }
 
     int
-    packet_format_bb_impl::work(int noutput_items,
-                                gr_vector_int &ninput_items,
-                                gr_vector_const_void_star &input_items,
-                                gr_vector_void_star &output_items)
+    protocol_formatter_bb_impl::work(int noutput_items,
+                                     gr_vector_int &ninput_items,
+                                     gr_vector_const_void_star &input_items,
+                                     gr_vector_void_star &output_items)
     {
       gr::thread::scoped_lock guard(d_setlock);
       unsigned char *out = (unsigned char *) output_items[0];
@@ -83,17 +83,17 @@ namespace gr {
 
       pmt::pmt_t pmt_out;
       pmt::pmt_t info = pmt::PMT_NIL;
-      if(!d_formatter->format(ninput_items[0], in, pmt_out, info)) {
-	GR_LOG_FATAL(d_logger, boost::format("formatter returned false "
+      if(!d_format->format(ninput_items[0], in, pmt_out, info)) {
+	GR_LOG_FATAL(d_logger, boost::format("header format returned false "
                                              "(this shouldn't happen). Offending "
                                              "header started at %1%") % nitems_read(0));
-	throw std::runtime_error("packet formatter returned false.");
+	throw std::runtime_error("header format returned false.");
       }
 
       size_t len;
       const uint8_t *data = pmt::u8vector_elements(pmt_out, len);
-      if(len != d_formatter->header_nbytes()) {
-        throw std::runtime_error("Formatter got wrong size header");
+      if(len != d_format->header_nbytes()) {
+        throw std::runtime_error("Header format got wrong size header");
       }
       memcpy(out, data, len);
 

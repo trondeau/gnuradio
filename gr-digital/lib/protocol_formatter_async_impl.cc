@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -26,25 +26,25 @@
 
 #include <volk/volk.h>
 #include <gnuradio/io_signature.h>
-#include "packet_format_async_impl.h"
+#include "protocol_formatter_async_impl.h"
 #include <stdio.h>
 
 namespace gr {
   namespace digital {
 
-    packet_format_async::sptr
-    packet_format_async::make(const packet_formatter_base::sptr &formatter)
+    protocol_formatter_async::sptr
+    protocol_formatter_async::make(const header_format_base::sptr &format)
     {
       return gnuradio::get_initial_sptr
-        (new packet_format_async_impl(formatter));
+        (new protocol_formatter_async_impl(format));
     }
 
-    packet_format_async_impl::packet_format_async_impl(const packet_formatter_base::sptr &formatter)
-      : block("packet_format_async",
+    protocol_formatter_async_impl::protocol_formatter_async_impl(const header_format_base::sptr &format)
+      : block("protocol_formatter_async",
               io_signature::make(0, 0, 0),
               io_signature::make(0, 0, 0))
     {
-      d_formatter = formatter;
+      d_format = format;
 
       d_in_port = pmt::mp("in");
       d_hdr_port = pmt::mp("header");
@@ -55,15 +55,15 @@ namespace gr {
       message_port_register_out(d_pld_port);
 
       set_msg_handler(d_in_port,
-                      boost::bind(&packet_format_async_impl::append, this ,_1) );
+                      boost::bind(&protocol_formatter_async_impl::append, this ,_1) );
     }
 
-    packet_format_async_impl::~packet_format_async_impl()
+    protocol_formatter_async_impl::~protocol_formatter_async_impl()
     {
     }
 
     void
-    packet_format_async_impl::append(pmt::pmt_t msg)
+    protocol_formatter_async_impl::append(pmt::pmt_t msg)
     {
       // extract input pdu
       pmt::pmt_t meta(pmt::car(msg));
@@ -80,8 +80,8 @@ namespace gr {
       output = pmt::init_u8vector(pkt_len, payload);
       volk_free(payload);
 
-      // Build the header from the input, metadata, and formatter
-      d_formatter->format(pkt_len, bytes_in, header, meta);
+      // Build the header from the input, metadata, and format
+      d_format->format(pkt_len, bytes_in, header, meta);
 
       // Package and publish
       pmt::pmt_t hdr_pdu = pmt::cons(meta, header);

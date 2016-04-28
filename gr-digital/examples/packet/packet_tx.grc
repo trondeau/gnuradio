@@ -182,7 +182,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(536, 251)</value>
+      <value>(536, 252)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -799,7 +799,7 @@
     </param>
   </block>
   <block>
-    <key>digital_packet_format_async</key>
+    <key>digital_protocol_formatter_async</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -817,12 +817,12 @@
       <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter</value>
+      <key>format</key>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(64, 225)</value>
+      <value>(56, 225)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -830,7 +830,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_format_async_1</value>
+      <value>digital_protocol_formatter_async_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -975,49 +975,6 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(904, 11)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>formatter</value>
-    </param>
-    <param>
-      <key>label</key>
-      <value>Packet Formatter</value>
-    </param>
-    <param>
-      <key>short_id</key>
-      <value></value>
-    </param>
-    <param>
-      <key>type</key>
-      <value></value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>digital.packet_formatter_default(digital.packet_utils.default_access_code, 0)</value>
-    </param>
-  </block>
-  <block>
-    <key>parameter</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
       <value>(552, 11)</value>
     </param>
     <param>
@@ -1086,6 +1043,49 @@
     <param>
       <key>value</key>
       <value> fec.dummy_encoder_make(8000)</value>
+    </param>
+  </block>
+  <block>
+    <key>parameter</key>
+    <param>
+      <key>alias</key>
+      <value></value>
+    </param>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>True</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
+      <value>(904, 11)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>hdr_format</value>
+    </param>
+    <param>
+      <key>label</key>
+      <value>Header Formatter</value>
+    </param>
+    <param>
+      <key>short_id</key>
+      <value></value>
+    </param>
+    <param>
+      <key>type</key>
+      <value></value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>digital.header_format_default(digital.packet_utils.default_access_code, 0)</value>
     </param>
   </block>
   <block>
@@ -1737,20 +1737,20 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async_1</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>fec_async_encoder_0_0</sink_block_id>
     <source_key>header</source_key>
     <sink_key>in</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async_1</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>blocks_pdu_to_tagged_stream_0</sink_block_id>
     <source_key>payload</source_key>
     <sink_key>pdus</sink_key>
   </connection>
   <connection>
     <source_block_id>fec_async_encoder_0</source_block_id>
-    <sink_block_id>digital_packet_format_async_1</sink_block_id>
+    <sink_block_id>digital_protocol_formatter_async_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>in</sink_key>
   </connection>

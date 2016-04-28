@@ -107,14 +107,14 @@ list(APPEND digital_sources
     ofdm_sampler_impl.cc
     ofdm_serializer_vcc_impl.cc
     ofdm_sync_sc_cfb_impl.cc
-    packet_formatter_base.cc
-    packet_formatter_default.cc
-    packet_formatter_counter.cc
-    packet_formatter_crc.cc
-    packet_formatter_ofdm.cc
-    packet_format_async_impl.cc
-    packet_format_bb_impl.cc
-    packet_parse_b_impl.cc
+    header_format_base.cc
+    header_format_default.cc
+    header_format_counter.cc
+    header_format_crc.cc
+    header_format_ofdm.cc
+    protocol_formatter_async_impl.cc
+    protocol_formatter_bb_impl.cc
+    protocol_parser_b_impl.cc
     packet_header_default.cc
     packet_header_ofdm.cc
     packet_headergenerator_bb_impl.cc
@@ -214,7 +214,7 @@ if(ENABLE_TESTING)
   list(APPEND test_gr_digital_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_gr_digital.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_digital.cc
-    ${CMAKE_CURRENT_SOURCE_DIR}/qa_packet_formatters.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/qa_header_format.cc
     )
 
   add_executable(test-gr-digital ${test_gr_digital_sources})

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015,2016 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,33 +20,31 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_PARSE_B_IMPL_H
-#define INCLUDED_DIGITAL_PACKET_PARSE_B_IMPL_H
+#ifndef INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_IMPL_H
+#define INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_IMPL_H
 
-#include <gnuradio/digital/packet_parse_b.h>
+#include <gnuradio/digital/protocol_formatter_async.h>
 
 namespace gr {
   namespace digital {
 
-    class packet_parse_b_impl : public packet_parse_b
+    class protocol_formatter_async_impl
+      : public protocol_formatter_async
     {
      private:
-      packet_formatter_base::sptr d_formatter;
-      pmt::pmt_t d_out_port;
+      header_format_base::sptr d_format;
+
+      pmt::pmt_t d_in_port;
+      pmt::pmt_t d_hdr_port, d_pld_port;
+
+      void append(pmt::pmt_t msg);
 
      public:
-      packet_parse_b_impl(const packet_formatter_base::sptr &formatter);
-      ~packet_parse_b_impl();
-
-      void set_threshold(unsigned int thresh);
-      unsigned int threshold() const;
-
-      int work(int noutput_items,
-               gr_vector_const_void_star &input_items,
-               gr_vector_void_star &output_items);
+      protocol_formatter_async_impl(const header_format_base::sptr &format);
+      ~protocol_formatter_async_impl();
     };
 
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_PARSE_B_IMPL_H */
+#endif /* INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_IMPL_H */

@@ -91,14 +91,14 @@ install(FILES
     ofdm_sampler.h
     ofdm_serializer_vcc.h
     ofdm_sync_sc_cfb.h
-    packet_formatter_base.h
-    packet_formatter_default.h
-    packet_formatter_counter.h
-    packet_formatter_crc.h
-    packet_formatter_ofdm.h
-    packet_format_async.h
-    packet_format_bb.h
-    packet_parse_b.h
+    header_format_base.h
+    header_format_default.h
+    header_format_counter.h
+    header_format_crc.h
+    header_format_ofdm.h
+    protocol_formatter_async.h
+    protocol_formatter_bb.h
+    protocol_parser_b.h
     packet_header_default.h
     packet_header_ofdm.h
     packet_headergenerator_bb.h

@@ -1,5 +1,5 @@
 /* -*- c++ -*- */
-/* Copyright 2014 Free Software Foundation, Inc.
+/* Copyright 2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -27,38 +27,38 @@
 #include <iomanip>
 #include <string.h>
 #include <volk/volk.h>
-#include <gnuradio/digital/packet_formatter_counter.h>
+#include <gnuradio/digital/header_format_counter.h>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/math.h>
 
 namespace gr {
   namespace digital {
 
-    packet_formatter_counter::sptr
-    packet_formatter_counter::make(const std::string &access_code,
-                                   int threshold, int bps)
+    header_format_counter::sptr
+    header_format_counter::make(const std::string &access_code,
+                                int threshold, int bps)
     {
-      return packet_formatter_counter::sptr
-        (new packet_formatter_counter(access_code, threshold, bps));
+      return header_format_counter::sptr
+        (new header_format_counter(access_code, threshold, bps));
     }
 
-    packet_formatter_counter::packet_formatter_counter(const std::string &access_code,
-                                                       int threshold, int bps)
-      : packet_formatter_default(access_code, threshold)
+    header_format_counter::header_format_counter(const std::string &access_code,
+                                                 int threshold, int bps)
+      : header_format_default(access_code, threshold)
     {
       d_bps = bps;
       d_counter = 0;
     }
 
-    packet_formatter_counter::~packet_formatter_counter()
+    header_format_counter::~header_format_counter()
     {
     }
 
     bool
-    packet_formatter_counter::format(int nbytes_in,
-                                     const unsigned char *input,
-                                     pmt::pmt_t &output,
-                                     pmt::pmt_t &info)
+    header_format_counter::format(int nbytes_in,
+                                  const unsigned char *input,
+                                  pmt::pmt_t &output,
+                                  pmt::pmt_t &info)
 
     {
       uint8_t* bytes_out = (uint8_t*)volk_malloc(header_nbytes(),
@@ -83,13 +83,13 @@ namespace gr {
     }
 
     size_t
-    packet_formatter_counter::header_nbits() const
+    header_format_counter::header_nbits() const
     {
       return d_access_code_len + 8*4*sizeof(uint16_t);
     }
 
     bool
-    packet_formatter_counter::header_ok()
+    header_format_counter::header_ok()
     {
       // confirm that two copies of header info are identical
       uint16_t len0 = d_hdr_reg.extract_field16(0);
@@ -98,7 +98,7 @@ namespace gr {
     }
 
     int
-    packet_formatter_counter::header_payload()
+    header_format_counter::header_payload()
     {
       uint16_t len = d_hdr_reg.extract_field16(0);
       uint16_t bps = d_hdr_reg.extract_field16(32);

@@ -37,10 +37,10 @@ transmitted frame:
   also often add a known word to the front to help with
   synchronization and identification. We use the Packet Header
   Formatter block for this, which is completely defined by a packet
-  formatter object. See the gr::digital::packet_formatter_base class
+  formatter object. See the gr::digital::header_format_base class
   to understand more about how these formatters are created and used.
 
-  The \ref gr::digital::packet_format_async "Packet Header Formatter"
+  The \ref gr::digital::protocol_formatter_async "Protocol Formatter"
   has two output paths, both emitted as PDUs from message ports. The
   first message port is "header" that emits the header created for the
   payload based on the formatter object. The second message port is
@@ -227,10 +227,10 @@ the transmit processing.
   threshold. That parameter is used in the receiver to know how many
   bits can be wrong in the access code and still pass.
 
-  Disabling the \ref gr::digital::packet_formatter_default
+  Disabling the \ref gr::digital::header_format_default
   "default header definition" and enabling the other 'formatter' to
   change the protocol. This other protocol definition is the \ref
-  gr::digital::packet_formatter_counter "counter header". It adds the
+  gr::digital::header_format_counter "counter header". It adds the
   access code and payload length fields as the header like the default
   formatter. This formatter includes two other fields as well: the
   number of bits/symbol used in the payload modulator (as a 16-bit
@@ -515,7 +515,7 @@ coding, and modulation of the header. Generally speaking, these are
 all controlled through three different objects:
 
 - formatter: An object that described the header structure, derived
-  from gr::digital::packet_formatter_base.
+  from gr::digital::header_format_base.
 
 - hdr_const: An object that describes the bit and symbol mapping,
   derived from gr::digital::constellation.
@@ -592,14 +592,14 @@ output of the FEC decoder block is a bit stream where each item is
 either a 1 or a 0.
 
 The last step in the header processing stage is to parse that bit
-stream back into the header. The \ref gr::digital::packet_parse_b
+stream back into the header. The \ref gr::digital::protocol_parser_b
 "Packet Parser" block does this by receiving a bit stream, passing it
-to the \ref gr::digital::packet_formatter_base::parse "parse" function
-of the packet formatter object, and emitting a message with the
+to the \ref gr::digital::header_format_base::parse "parse" function of
+the packet formatter object, and emitting a message with the
 information about the parsed data.
 
 The packet parsing is explained in detail in the \ref
-gr::digital::packet_formatter_base "Packet Formatter Base" class. The
+gr::digital::header_format_base "Packet Formatter Base" class. The
 parse function packs together the received bits into the different
 header fields, checks that the header is correct, and the constructs a
 PMT dictionary of the header information, such as the payload length

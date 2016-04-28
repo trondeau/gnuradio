@@ -35,14 +35,14 @@ class test_packet_format_fb(gr_unittest.TestCase):
 
     def test_packet_format_async_default(self):
         ac = packet_utils.default_access_code
-        formatter = digital.packet_formatter_default(ac, 0)
+        hdr_format = digital.header_format_default(ac, 0)
 
-        pkt_header = digital.packet_format_async(formatter)
+        formatter = digital.protocol_formatter_async(hdr_format)
         snk_hdr = blocks.message_debug()
         snk_pld = blocks.message_debug()
 
-        self.tb.msg_connect(pkt_header, 'header', snk_hdr, 'store')
-        self.tb.msg_connect(pkt_header, 'payload', snk_pld, 'store')
+        self.tb.msg_connect(formatter, 'header', snk_hdr, 'store')
+        self.tb.msg_connect(formatter, 'payload', snk_pld, 'store')
 
 
         send_str = "Hello World"
@@ -83,14 +83,14 @@ class test_packet_format_fb(gr_unittest.TestCase):
     def test_packet_format_async_counter(self):
         bps = 2
         ac = packet_utils.default_access_code
-        formatter = digital.packet_formatter_counter(ac, 0, 2)
+        hdr_format = digital.header_format_counter(ac, 0, 2)
 
-        pkt_header = digital.packet_format_async(formatter)
+        formatter = digital.protocol_formatter_async(hdr_format)
         snk_hdr = blocks.message_debug()
         snk_pld = blocks.message_debug()
 
-        self.tb.msg_connect(pkt_header, 'header', snk_hdr, 'store')
-        self.tb.msg_connect(pkt_header, 'payload', snk_pld, 'store')
+        self.tb.msg_connect(formatter, 'header', snk_hdr, 'store')
+        self.tb.msg_connect(formatter, 'payload', snk_pld, 'store')
 
 
         send_str = "Hello World" + 1000*"xxx"

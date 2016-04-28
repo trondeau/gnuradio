@@ -1,12 +1,14 @@
+<?xml version="1.0"?>
+
 <block>
-  <name>Packet Parser</name>
-  <key>digital_packet_parse_b</key>
+  <name>Protocol Parser</name>
+  <key>digital_protocol_parser_b</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_parse_b($formatter)</make>
+  <make>digital.protocol_parser_b($format)</make>
 
   <param>
-    <name>Formatter</name>
-    <key>formatter</key>
+    <name>Format Obj.</name>
+    <key>format</key>
     <type>raw</type>
   </param>
 

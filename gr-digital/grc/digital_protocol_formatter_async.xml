@@ -1,12 +1,14 @@
+<?xml version="1.0"?>
+
 <block>
-  <name>Packet Header Formatter (Async)</name>
-  <key>digital_packet_format_async</key>
+  <name>Protocol Formatter (Async)</name>
+  <key>digital_protocol_formatter_async</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_format_async($formatter)</make>
+  <make>digital.protocol_formatter_async($format)</make>
 
   <param>
-    <name>Formatter</name>
-    <key>formatter</key>
+    <name>Format Obj.</name>
+    <key>format</key>
     <type>raw</type>
   </param>
 

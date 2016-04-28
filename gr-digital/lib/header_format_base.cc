@@ -26,42 +26,42 @@
 #include <iostream>
 #include <string.h>
 #include <volk/volk.h>
-#include <gnuradio/digital/packet_formatter_base.h>
+#include <gnuradio/digital/header_format_base.h>
 #include <gnuradio/math.h>
 
 namespace gr {
   namespace digital {
 
-    packet_formatter_base::packet_formatter_base()
+    header_format_base::header_format_base()
     {
       enter_search();
       configure_default_loggers(d_logger, d_debug_logger, "packet formatter");
     }
 
-    packet_formatter_base::~packet_formatter_base()
+    header_format_base::~header_format_base()
     {
     }
 
     size_t
-    packet_formatter_base::header_nbytes() const
+    header_format_base::header_nbytes() const
     {
       return header_nbits() / 8;
     }
 
     inline void
-    packet_formatter_base::enter_search()
+    header_format_base::enter_search()
     {
       d_state = STATE_SYNC_SEARCH;
     }
 
     inline void
-    packet_formatter_base::enter_have_sync()
+    header_format_base::enter_have_sync()
     {
       d_state = STATE_HAVE_SYNC;
     }
 
     inline void
-    packet_formatter_base::enter_have_header(int payload_len)
+    header_format_base::enter_have_header(int payload_len)
     {
       d_state = STATE_SYNC_SEARCH;
     }

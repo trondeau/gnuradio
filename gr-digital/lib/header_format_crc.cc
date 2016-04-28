@@ -25,38 +25,38 @@
 
 #include <string.h>
 #include <volk/volk.h>
-#include <gnuradio/digital/packet_formatter_crc.h>
+#include <gnuradio/digital/header_format_crc.h>
 #include <gnuradio/digital/header_buffer.h>
 
 namespace gr {
   namespace digital {
 
-    packet_formatter_crc::sptr
-    packet_formatter_crc::make(const std::string &len_key_name,
-                               const std::string &num_key_name)
+    header_format_crc::sptr
+    header_format_crc::make(const std::string &len_key_name,
+                            const std::string &num_key_name)
     {
-      return packet_formatter_crc::sptr
-        (new packet_formatter_crc(len_key_name, num_key_name));
+      return header_format_crc::sptr
+        (new header_format_crc(len_key_name, num_key_name));
     }
 
-    packet_formatter_crc::packet_formatter_crc(const std::string &len_key_name,
-                                               const std::string &num_key_name)
-      : packet_formatter_base(),
+    header_format_crc::header_format_crc(const std::string &len_key_name,
+                                         const std::string &num_key_name)
+      : header_format_base(),
         d_header_number(0)
     {
       d_len_key_name = pmt::intern(len_key_name);
       d_num_key_name = pmt::intern(num_key_name);
     }
 
-    packet_formatter_crc::~packet_formatter_crc()
+    header_format_crc::~header_format_crc()
     {
     }
 
     bool
-    packet_formatter_crc::format(int nbytes_in,
-                                 const unsigned char *input,
-                                 pmt::pmt_t &output,
-                                 pmt::pmt_t &info)
+    header_format_crc::format(int nbytes_in,
+                              const unsigned char *input,
+                              pmt::pmt_t &output,
+                              pmt::pmt_t &info)
     {
       uint8_t* bytes_out = (uint8_t*)volk_malloc(header_nbytes(),
                                                  volk_get_alignment());
@@ -92,10 +92,10 @@ namespace gr {
     }
 
     bool
-    packet_formatter_crc::parse(int nbits_in,
-                                const unsigned char *input,
-                                std::vector<pmt::pmt_t> &info,
-                                int &nbits_processed)
+    header_format_crc::parse(int nbits_in,
+                             const unsigned char *input,
+                             std::vector<pmt::pmt_t> &info,
+                             int &nbits_processed)
     {
       while(nbits_processed <= nbits_in) {
         d_hdr_reg.insert_bit(input[nbits_processed++]);
@@ -119,14 +119,14 @@ namespace gr {
     }
 
     size_t
-    packet_formatter_crc::header_nbits() const
+    header_format_crc::header_nbits() const
     {
       return 32;
     }
 
 
     bool
-    packet_formatter_crc::header_ok()
+    header_format_crc::header_ok()
     {
       uint32_t pkt = d_hdr_reg.extract_field32(0, 24, true);
       uint16_t pktlen = static_cast<uint16_t>((pkt >> 8) & 0x0fff);
@@ -143,7 +143,7 @@ namespace gr {
     }
 
     int
-    packet_formatter_crc::header_payload()
+    header_format_crc::header_payload()
     {
       uint32_t pkt = d_hdr_reg.extract_field32(0, 24, true);
       uint16_t pktlen = static_cast<uint16_t>((pkt >> 8) & 0x0fff);

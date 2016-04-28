@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -21,22 +21,23 @@
  */
 
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_H
-#define INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_H
+#ifndef INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_H
+#define INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_H
 
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_base.h>
+#include <gnuradio/digital/header_format_base.h>
 #include <gnuradio/block.h>
 
 namespace gr {
   namespace digital {
 
     /*!
-     * \brief Uses a header formatter to append a header onto a PDU.
+     * \brief Uses a header format object to append a header onto a
+     * PDU.
+     *
      * \ingroup packet_operators_blk
      *
      * \details
-
      * This block takes in PDUs and creates a header, generally for
      * MAC-level processing. Each received PDU is assumed to be its
      * own frame, so any fragmentation would be done upstream in or
@@ -44,21 +45,21 @@ namespace gr {
      *
      * The header that is created and transmitted out of the 'header'
      * message port as a PDU. The header is based entirely on the \p
-     * formatter, which is an object derived from the
-     * packet_formatter_base class. All of these packet header
-     * formatters operate the same: they take in the payload data as
-     * well as possible extra metadata info about the PDU; the
-     * formatter then returns the output PDU as a PMT argument along
+     * format object, which is an object derived from the
+     * header_format_base class. All of these packet header format
+     * objects operate the same: they take in the payload data as well
+     * as possible extra metadata info about the PDU; the format
+     * object then returns the output PDU as a PMT argument along
      * with any changes to the metadata info PMT.
      *
      * For different packet header formatting needs, we can define new
-     * classes that inherit from the packet_formatter_base block
-     * and which overload the packet_formatter_base::format
+     * classes that inherit from the header_format_base block
+     * and which overload the header_format_base::format
      * function.
      *
-     * \sa packet_formatter_base
-     * \sa packet_formatter_default
-     * \sa packet_formatter_counter
+     * \sa header_format_base
+     * \sa header_format_default
+     * \sa header_format_counter
      *
      * This block only uses asynchronous message passing interfaces to
      * receiver and emit PDUs. The message ports are:
@@ -67,21 +68,21 @@ namespace gr {
      * \li header: the header formatted for the given frame
      * \li payload: the payload
      */
-    class DIGITAL_API packet_format_async : virtual public block
+    class DIGITAL_API protocol_formatter_async : virtual public block
     {
      public:
-      typedef boost::shared_ptr<packet_format_async> sptr;
+      typedef boost::shared_ptr<protocol_formatter_async> sptr;
 
       /*!
-       * Make a packet header block using a given \p formatter.
+       * Make a packet header block using a given \p format.
        *
-       * \param formatter The formatter class to use when creating the
+       * \param format The format object to use when creating the
        *        header for the packet.
        */
-      static sptr make(const packet_formatter_base::sptr &formatter);
+      static sptr make(const header_format_base::sptr &format);
     };
 
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_H */
+#endif /* INCLUDED_DIGITAL_PROTOCOL_FORMATTER_ASYNC_H */

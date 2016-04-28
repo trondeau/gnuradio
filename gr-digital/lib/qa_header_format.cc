@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015,2016 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -32,13 +32,13 @@
 #include <gnuradio/expj.h>
 #include <cppunit/TestAssert.h>
 
-#include "qa_packet_formatters.h"
-#include <gnuradio/digital/packet_formatter_counter.h>
-#include <gnuradio/digital/packet_formatter_default.h>
+#include "qa_header_format.h"
+#include <gnuradio/digital/header_format_counter.h>
+#include <gnuradio/digital/header_format_default.h>
 #include <gnuradio/blocks/unpack_k_bits.h>
 
 void
-qa_packet_formatters::test_default_format()
+qa_header_format::test_default_format()
 {
   static const int N = 4800;
   int upper8 = (N >> 8) & 0xFF;
@@ -52,8 +52,8 @@ qa_packet_formatters::test_default_format()
     data[i] = rand() % 256;
   }
 
-  gr::digital::packet_formatter_default::sptr formatter;
-  formatter = gr::digital::packet_formatter_default::make(ac, 0);
+  gr::digital::header_format_default::sptr formatter;
+  formatter = gr::digital::header_format_default::make(ac, 0);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
@@ -86,7 +86,7 @@ qa_packet_formatters::test_default_format()
 
 
 void
-qa_packet_formatters::test_default_parse()
+qa_header_format::test_default_parse()
 {
   static const int nbytes = 106;
   static const int nbits = 8*nbytes;
@@ -114,8 +114,8 @@ qa_packet_formatters::test_default_parse()
   unpacker.unpack(bits, bytes, nbytes);
 
   std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::packet_formatter_default::sptr formatter;
-  formatter = gr::digital::packet_formatter_default::make(ac, 0);
+  gr::digital::header_format_default::sptr formatter;
+  formatter = gr::digital::header_format_default::make(ac, 0);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;
@@ -137,7 +137,7 @@ qa_packet_formatters::test_default_parse()
 }
 
 void
-qa_packet_formatters::test_counter_format()
+qa_header_format::test_counter_format()
 {
   static const int N = 4800;
   int upper8 = (N >> 8) & 0xFF;
@@ -152,8 +152,8 @@ qa_packet_formatters::test_counter_format()
   }
 
   uint16_t expected_bps = 2;
-  gr::digital::packet_formatter_counter::sptr formatter;
-  formatter = gr::digital::packet_formatter_counter::make(ac, 0, expected_bps);
+  gr::digital::header_format_counter::sptr formatter;
+  formatter = gr::digital::header_format_counter::make(ac, 0, expected_bps);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
@@ -203,7 +203,7 @@ qa_packet_formatters::test_counter_format()
 
 
 void
-qa_packet_formatters::test_counter_parse()
+qa_header_format::test_counter_parse()
 {
   static const int nbytes = 110;
   static const int nbits = 8*nbytes;
@@ -236,8 +236,8 @@ qa_packet_formatters::test_counter_parse()
 
   uint16_t expected_bps = 2;
   std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::packet_formatter_counter::sptr formatter;
-  formatter = gr::digital::packet_formatter_counter::make(ac, 0, expected_bps);
+  gr::digital::header_format_counter::sptr formatter;
+  formatter = gr::digital::header_format_counter::make(ac, 0, expected_bps);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;

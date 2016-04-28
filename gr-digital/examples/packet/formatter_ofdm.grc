@@ -93,6 +93,33 @@
     </param>
     <param>
       <key>_coordinate</key>
+      <value>(584, 13)</value>
+    </param>
+    <param>
+      <key>_rotation</key>
+      <value>0</value>
+    </param>
+    <param>
+      <key>id</key>
+      <value>frame_key</value>
+    </param>
+    <param>
+      <key>value</key>
+      <value>"frame_len"</value>
+    </param>
+  </block>
+  <block>
+    <key>variable</key>
+    <param>
+      <key>comment</key>
+      <value></value>
+    </param>
+    <param>
+      <key>_enabled</key>
+      <value>1</value>
+    </param>
+    <param>
+      <key>_coordinate</key>
       <value>(168, 13)</value>
     </param>
     <param>
@@ -101,11 +128,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>formatter</value>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>value</key>
-      <value>digital.packet_formatter_ofdm(occupied_carriers, 1, len_key, frame_key, num_key, header_mod.bits_per_symbol(), payload_mod.bits_per_symbol(), scramble)</value>
+      <value>digital.header_format_ofdm(occupied_carriers, 1, len_key, frame_key, num_key, header_mod.bits_per_symbol(), payload_mod.bits_per_symbol(), scramble)</value>
     </param>
   </block>
   <block>
@@ -129,38 +156,11 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>id</key>
-      <value>formatter_bb</value>
+      <value>hdr_format_bb</value>
     </param>
     <param>
       <key>value</key>
-      <value>digital.packet_formatter_ofdm(occupied_carriers, 1, len_key, frame_key, num_key, header_mod.bits_per_symbol(), payload_mod.bits_per_symbol(), scramble)</value>
-    </param>
-  </block>
-  <block>
-    <key>variable</key>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>1</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(584, 13)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>frame_key</value>
-    </param>
-    <param>
-      <key>value</key>
-      <value>"frame_len"</value>
+      <value>digital.header_format_ofdm(occupied_carriers, 1, len_key, frame_key, num_key, header_mod.bits_per_symbol(), payload_mod.bits_per_symbol(), scramble)</value>
     </param>
   </block>
   <block>
@@ -895,7 +895,7 @@ as the formatters keep state.</value>
     </param>
   </block>
   <block>
-    <key>digital_packet_format_async</key>
+    <key>digital_protocol_formatter_async</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -910,15 +910,15 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter</value>
+      <key>format</key>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(624, 289)</value>
+      <value>(616, 289)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -926,7 +926,7 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_format_async</value>
+      <value>digital_protocol_formatter_async_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -938,7 +938,7 @@ as the formatters keep state.</value>
     </param>
   </block>
   <block>
-    <key>digital_packet_format_bb</key>
+    <key>digital_protocol_formatter_bb</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -953,11 +953,11 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter_bb</value>
+      <key>format</key>
+      <value>hdr_format_bb</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -969,7 +969,7 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_format_bb_0</value>
+      <value>digital_protocol_formatter_bb_0</value>
     </param>
     <param>
       <key>len_tag_key</key>
@@ -985,7 +985,7 @@ as the formatters keep state.</value>
     </param>
   </block>
   <block>
-    <key>digital_packet_parse_b</key>
+    <key>digital_protocol_parser_b</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -1000,11 +1000,11 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter</value>
+      <key>format</key>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -1016,7 +1016,7 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_parse_b_0</value>
+      <value>digital_protocol_parser_b_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1028,7 +1028,7 @@ as the formatters keep state.</value>
     </param>
   </block>
   <block>
-    <key>digital_packet_parse_b</key>
+    <key>digital_protocol_parser_b</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -1043,11 +1043,11 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter_bb</value>
+      <key>format</key>
+      <value>hdr_format_bb</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -1059,7 +1059,7 @@ as the formatters keep state.</value>
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_parse_b_0_0</value>
+      <value>digital_protocol_parser_b_0_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -1084,7 +1084,7 @@ as the formatters keep state.</value>
   </connection>
   <connection>
     <source_block_id>blocks_pdu_to_tagged_stream_0_0</source_block_id>
-    <sink_block_id>digital_packet_format_bb_0</sink_block_id>
+    <sink_block_id>digital_protocol_formatter_bb_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -1096,7 +1096,7 @@ as the formatters keep state.</value>
   </connection>
   <connection>
     <source_block_id>blocks_repack_bits_bb_0</source_block_id>
-    <sink_block_id>digital_packet_parse_b_0</sink_block_id>
+    <sink_block_id>digital_protocol_parser_b_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -1108,7 +1108,7 @@ as the formatters keep state.</value>
   </connection>
   <connection>
     <source_block_id>blocks_repack_bits_bb_0_0</source_block_id>
-    <sink_block_id>digital_packet_parse_b_0_0</sink_block_id>
+    <sink_block_id>digital_protocol_parser_b_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -1120,36 +1120,36 @@ as the formatters keep state.</value>
   </connection>
   <connection>
     <source_block_id>digital_crc32_async_bb_1</source_block_id>
-    <sink_block_id>digital_packet_format_async</sink_block_id>
+    <sink_block_id>digital_protocol_formatter_async_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>in</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>blocks_message_debug_0</sink_block_id>
     <source_key>header</source_key>
     <sink_key>print_pdu</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>blocks_pdu_to_tagged_stream_0</sink_block_id>
     <source_key>header</source_key>
     <sink_key>pdus</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_bb_0</source_block_id>
+    <source_block_id>digital_protocol_formatter_bb_0</source_block_id>
     <sink_block_id>blocks_repack_bits_bb_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_parse_b_0</source_block_id>
+    <source_block_id>digital_protocol_parser_b_0</source_block_id>
     <sink_block_id>blocks_message_debug_0_0</sink_block_id>
     <source_key>info</source_key>
     <sink_key>print</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_parse_b_0_0</source_block_id>
+    <source_block_id>digital_protocol_parser_b_0_0</source_block_id>
     <sink_block_id>blocks_message_debug_0_0_0</sink_block_id>
     <source_key>info</source_key>
     <sink_key>print</sink_key>

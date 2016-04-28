@@ -19,12 +19,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMATTER_DEFAULT_H
-#define INCLUDED_DIGITAL_PACKET_FORMATTER_DEFAULT_H
+#ifndef INCLUDED_DIGITAL_HEADER_FORMAT_DEFAULT_H
+#define INCLUDED_DIGITAL_HEADER_FORMAT_DEFAULT_H
 
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_base.h>
+#include <gnuradio/digital/header_format_base.h>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/logger.h>
 #include <boost/enable_shared_from_this.hpp>
@@ -39,7 +39,7 @@ namespace gr {
      * \details
      * Used to handle the default packet header.
      *
-     * See the parent class packet_formatter_base for details of how
+     * See the parent class header_format_base for details of how
      * these classes operate.
      *
      * The default header created in this base class consists of an
@@ -72,18 +72,18 @@ namespace gr {
      * payload. The payload decoder will have to know how this relates
      * to the number of bits received. This block knows nothing about
      * the payload modulation or the number of bits/symbol. Use the
-     * gr::digital::packet_formatter_counter for that purpose.
+     * gr::digital::header_format_counter for that purpose.
      *
-     * \sa packet_formatter_counter
-     * \sa packet_formatter_1
-     * \sa packet_formatter_ofdm
+     * \sa header_format_counter
+     * \sa header_format_crc
+     * \sa header_format_ofdm
      */
-    class DIGITAL_API packet_formatter_default
-      : public packet_formatter_base
+    class DIGITAL_API header_format_default
+      : public header_format_base
     {
      public:
-      packet_formatter_default(const std::string &access_code, int threshold);
-      virtual ~packet_formatter_default();
+      header_format_default(const std::string &access_code, int threshold);
+      virtual ~header_format_default();
 
       /*!
        * Creates a header from the access code and packet length and
@@ -214,4 +214,4 @@ namespace gr {
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMATTER_DEFAULT_H */
+#endif /* INCLUDED_DIGITAL_HEADER_FORMAT_DEFAULT_H */

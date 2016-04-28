@@ -25,40 +25,40 @@
 
 #include <string.h>
 #include <volk/volk.h>
-#include <gnuradio/digital/packet_formatter_ofdm.h>
+#include <gnuradio/digital/header_format_ofdm.h>
 #include <gnuradio/digital/header_buffer.h>
 #include <gnuradio/digital/lfsr.h>
 
 namespace gr {
   namespace digital {
 
-    packet_formatter_ofdm::sptr
-    packet_formatter_ofdm::make(const std::vector<std::vector<int> > &occupied_carriers,
-                                int n_syms,
-                                const std::string &len_key_name,
-                                const std::string &frame_key_name,
-                                const std::string &num_key_name,
-                                int bits_per_header_sym,
-                                int bits_per_payload_sym,
-                                bool scramble_header)
+    header_format_ofdm::sptr
+    header_format_ofdm::make(const std::vector<std::vector<int> > &occupied_carriers,
+                             int n_syms,
+                             const std::string &len_key_name,
+                             const std::string &frame_key_name,
+                             const std::string &num_key_name,
+                             int bits_per_header_sym,
+                             int bits_per_payload_sym,
+                             bool scramble_header)
     {
-      return packet_formatter_ofdm::sptr
-        (new packet_formatter_ofdm(occupied_carriers, n_syms,
-                                   len_key_name, frame_key_name, num_key_name,
-                                   bits_per_header_sym,
-                                   bits_per_payload_sym,
-                                   scramble_header));
+      return header_format_ofdm::sptr
+        (new header_format_ofdm(occupied_carriers, n_syms,
+                                len_key_name, frame_key_name, num_key_name,
+                                bits_per_header_sym,
+                                bits_per_payload_sym,
+                                scramble_header));
     }
 
-    packet_formatter_ofdm::packet_formatter_ofdm(const std::vector<std::vector<int> > &occupied_carriers,
-                                                 int n_syms,
-                                                 const std::string &len_key_name,
-                                                 const std::string &frame_key_name,
-                                                 const std::string &num_key_name,
-                                                 int bits_per_header_sym,
-                                                 int bits_per_payload_sym,
-                                                 bool scramble_header)
-    : packet_formatter_crc(len_key_name, num_key_name),
+    header_format_ofdm::header_format_ofdm(const std::vector<std::vector<int> > &occupied_carriers,
+                                           int n_syms,
+                                           const std::string &len_key_name,
+                                           const std::string &frame_key_name,
+                                           const std::string &num_key_name,
+                                           int bits_per_header_sym,
+                                           int bits_per_payload_sym,
+                                           bool scramble_header)
+    : header_format_crc(len_key_name, num_key_name),
       d_frame_key_name(pmt::intern(frame_key_name)),
       d_occupied_carriers(occupied_carriers),
       d_bits_per_payload_sym(bits_per_payload_sym)
@@ -86,18 +86,18 @@ namespace gr {
       }
     }
 
-    packet_formatter_ofdm::~packet_formatter_ofdm()
+    header_format_ofdm::~header_format_ofdm()
     {
     }
 
     bool
-    packet_formatter_ofdm::format(int nbytes_in,
-                                  const unsigned char *input,
-                                  pmt::pmt_t &output,
-                                  pmt::pmt_t &info)
+    header_format_ofdm::format(int nbytes_in,
+                               const unsigned char *input,
+                               pmt::pmt_t &output,
+                               pmt::pmt_t &info)
     {
-      bool ret_val = packet_formatter_crc::format(nbytes_in, input,
-                                                  output, info);
+      bool ret_val = header_format_crc::format(nbytes_in, input,
+                                               output, info);
 
       //size_t len;
       //uint8_t *out = pmt::u8vector_writable_elements(output, len);
@@ -109,7 +109,7 @@ namespace gr {
     }
 
     bool
-    packet_formatter_ofdm::parse(int nbits_in,
+    header_format_ofdm::parse(int nbits_in,
                                  const unsigned char *input,
                                  std::vector<pmt::pmt_t> &info,
                                  int &nbits_processed)
@@ -137,13 +137,13 @@ namespace gr {
     }
 
     size_t
-    packet_formatter_ofdm::header_nbits() const
+    header_format_ofdm::header_nbits() const
     {
       return d_header_len;
     }
 
     int
-    packet_formatter_ofdm::header_payload()
+    header_format_ofdm::header_payload()
     {
       uint32_t pkt = d_hdr_reg.extract_field32(0, 24, true);
       uint16_t pktlen = static_cast<uint16_t>((pkt >> 8) & 0x0fff);

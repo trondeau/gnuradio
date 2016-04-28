@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,31 +20,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_IMPL_H
-#define INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_IMPL_H
+#ifndef _QA_DIGITAL_HEADER_FORMAT_H_
+#define _QA_DIGITAL_HEADER_FORMAT_H_
 
-#include <gnuradio/digital/packet_format_async.h>
+#include <cppunit/extensions/HelperMacros.h>
+#include <cppunit/TestCase.h>
 
-namespace gr {
-  namespace digital {
+class qa_header_format : public CppUnit::TestCase
+{
+  CPPUNIT_TEST_SUITE(qa_header_format);
+  CPPUNIT_TEST(test_default_format);
+  CPPUNIT_TEST(test_default_parse);
+  CPPUNIT_TEST(test_counter_format);
+  CPPUNIT_TEST(test_counter_parse);
+  CPPUNIT_TEST_SUITE_END();
 
-    class packet_format_async_impl
-      : public packet_format_async
-    {
-     private:
-      packet_formatter_base::sptr d_formatter;
+ private:
+  void test_default_format();
+  void test_default_parse();
+  void test_default_parse_soft();
+  void test_counter_format();
+  void test_counter_parse();
+  void test_counter_parse_soft();
+};
 
-      pmt::pmt_t d_in_port;
-      pmt::pmt_t d_hdr_port, d_pld_port;
-
-      void append(pmt::pmt_t msg);
-
-     public:
-      packet_format_async_impl(const packet_formatter_base::sptr &formatter);
-      ~packet_format_async_impl();
-    };
-
-  } // namespace digital
-} // namespace gr
-
-#endif /* INCLUDED_DIGITAL_PACKET_FORMAT_ASYNC_IMPL_H */
+#endif /* _QA_DIGITAL_HEADER_FORMAT_H_ */

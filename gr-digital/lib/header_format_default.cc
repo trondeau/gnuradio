@@ -26,39 +26,39 @@
 #include <iostream>
 #include <string.h>
 #include <volk/volk.h>
-#include <gnuradio/digital/packet_formatter_default.h>
+#include <gnuradio/digital/header_format_default.h>
 #include <gnuradio/math.h>
 
 namespace gr {
   namespace digital {
 
-    packet_formatter_default::sptr
-    packet_formatter_default::make(const std::string &access_code,
-                                   int threshold)
+    header_format_default::sptr
+    header_format_default::make(const std::string &access_code,
+                                int threshold)
     {
-      return packet_formatter_default::sptr
-        (new packet_formatter_default(access_code, threshold));
+      return header_format_default::sptr
+        (new header_format_default(access_code, threshold));
     }
 
-    packet_formatter_default::packet_formatter_default(const std::string &access_code,
-                                                       int threshold)
-      : packet_formatter_base(),
+    header_format_default::header_format_default(const std::string &access_code,
+                                                 int threshold)
+      : header_format_base(),
         d_data_reg(0), d_mask(0), d_threshold(0),
         d_pkt_len(0), d_pkt_count(0), d_nbits(0)
     {
       if(!set_access_code(access_code)) {
-        throw std::runtime_error("packet_formatter_default: Setting access code failed");
+        throw std::runtime_error("header_format_default: Setting access code failed");
       }
 
       set_threshold(threshold);
     }
 
-    packet_formatter_default::~packet_formatter_default()
+    header_format_default::~header_format_default()
     {
     }
 
     bool
-    packet_formatter_default::set_access_code(const std::string &access_code)
+    header_format_default::set_access_code(const std::string &access_code)
     {
       d_access_code_len = access_code.length();	// # of bits in the access code
 
@@ -78,32 +78,32 @@ namespace gr {
     }
 
     unsigned long long
-    packet_formatter_default::access_code() const
+    header_format_default::access_code() const
     {
       return d_access_code;
     }
 
     void
-    packet_formatter_default::set_threshold(unsigned int thresh)
+    header_format_default::set_threshold(unsigned int thresh)
     {
       if(d_threshold > d_access_code_len) {
-        throw std::runtime_error("packet_formatter_default: Cannot set threshold " \
+        throw std::runtime_error("header_format_default: Cannot set threshold " \
                                  "larger than the access code length.");
       }
       d_threshold = thresh;
     }
 
     unsigned int
-    packet_formatter_default::threshold() const
+    header_format_default::threshold() const
     {
       return d_threshold;
     }
 
     bool
-    packet_formatter_default::format(int nbytes_in,
-                                     const unsigned char *input,
-                                     pmt::pmt_t &output,
-                                     pmt::pmt_t &info)
+    header_format_default::format(int nbytes_in,
+                                  const unsigned char *input,
+                                  pmt::pmt_t &output,
+                                  pmt::pmt_t &info)
     {
       uint8_t* bytes_out = (uint8_t*)volk_malloc(header_nbytes(),
                                                  volk_get_alignment());
@@ -123,10 +123,10 @@ namespace gr {
     }
 
     bool
-    packet_formatter_default::parse(int nbits_in,
-                                    const unsigned char *input,
-                                    std::vector<pmt::pmt_t> &info,
-                                    int &nbits_processed)
+    header_format_default::parse(int nbits_in,
+                                 const unsigned char *input,
+                                 std::vector<pmt::pmt_t> &info,
+                                 int &nbits_processed)
     {
       nbits_processed = 0;
 
@@ -178,20 +178,20 @@ namespace gr {
     }
 
     size_t
-    packet_formatter_default::header_nbits() const
+    header_format_default::header_nbits() const
     {
       return d_access_code_len + 8*2*sizeof(uint16_t);
     }
 
     inline void
-    packet_formatter_default::enter_have_sync()
+    header_format_default::enter_have_sync()
     {
       d_state = STATE_HAVE_SYNC;
       d_hdr_reg.clear_input();
     }
 
     inline void
-    packet_formatter_default::enter_have_header(int payload_len)
+    header_format_default::enter_have_header(int payload_len)
     {
       d_state = STATE_SYNC_SEARCH;
       d_pkt_len = payload_len;
@@ -199,7 +199,7 @@ namespace gr {
     }
 
     bool
-    packet_formatter_default::header_ok()
+    header_format_default::header_ok()
     {
       // confirm that two copies of header info are identical
       uint16_t len0 = d_hdr_reg.extract_field16(0, 16);
@@ -208,7 +208,7 @@ namespace gr {
     }
 
     int
-    packet_formatter_default::header_payload()
+    header_format_default::header_payload()
     {
       uint16_t len = d_hdr_reg.extract_field16(0, 16);
 

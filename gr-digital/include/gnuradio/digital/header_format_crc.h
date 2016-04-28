@@ -19,12 +19,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMATTER_OFDM_H
-#define INCLUDED_DIGITAL_PACKET_FORMATTER_OFDM_H
+#ifndef INCLUDED_DIGITAL_HEADER_FORMAT_CRC_H
+#define INCLUDED_DIGITAL_HEADER_FORMAT_CRC_H
 
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_crc.h>
+#include <gnuradio/digital/header_format_default.h>
 #include <boost/crc.hpp>
 
 namespace gr {
@@ -37,7 +37,7 @@ namespace gr {
      *
      * \details
      *
-     * Child class of packet_formatter_base. This version's header
+     * Child class of header_format_base. This version's header
      * format looks like:
      *
      * \li length (12 bits): length of the payload
@@ -53,21 +53,17 @@ namespace gr {
        \endverbatim
      *
      * Reimplements packet_header_default in the style of the
-     * packet_formatter_base.
+     * header_format_base.
      */
-    class DIGITAL_API packet_formatter_ofdm
-      : public packet_formatter_crc
+    class DIGITAL_API header_format_crc
+      : public header_format_base
     {
      public:
-      packet_formatter_ofdm(const std::vector<std::vector<int> > &occupied_carriers,
-                            int n_syms,
-                            const std::string &len_key_name="packet_len",
-                            const std::string &frame_key_name="frame_len",
-                            const std::string &num_key_name="packet_num",
-                            int bits_per_header_sym=1,
-                            int bits_per_payload_sym=1,
-                            bool scramble_header=false);
-      virtual ~packet_formatter_ofdm();
+      header_format_crc(const std::string &len_key_name="packet_len",
+                           const std::string &num_key_name="packet_num");
+      virtual ~header_format_crc();
+
+      void set_header_num(unsigned header_num) { d_header_number = header_num; };
 
       /*!
        * \brief Encodes the header information in the given tags into
@@ -98,22 +94,17 @@ namespace gr {
        * Factory to create an async packet header formatter; returns
        * an sptr to the object.
        */
-      static sptr make(const std::vector<std::vector<int> > &occupied_carriers,
-                       int n_syms,
-                       const std::string &len_key_name="packet_len",
-                       const std::string &frame_key_name="frame_len",
-                       const std::string &num_key_name="packet_num",
-                       int bits_per_header_sym=1,
-                       int bits_per_payload_sym=1,
-                       bool scramble_header=false);
+      static sptr make(const std::string &len_key_name="packet_len",
+                       const std::string &num_key_name="packet_num");
 
     protected:
-      pmt::pmt_t d_frame_key_name; //!< Tag key of the additional frame length tag
-      const std::vector<std::vector<int> > d_occupied_carriers; //!< Which carriers/symbols carry data
-      int d_syms_per_set; //!< Helper variable: Total number of elements in d_occupied_carriers
-      int d_bits_per_payload_sym;
-      std::vector<uint8_t> d_scramble_mask; //!< Bits are xor'd with this before tx'ing
-      size_t d_header_len;
+      uint16_t d_header_number;
+      pmt::pmt_t d_len_key_name;
+      pmt::pmt_t d_num_key_name;
+      boost::crc_optimal<8, 0x07, 0xFF, 0x00, false, false>  d_crc_impl;
+
+      //! Verify that the header is valid
+      virtual bool header_ok();
 
       /*! Get info from the header; return payload length and package
        *  rest of data in d_info dictionary.
@@ -124,4 +115,4 @@ namespace gr {
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMATTER_OFDM_H */
+#endif /* INCLUDED_DIGITAL_HEADER_FORMAT_CRC_H */

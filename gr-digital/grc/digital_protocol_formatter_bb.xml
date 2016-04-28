@@ -1,12 +1,14 @@
+<?xml version="1.0"?>
+
 <block>
-  <name>Packet Header Formatter</name>
-  <key>digital_packet_format_bb</key>
+  <name>Protocol Formatter</name>
+  <key>digital_protocol_formatter_bb</key>
   <import>from gnuradio import digital</import>
-  <make>digital.packet_format_bb($formatter, $len_tag_key)</make>
+  <make>digital.protocol_formatter_bb($format, $len_tag_key)</make>
 
   <param>
-    <name>Formatter</name>
-    <key>formatter</key>
+    <name>Format Obj.</name>
+    <key>format</key>
     <type>raw</type>
   </param>
 

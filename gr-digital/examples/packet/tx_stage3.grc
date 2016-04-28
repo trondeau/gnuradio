@@ -93,7 +93,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(256, 275)</value>
+      <value>(256, 285)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -109,7 +109,7 @@
     </param>
   </block>
   <block>
-    <key>variable_packet_formatter_default</key>
+    <key>variable_header_format_default</key>
     <param>
       <key>access_code</key>
       <value>digital.packet_utils.default_access_code</value>
@@ -124,7 +124,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(32, 211)</value>
+      <value>(24, 206)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -132,7 +132,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>formatter</value>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>threshold</key>
@@ -159,11 +159,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>formatter</value>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>value</key>
-      <value>digital.packet_formatter_counter(digital.packet_utils.default_access_code, thresh, bps)</value>
+      <value>digital.header_format_counter(digital.packet_utils.default_access_code, thresh, bps)</value>
     </param>
   </block>
   <block>
@@ -178,7 +178,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(32, 291)</value>
+      <value>(24, 285)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -370,7 +370,7 @@
     </param>
   </block>
   <block>
-    <key>digital_packet_format_async</key>
+    <key>digital_protocol_formatter_async</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -388,12 +388,12 @@
       <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter</value>
+      <key>format</key>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(624, 105)</value>
+      <value>(616, 105)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -401,7 +401,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_format_async_1</value>
+      <value>digital_protocol_formatter_async_0</value>
     </param>
     <param>
       <key>maxoutbuf</key>
@@ -426,18 +426,18 @@
   </connection>
   <connection>
     <source_block_id>digital_crc32_async_bb_1</source_block_id>
-    <sink_block_id>digital_packet_format_async_1</sink_block_id>
+    <sink_block_id>digital_protocol_formatter_async_0</sink_block_id>
     <source_key>out</source_key>
     <sink_key>in</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async_1</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>blocks_message_debug_0</sink_block_id>
     <source_key>header</source_key>
     <sink_key>print_pdu</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_async_1</source_block_id>
+    <source_block_id>digital_protocol_formatter_async_0</source_block_id>
     <sink_block_id>blocks_message_debug_0</sink_block_id>
     <source_key>payload</source_key>
     <sink_key>print_pdu</sink_key>

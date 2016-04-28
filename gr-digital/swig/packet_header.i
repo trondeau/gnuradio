@@ -32,29 +32,29 @@ packet_header_ofdm_sptr.__repr__ = lambda self: "<packet_header_ofdm>"
 packet_header_ofdm = packet_header_ofdm .make;
 %}
 
-%template(packet_formatter_base_sptr) boost::shared_ptr<gr::digital::packet_formatter_base>;
+%template(header_format_base_sptr) boost::shared_ptr<gr::digital::header_format_base>;
 
-%template(packet_formatter_default_sptr) boost::shared_ptr<gr::digital::packet_formatter_default>;
+%template(header_format_default_sptr) boost::shared_ptr<gr::digital::header_format_default>;
 %pythoncode %{
-packet_formatter_default_sptr.__repr__ = lambda self: "<packet_formatter_default>"
-packet_formatter_default = packet_formatter_default .make;
+header_format_default_sptr.__repr__ = lambda self: "<header_format_default>"
+header_format_default = header_format_default .make;
 %}
 
 
-%template(packet_formatter_counter_sptr) boost::shared_ptr<gr::digital::packet_formatter_counter>;
+%template(header_format_counter_sptr) boost::shared_ptr<gr::digital::header_format_counter>;
 %pythoncode %{
-packet_formatter_counter_sptr.__repr__ = lambda self: "<packet_formatter_counter>"
-packet_formatter_counter = packet_formatter_counter .make;
+header_format_counter_sptr.__repr__ = lambda self: "<header_format_counter>"
+header_format_counter = header_format_counter .make;
 %}
 
-%template(packet_formatter_crc_sptr) boost::shared_ptr<gr::digital::packet_formatter_crc>;
+%template(header_format_crc_sptr) boost::shared_ptr<gr::digital::header_format_crc>;
 %pythoncode %{
-packet_formatter_crc_sptr.__repr__ = lambda self: "<packet_formatter_crc>"
-packet_formatter_crc = packet_formatter_crc .make;
+header_format_crc_sptr.__repr__ = lambda self: "<header_format_crc>"
+header_format_crc = header_format_crc .make;
 %}
 
-%template(packet_formatter_ofdm_sptr) boost::shared_ptr<gr::digital::packet_formatter_ofdm>;
+%template(header_format_ofdm_sptr) boost::shared_ptr<gr::digital::header_format_ofdm>;
 %pythoncode %{
-packet_formatter_ofdm_sptr.__repr__ = lambda self: "<packet_formatter_ofdm>"
-packet_formatter_ofdm = packet_formatter_ofdm .make;
+header_format_ofdm_sptr.__repr__ = lambda self: "<header_format_ofdm>"
+header_format_ofdm = header_format_ofdm .make;
 %}

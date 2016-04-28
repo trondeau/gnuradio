@@ -19,12 +19,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMATTER_COUNTER_H
-#define INCLUDED_DIGITAL_PACKET_FORMATTER_COUNTER_H
+#ifndef INCLUDED_DIGITAL_HEADER_FORMAT_COUNTER_H
+#define INCLUDED_DIGITAL_HEADER_FORMAT_COUNTER_H
 
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
-#include <gnuradio/digital/packet_formatter_default.h>
+#include <gnuradio/digital/header_format_default.h>
 
 namespace gr {
   namespace digital {
@@ -36,7 +36,7 @@ namespace gr {
      *
      * \details
      *
-     * Child class of packet_formatter_default. This version adds two
+     * Child class of header_format_default. This version adds two
      * fields to the header:
      *
      * \li bps (16 bits): bits/symbol used when modulating the payload.
@@ -57,15 +57,15 @@ namespace gr {
      *
      * The access code and header are formatted for network byte order.
      *
-     * \sa packet_formatter_default
+     * \sa header_format_default
      */
-    class DIGITAL_API packet_formatter_counter
-      : public packet_formatter_default
+    class DIGITAL_API header_format_counter
+      : public header_format_default
     {
      public:
-      packet_formatter_counter(const std::string &access_code,
-                               int threshold, int bps);
-      virtual ~packet_formatter_counter();
+      header_format_counter(const std::string &access_code,
+                            int threshold, int bps);
+      virtual ~header_format_counter();
 
       /*!
        * Creates a header from the access code and packet length to
@@ -132,4 +132,4 @@ namespace gr {
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMATTER_COUNTER_H */
+#endif /* INCLUDED_DIGITAL_HEADER_FORMAT_COUNTER_H */

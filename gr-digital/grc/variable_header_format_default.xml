@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <!--
 ###################################################
-# packet_formatter_default object
+# header_format_default object
 ###################################################
  -->
 <block>
-  <name>Default Packet Header Definition</name>
-  <key>variable_packet_formatter_default</key>
+  <name>Default Header Format Obj.</name>
+  <key>variable_header_format_default</key>
   <import>from gnuradio import digital</import>
   <var_make>
 #if int($access_code())==0 #
-self.$(id) = $(id) = digital.packet_formatter_default(digital.packet_utils.default_access_code, $threshold)
+self.$(id) = $(id) = digital.header_format_default(digital.packet_utils.default_access_code, $threshold)
 #else
-self.$(id) = $(id) = digital.packet_formatter_default($access_code, $threshold)
+self.$(id) = $(id) = digital.header_format_default($access_code, $threshold)
 #end if
   </var_make>
-  <var_value>digital.packet_formatter_default($access_code, $threshold)</var_value>
+  <var_value>digital.header_format_default($access_code, $threshold)</var_value>
   <make></make>
 
   <param>

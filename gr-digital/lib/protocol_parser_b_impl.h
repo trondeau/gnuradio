@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2016 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -20,31 +20,28 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMAT_BB_IMPL_H
-#define INCLUDED_DIGITAL_PACKET_FORMAT_BB_IMPL_H
+#ifndef INCLUDED_DIGITAL_PROTOCOL_PARSER_B_IMPL_H
+#define INCLUDED_DIGITAL_PROTOCOL_PARSER_B_IMPL_H
 
-#include <gnuradio/digital/packet_format_bb.h>
+#include <gnuradio/digital/protocol_parser_b.h>
 
 namespace gr {
   namespace digital {
 
-    class packet_format_bb_impl : public packet_format_bb
+    class protocol_parser_b_impl : public protocol_parser_b
     {
      private:
-      packet_formatter_base::sptr d_formatter;
+      header_format_base::sptr d_format;
+      pmt::pmt_t d_out_port;
 
      public:
-      packet_format_bb_impl(const packet_formatter_base::sptr &formatter,
-                            const std::string &len_tag_key);
-      ~packet_format_bb_impl();
+      protocol_parser_b_impl(const header_format_base::sptr &format);
+      ~protocol_parser_b_impl();
 
-      void set_header_formatter(packet_formatter_base::sptr &formatter);
-
-      void remove_length_tags(const std::vector<std::vector<tag_t> > &tags) {};
-      int calculate_output_stream_length(const gr_vector_int &ninput_items) { return d_formatter->header_nbytes(); };
+      void set_threshold(unsigned int thresh);
+      unsigned int threshold() const;
 
       int work(int noutput_items,
-               gr_vector_int &ninput_items,
                gr_vector_const_void_star &input_items,
                gr_vector_void_star &output_items);
     };
@@ -52,4 +49,4 @@ namespace gr {
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMAT_BB_IMPL_H */
+#endif /* INCLUDED_DIGITAL_PROTOCOL_PARSER_B_IMPL_H */

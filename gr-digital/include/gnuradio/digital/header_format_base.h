@@ -19,8 +19,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_DIGITAL_PACKET_FORMATTER_BASE_H
-#define INCLUDED_DIGITAL_PACKET_FORMATTER_BASE_H
+#ifndef INCLUDED_DIGITAL_HEADER_FORMAT_BASE_H
+#define INCLUDED_DIGITAL_HEADER_FORMAT_BASE_H
 
 #include <pmt/pmt.h>
 #include <gnuradio/digital/api.h>
@@ -43,22 +43,22 @@ namespace gr {
      * that inherits from this and overload the necessary
      * functions. The main functions to overload are:
      *
-     * \li packet_formatter_base::format: takes in a payload and
+     * \li header_format_base::format: takes in a payload and
      * creates a header from it.
      *
-     * \li packet_formatter_base::parse: receive bits and extract
+     * \li header_format_base::parse: receive bits and extract
      * the header info. These are expected to be hard bits (0 or 1)
      * that have either been sliced or gone through an FEC decoder.
      *
-     * \li packet_formatter_base::header_nbits: the number of bits
+     * \li header_format_base::header_nbits: the number of bits
      * in the full header (including an access code).
      *
-     * \li packet_formatter_base::header_ok: checks to see if the
+     * \li header_format_base::header_ok: checks to see if the
      * received header is ok. Since the header often specifies the
      * length of the frame to decode next, it is important that this
      * information be correct.
      *
-     * \li packet_formatter_base::header_payload: unpacks the header
+     * \li header_format_base::header_payload: unpacks the header
      * register (from the class header_buffer) as a set of bits into
      * its component parts of the header. For example, this may find
      * and extract the frame length field as a 16-bit value and/or
@@ -117,17 +117,17 @@ namespace gr {
      * format, parse, and parsing state machine functions as
      * necessary.
      *
-     * \sa packet_formatter_default
-     * \sa packet_formatter_counter
+     * \sa header_format_default
+     * \sa header_format_counter
      */
-    class DIGITAL_API packet_formatter_base
-      : public boost::enable_shared_from_this<gr::digital::packet_formatter_base>
+    class DIGITAL_API header_format_base
+      : public boost::enable_shared_from_this<gr::digital::header_format_base>
     {
      public:
-      typedef boost::shared_ptr<packet_formatter_base> sptr;
+      typedef boost::shared_ptr<header_format_base> sptr;
 
-      packet_formatter_base();
-      virtual ~packet_formatter_base();
+      header_format_base();
+      virtual ~header_format_base();
 
       sptr base() { return shared_from_this(); };
       sptr formatter() { return shared_from_this(); };
@@ -222,4 +222,4 @@ namespace gr {
   } // namespace digital
 } // namespace gr
 
-#endif /* INCLUDED_DIGITAL_PACKET_FORMATTER_BASE_H */
+#endif /* INCLUDED_DIGITAL_HEADER_FORMAT_BASE_H */

@@ -1,6 +1,6 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2015,2016 Free Software Foundation, Inc.
+ * Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -24,7 +24,7 @@
 #include "config.h"
 #endif
 
-#include "packet_parse_b_impl.h"
+#include "protocol_parser_b_impl.h"
 #include <gnuradio/io_signature.h>
 #include <stdexcept>
 #include <volk/volk.h>
@@ -33,39 +33,39 @@
 namespace gr {
   namespace digital {
 
-    packet_parse_b::sptr
-    packet_parse_b::make(const packet_formatter_base::sptr &formatter)
+    protocol_parser_b::sptr
+    protocol_parser_b::make(const header_format_base::sptr &format)
     {
       return gnuradio::get_initial_sptr
-	(new packet_parse_b_impl(formatter));
+	(new protocol_parser_b_impl(format));
     }
 
 
-    packet_parse_b_impl::packet_parse_b_impl(const packet_formatter_base::sptr &formatter)
-      : sync_block("packet_parse_b",
+    protocol_parser_b_impl::protocol_parser_b_impl(const header_format_base::sptr &format)
+      : sync_block("protocol_parser_b",
                    io_signature::make(1, 1, sizeof(char)),
                    io_signature::make(0, 0, 0))
     {
-      d_formatter = formatter;
+      d_format = format;
 
       d_out_port = pmt::mp("info");
       message_port_register_out(d_out_port);
     }
 
-    packet_parse_b_impl::~packet_parse_b_impl()
+    protocol_parser_b_impl::~protocol_parser_b_impl()
     {
     }
 
     int
-    packet_parse_b_impl::work(int noutput_items,
-                              gr_vector_const_void_star &input_items,
-                              gr_vector_void_star &output_items)
+    protocol_parser_b_impl::work(int noutput_items,
+                                 gr_vector_const_void_star &input_items,
+                                 gr_vector_void_star &output_items)
     {
       const unsigned char *in = (const unsigned char*)input_items[0];
 
       int count = 0;
       std::vector<pmt::pmt_t> info;
-      bool ret = d_formatter->parse(noutput_items, in, info, count);
+      bool ret = d_format->parse(noutput_items, in, info, count);
 
       if(ret) {
         for(size_t i = 0; i < info.size(); i++) {

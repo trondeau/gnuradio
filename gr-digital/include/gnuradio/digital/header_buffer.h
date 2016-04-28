@@ -1,5 +1,5 @@
 /* -*- c++ -*- */
-/* Copyright 2015 Free Software Foundation, Inc.
+/* Copyright 2015-2016 Free Software Foundation, Inc.
  *
  * This file is part of GNU Radio
  *
@@ -34,14 +34,13 @@ namespace gr {
      *
      * \details
      *
-     * This class is used by the packet formatter blocks (e.g.,
-     * digital::packet_formatter_default) to make it easier to deal
-     * with payload headers. This class functions in two different
-     * ways depending on if it is used in a transmitter or
-     * receiver. When used in a transmitter, this class helps us build
-     * headers out of the fields of the protocol. When used in a
-     * receiver, this class helps us parse the received bits into the
-     * protocol's fields.
+     * This class is used by the header format blocks (e.g.,
+     * digital::header_format_default) to make it easier to deal with
+     * payload headers. This class functions in two different ways
+     * depending on if it is used in a transmitter or receiver. When
+     * used in a transmitter, this class helps us build headers out of
+     * the fields of the protocol. When used in a receiver, this class
+     * helps us parse the received bits into the protocol's fields.
      *
      * This page describes how to work with the different modes,
      * transmit or receive. The class is instructed as to which mode
@@ -56,9 +55,9 @@ namespace gr {
      * transmit mode. We can then use the add_field[N] functions to
      * add new fields to this header. The buffer MUST be large enough
      * to hold the full header. As this class is meant to work mostly
-     * with the digital::packet_formatter_default and child
+     * with the digital::header_format_default and child
      * classes, the header length can be read from
-     * digital::packet_formatter_default::header_nbytes().
+     * digital::header_format_default::header_nbytes().
      *
      * Each field is a specific length of 8, 16, 32, or 64 bits that
      * are to be transmitted in network byte order (bit
@@ -73,7 +72,7 @@ namespace gr {
      * which is sizeof(dtype), and the add_field[N] call defaults to
      * len=N. Occasionally, we may need to use fewer bytes than
      * actually represented by the data type. An example would be the
-     * access code used in the packet_formatter_default, which is a
+     * access code used in the header_format_default, which is a
      * uint64_t type but may have fewer bytes used in the actual
      * access code.
      *
@@ -162,8 +161,9 @@ namespace gr {
           uint16_t opts  = d_hdr_reg.extract_field16(20, 12);
        \endverbatim
      *
-     * \sa packet_formatter_default
-     * \sa packet_formatter_counter
+     * \sa header_format_default
+     * \sa header_format_counter
+     * \sa header_format_crc
      */
     class DIGITAL_API header_buffer
     {

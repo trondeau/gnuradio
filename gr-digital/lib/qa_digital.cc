@@ -26,14 +26,14 @@
  */
 
 #include "qa_digital.h"
-#include "qa_packet_formatters.h"
+#include "qa_header_format.h"
 
 CppUnit::TestSuite *
 qa_digital::suite()
 {
   CppUnit::TestSuite *s = new CppUnit::TestSuite("gr-digital");
 
-  s->addTest(qa_packet_formatters::suite());
+  s->addTest(qa_header_format::suite());
 
   return s;
 }

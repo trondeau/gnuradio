@@ -128,11 +128,11 @@
     </param>
     <param>
       <key>id</key>
-      <value>formatter</value>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>value</key>
-      <value>digital.packet_formatter_ofdm(occupied_carriers, 1, length_tag_key,)</value>
+      <value>digital.header_format_ofdm(occupied_carriers, 1, length_tag_key,)</value>
     </param>
   </block>
   <block>
@@ -1373,7 +1373,7 @@
     </param>
   </block>
   <block>
-    <key>digital_packet_format_bb</key>
+    <key>digital_protocol_formatter_bb</key>
     <param>
       <key>alias</key>
       <value></value>
@@ -1388,15 +1388,15 @@
     </param>
     <param>
       <key>_enabled</key>
-      <value>1</value>
+      <value>True</value>
     </param>
     <param>
-      <key>formatter</key>
-      <value>formatter</value>
+      <key>format</key>
+      <value>hdr_format</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(664, 157)</value>
+      <value>(656, 157)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1404,7 +1404,7 @@
     </param>
     <param>
       <key>id</key>
-      <value>digital_packet_format_bb_0</value>
+      <value>digital_protocol_formatter_bb_0</value>
     </param>
     <param>
       <key>len_tag_key</key>
@@ -2500,7 +2500,7 @@
   </connection>
   <connection>
     <source_block_id>digital_crc32_bb_0</source_block_id>
-    <sink_block_id>digital_packet_format_bb_0</sink_block_id>
+    <sink_block_id>digital_protocol_formatter_bb_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -2523,7 +2523,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>digital_packet_format_bb_0</source_block_id>
+    <source_block_id>digital_protocol_formatter_bb_0</source_block_id>
     <sink_block_id>blocks_repack_bits_bb_0_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
