@@ -52,18 +52,18 @@ qa_header_format::test_default_format()
     data[i] = rand() % 256;
   }
 
-  gr::digital::header_format_default::sptr formatter;
-  formatter = gr::digital::header_format_default::make(ac, 0);
+  gr::digital::header_format_default::sptr hdr_format;
+  hdr_format = gr::digital::header_format_default::make(ac, 0);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
 
-  bool ret = formatter->format(N, data, output, info);
+  bool ret = hdr_format->format(N, data, output, info);
   size_t length = pmt::length(output);
 
   CPPUNIT_ASSERT(ret);
-  CPPUNIT_ASSERT_EQUAL(length, formatter->header_nbytes());
-  CPPUNIT_ASSERT_EQUAL(8*length, formatter->header_nbits());
+  CPPUNIT_ASSERT_EQUAL(length, hdr_format->header_nbytes());
+  CPPUNIT_ASSERT_EQUAL(8*length, hdr_format->header_nbits());
 
   // Test access code formatted correctly
   unsigned char h0 = pmt::u8vector_ref(output, 0);
@@ -114,21 +114,21 @@ qa_header_format::test_default_parse()
   unpacker.unpack(bits, bytes, nbytes);
 
   std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::header_format_default::sptr formatter;
-  formatter = gr::digital::header_format_default::make(ac, 0);
+  gr::digital::header_format_default::sptr hdr_format;
+  hdr_format = gr::digital::header_format_default::make(ac, 0);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse(nbits, bits, info, count);
+  bool ret = hdr_format->parse(nbits, bits, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
 
   pmt::pmt_t dict = info[0];
-  int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
-                                                pmt::PMT_NIL));
+  int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload symbols"),
+                                                pmt::from_long(-1)));
 
-  int hdr_bits = (int)formatter->header_nbits();
+  int hdr_bits = (int)hdr_format->header_nbits();
   int expected_bits = nbits - hdr_bits;
   CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
 
@@ -152,18 +152,18 @@ qa_header_format::test_counter_format()
   }
 
   uint16_t expected_bps = 2;
-  gr::digital::header_format_counter::sptr formatter;
-  formatter = gr::digital::header_format_counter::make(ac, 0, expected_bps);
+  gr::digital::header_format_counter::sptr hdr_format;
+  hdr_format = gr::digital::header_format_counter::make(ac, 0, expected_bps);
 
   pmt::pmt_t output;
   pmt::pmt_t info = pmt::make_dict();
 
-  bool ret = formatter->format(N, data, output, info);
+  bool ret = hdr_format->format(N, data, output, info);
   size_t length = pmt::length(output);
 
   CPPUNIT_ASSERT(ret);
-  CPPUNIT_ASSERT_EQUAL(length, formatter->header_nbytes());
-  CPPUNIT_ASSERT_EQUAL(8*length, formatter->header_nbits());
+  CPPUNIT_ASSERT_EQUAL(length, hdr_format->header_nbytes());
+  CPPUNIT_ASSERT_EQUAL(8*length, hdr_format->header_nbits());
 
   // Test access code formatted correctly
   unsigned char h0 = pmt::u8vector_ref(output, 0);
@@ -192,7 +192,7 @@ qa_header_format::test_counter_format()
   CPPUNIT_ASSERT_EQUAL((uint16_t)0, counter);
 
   // Run another format to increment the counter to 1 and test.
-  ret = formatter->format(N, data, output, info);
+  ret = hdr_format->format(N, data, output, info);
   h8 = pmt::u8vector_ref(output, 8);
   h9 = pmt::u8vector_ref(output, 9);
   counter = ((h8 << 8) & 0xFF00) | (h9 & 0x00FF);
@@ -236,27 +236,27 @@ qa_header_format::test_counter_parse()
 
   uint16_t expected_bps = 2;
   std::string ac = "1010101010101010"; //0xAAAA
-  gr::digital::header_format_counter::sptr formatter;
-  formatter = gr::digital::header_format_counter::make(ac, 0, expected_bps);
+  gr::digital::header_format_counter::sptr hdr_format;
+  hdr_format = gr::digital::header_format_counter::make(ac, 0, expected_bps);
 
   int count = 0;
   std::vector<pmt::pmt_t> info;
-  bool ret = formatter->parse(nbits, bits, info, count);
+  bool ret = hdr_format->parse(nbits, bits, info, count);
 
   CPPUNIT_ASSERT(ret);
   CPPUNIT_ASSERT_EQUAL((size_t)1, info.size());
 
   pmt::pmt_t dict = info[0];
-  int payload_bits = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload bits"),
-                                                pmt::PMT_NIL));
+  int payload_syms = pmt::to_long(pmt::dict_ref(dict, pmt::intern("payload symbols"),
+                                                pmt::from_long(-1)));
   int bps = pmt::to_long(pmt::dict_ref(dict, pmt::intern("bps"),
-                                       pmt::PMT_NIL));
+                                       pmt::from_long(-1)));
   int counter = pmt::to_long(pmt::dict_ref(dict, pmt::intern("counter"),
-                                           pmt::PMT_NIL));
+                                           pmt::from_long(-1)));
 
-  int hdr_bits = (int)formatter->header_nbits();
+  int hdr_bits = (int)hdr_format->header_nbits();
   int expected_bits = nbits - hdr_bits;
-  CPPUNIT_ASSERT_EQUAL(expected_bits, payload_bits);
+  CPPUNIT_ASSERT_EQUAL(expected_bits, payload_syms * bps);
   CPPUNIT_ASSERT_EQUAL(expected_bps, (uint16_t)bps);
   CPPUNIT_ASSERT_EQUAL(0, counter);
 

@@ -52,7 +52,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
         msg = pmt.cons(pmt.PMT_NIL, send_pmt)
 
         port = pmt.intern("in")
-        pkt_header.to_basic_block()._post(port, msg)
+        formatter.to_basic_block()._post(port, msg)
 
         self.tb.start()
         while (snk_hdr.num_messages() < 1) and (snk_pld.num_messages() < 1):
@@ -100,7 +100,7 @@ class test_packet_format_fb(gr_unittest.TestCase):
         msg = pmt.cons(pmt.PMT_NIL, send_pmt)
 
         port = pmt.intern("in")
-        pkt_header.to_basic_block()._post(port, msg)
+        formatter.to_basic_block()._post(port, msg)
 
         self.tb.start()
         while (snk_hdr.num_messages() < 1) and (snk_pld.num_messages() < 1):
