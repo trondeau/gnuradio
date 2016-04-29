@@ -187,7 +187,7 @@ namespace gr {
     header_format_default::enter_have_sync()
     {
       d_state = STATE_HAVE_SYNC;
-      d_hdr_reg.clear_input();
+      d_hdr_reg.clear();
     }
 
     inline void

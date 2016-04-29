@@ -215,6 +215,7 @@ if(ENABLE_TESTING)
     ${CMAKE_CURRENT_SOURCE_DIR}/test_gr_digital.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_digital.cc
     ${CMAKE_CURRENT_SOURCE_DIR}/qa_header_format.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/qa_header_buffer.cc
     )
 
   add_executable(test-gr-digital ${test_gr_digital_sources})

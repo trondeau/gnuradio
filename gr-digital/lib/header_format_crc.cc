@@ -104,11 +104,11 @@ namespace gr {
             int payload_len = header_payload();
             enter_have_header(payload_len);
             info.push_back(d_info);
-            d_hdr_reg.clear_input();
+            d_hdr_reg.clear();
             return true;
           }
           else {
-            d_hdr_reg.clear_input();
+            d_hdr_reg.clear();
             return false;
           }
           break;

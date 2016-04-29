@@ -42,12 +42,21 @@ namespace gr {
     {
     }
 
+    void
+    header_buffer::clear()
+    {
+      if(d_buffer) // TX mode
+        d_offset = 0;
+      else // RX mode
+        d_input.clear();
+    }
+
     size_t
     header_buffer::length() const
     {
-      if(d_buffer)
+      if(d_buffer) // TX mode
         return d_offset;
-      else
+      else // RX mode
         return d_input.size();
     }
 
@@ -58,7 +67,7 @@ namespace gr {
     }
 
     void
-    header_buffer::add_field8(uint8_t data, int len, bool be)
+    header_buffer::add_field8(uint8_t data, int len, bool bs)
     {
       int nbytes = len/8;
       if(d_buffer) {
@@ -68,12 +77,12 @@ namespace gr {
     }
 
     void
-    header_buffer::add_field16(uint16_t data, int len, bool be)
+    header_buffer::add_field16(uint16_t data, int len, bool bs)
     {
       int nbytes = len/8;
       if(d_buffer) {
         uint16_t x = data;
-        if(!be) {
+        if(!bs) {
           volk_16u_byteswap(&x, 1);
           x = x >> (16-len);
         }
@@ -83,12 +92,12 @@ namespace gr {
     }
 
     void
-    header_buffer::add_field32(uint32_t data, int len, bool be)
+    header_buffer::add_field32(uint32_t data, int len, bool bs)
     {
       int nbytes = len/8;
       if(d_buffer) {
         uint32_t x = data;
-        if(!be) {
+        if(!bs) {
           volk_32u_byteswap(&x, 1);
           x = x >> (32-len);
         }
@@ -98,12 +107,12 @@ namespace gr {
     }
 
     void
-    header_buffer::add_field64(uint64_t data, int len, bool be)
+    header_buffer::add_field64(uint64_t data, int len, bool bs)
     {
       int nbytes = len/8;
       if(d_buffer) {
         uint64_t x = data;
-        if(!be) {
+        if(!bs) {
           volk_64u_byteswap(&x, 1);
           x = x >> (64-len);
         }
@@ -118,14 +127,8 @@ namespace gr {
       d_input.push_back(bit);
     }
 
-    void
-    header_buffer::clear_input()
-    {
-      d_input.clear();
-    }
-
     uint8_t
-    header_buffer::extract_field8(int pos, int len, bool be)
+    header_buffer::extract_field8(int pos, int len, bool bs)
     {
       if(len > 8) {
         throw std::runtime_error("header_buffer::extract_field for "
@@ -142,7 +145,7 @@ namespace gr {
     }
 
     uint16_t
-    header_buffer::extract_field16(int pos, int len, bool be)
+    header_buffer::extract_field16(int pos, int len, bool bs)
     {
       if(len > 16) {
         throw std::runtime_error("header_buffer::extract_field for "
@@ -155,7 +158,7 @@ namespace gr {
         field = (field << 1) | ((*itr) & 0x1);
       }
 
-      if(be) {
+      if(bs) {
         volk_16u_byteswap(&field, 1);
       }
 
@@ -163,7 +166,7 @@ namespace gr {
     }
 
     uint32_t
-    header_buffer::extract_field32(int pos, int len, bool be)
+    header_buffer::extract_field32(int pos, int len, bool bs)
     {
       if(len > 32) {
         throw std::runtime_error("header_buffer::extract_field for "
@@ -176,7 +179,7 @@ namespace gr {
         field = (field << 1) | ((*itr) & 0x1);
       }
 
-      if(be) {
+      if(bs) {
         volk_32u_byteswap(&field, 1);
       }
 
@@ -184,7 +187,7 @@ namespace gr {
     }
 
     uint64_t
-    header_buffer::extract_field64(int pos, int len, bool be)
+    header_buffer::extract_field64(int pos, int len, bool bs)
     {
       if(len > 64) {
         throw std::runtime_error("header_buffer::extract_field for "
@@ -197,7 +200,7 @@ namespace gr {
         field = (field << 1) | ((*itr) & 0x1);
       }
 
-      if(be) {
+      if(bs) {
         volk_64u_byteswap(&field, 1);
       }
 

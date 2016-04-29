@@ -24,6 +24,7 @@
 
 #include <gnuradio/digital/api.h>
 #include <vector>
+#include <stdint.h>
 
 namespace gr {
   namespace digital {
@@ -60,11 +61,9 @@ namespace gr {
      * digital::header_format_default::header_nbytes().
      *
      * Each field is a specific length of 8, 16, 32, or 64 bits that
-     * are to be transmitted in network byte order (bit
-     * endian). Generally, data passed to the add_field[N] calls are
-     * formatted little endian, so the data is first converted to big
-     * endian and then added to the back of the buffer. If the data
-     * are already big endian, set the \p be flag to true.
+     * are to be transmitted in network byte order. We can adjust the
+     * direction of the bytes by setting the byte-swap flag, \p bs, to
+     * true or false.
      *
      * The length argument (\p len) for all add_field[N] calls is the
      * number of bytes actually accounted for in the data
@@ -117,8 +116,8 @@ namespace gr {
      * current header is, in bits, using the call to length(). If the
      * header is of the appropriate length, we can then start
      * extracting the fields from it. When we are done with the
-     * current header, call clear_input() to reset the internal buffer
-     * to empty, which will mean that length() returns 0.
+     * current header, call clear() to reset the internal buffer to
+     * empty, which will mean that length() returns 0.
      *
      * The header fields are extracted using the extract_field[N]
      * functions. Like the add_field[N] functions, we specify the size
@@ -191,6 +190,19 @@ namespace gr {
       ~header_buffer();
 
       /*!
+       * Clears the header.
+       *
+       * In transmit mode, this resets the current offset so new
+       * add_field functions start adding data to the start of the
+       * buffer.
+       *
+       * In receive mode, this clears the buffer that we have inserted
+       * bits in to.
+       */
+      void clear();
+
+
+      /*!
        * In transmit mode, this returns the length of the data in
        * the buffer (not the allocated buffer length).
        *
@@ -209,36 +221,36 @@ namespace gr {
        *
        * \param data The 8-bit data item.
        * \param len Length (in bits) of \p data.
-       * \param be Set to 'true' if data is already big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      void add_field8(uint8_t data, int len=8, bool be=false);
+      void add_field8(uint8_t data, int len=8, bool bs=false);
 
       /*!
        * Add an 16-bit field to the header.
        *
        * \param data The 16-bit data item.
        * \param len Length (in bits) of \p data.
-       * \param be Set to 'true' if data is already big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      void add_field16(uint16_t data, int len=16, bool be=false);
+      void add_field16(uint16_t data, int len=16, bool bs=false);
 
       /*!
        * Add an 32-bit field to the header.
        *
        * \param data The 32-bit data item.
        * \param len Length (in bits) of \p data.
-       * \param be Set to 'true' if data is already big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      void add_field32(uint32_t data, int len=32, bool be=false);
+      void add_field32(uint32_t data, int len=32, bool bs=false);
 
       /*!
        * Add an 64-bit field to the header.
        *
        * \param data The 64-bit data item.
        * \param len Length (in bits) of \p data.
-       * \param be Set to 'true' if data is already big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      void add_field64(uint64_t data, int len=64, bool be=false);
+      void add_field64(uint64_t data, int len=64, bool bs=false);
 
 
 
@@ -247,52 +259,49 @@ namespace gr {
        *****************************************************/
 
       /*!
-       * Insert a new bit on the back of the input buffer.
+       * Insert a new bit on the back of the input buffer. This
+       * function is used in receive mode to add new bits as they are
+       * received for later use of the extract_field functions.
        *
        * \param bit New bit to add.
        */
       void insert_bit(int bit);
 
       /*!
-       * Clears the input buffer; sets size to 0.
-       */
-      void clear_input();
-
-      /*!
        * Returns up to an 8-bit field in the packet header.
        *
        * \param pos Bit position of the start of the field.
        * \param len The number of bits in the field.
-       * \param be Set to 'true' to get the field as big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      uint8_t extract_field8(int pos, int len=8, bool be=false);
+      uint8_t extract_field8(int pos, int len=8, bool bs=false);
 
       /*!
        * Returns up to a 16-bit field in the packet header.
        *
        * \param pos Bit position of the start of the field.
        * \param len The number of bits in the field.
-       * \param be Set to 'true' to get the field as big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      uint16_t extract_field16(int pos, int len=16, bool be=false);
+      uint16_t extract_field16(int pos, int len=16, bool bs=false);
 
       /*!
        * Returns up to a 32-bit field in the packet header.
        *
        * \param pos Bit position of the start of the field.
        * \param len The number of bits in the field.
-       * \param be Set to 'true' to get the field as big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      uint32_t extract_field32(int pos, int len=32, bool be=false);
+      uint32_t extract_field32(int pos, int len=32, bool bs=false);
 
       /*!
        * Returns up to a 64-bit field in the packet header.
        *
        * \param pos Bit position of the start of the field.
        * \param len The number of bits in the field.
-       * \param be Set to 'true' to get the field as big endian.
+       * \param bs Set to 'true' to byte swap the data.
        */
-      uint64_t extract_field64(int pos, int len=64, bool be=false);
+      uint64_t extract_field64(int pos, int len=64, bool bs=false);
     };
 
   } // namespace digital
